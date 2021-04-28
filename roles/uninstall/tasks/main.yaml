@@ -1,5 +1,5 @@
 ---
-- name: Stop service postgresdql, if started
+- name: Stop service postgresql, if started
   service:
     name: postgresql
     state: stopped
