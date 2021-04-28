@@ -1,0 +1,7 @@
+---
+- name: create users
+  postgresql_user:
+    db: "{{ managedclusters_db }}"
+    name: "{{ hoh_process_user }}"
+  become: yes
+  become_user: postgres
