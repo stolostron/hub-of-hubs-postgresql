@@ -1,0 +1,32 @@
+---
+- name: Stop service postgresdql, if started
+  service:
+    name: postgresql
+    state: stopped
+  ignore_errors: yes
+
+- name: uninstall postgresql
+  apt:
+    name:
+      - postgresql
+      - postgresql-client-common
+      - postgresql-common
+      - "postgresql-{{ postgresql_version }}"
+      - "postgresql-client-{{ postgresql_version }}"
+    state: absent
+    purge: yes
+
+- name: Delete postgresql directories
+  file:
+    state: absent
+    path: '{{ item }}'
+  loop:
+    - /var/lib/postgresql
+    - /var/log/postgresql
+    - /etc/postgresql
+
+- name: Remove the user 'postgres'
+  user:
+    name: postgres
+    state: absent
+    remove: yes

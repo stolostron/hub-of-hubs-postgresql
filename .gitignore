@@ -1,0 +1,8 @@
+# emacs backup files
+*~
+
+# the inventory file
+production
+
+# the vault file with credentials
+group_vars/acm/vault

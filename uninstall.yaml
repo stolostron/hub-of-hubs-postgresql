@@ -1,0 +1,6 @@
+---
+- name: uninstall
+  become: true
+  hosts: all
+  roles:
+    - { role: uninstall, tags: ["uninstall"] }

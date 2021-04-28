@@ -1,0 +1,6 @@
+---
+- name: install
+  become: true
+  hosts: all
+  roles:
+    - { role: install, tags: ["install"] }
