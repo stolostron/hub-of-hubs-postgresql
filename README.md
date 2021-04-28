@@ -15,6 +15,15 @@ PostgreSQL serves as the database of Hub-of-Hubs.
     - `ansible_user`: contains the user of the machine where you install the database
     - `vault_ansible_ssh_private_key_file`: the path to the SSSH private key file to connect to the machine
 
+1.  For formatting multiple lines output, add the following lines to your `ansible.cfg`:
+
+    ```
+    # Use the YAML callback plugin.
+    stdout_callback = yaml
+    # Use the stdout_callback when running ad-hoc commands.
+    bin_ansible_callbacks = True
+    ```
+
 ## To install
 
 Run:
