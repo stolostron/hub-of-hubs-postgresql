@@ -13,6 +13,8 @@
       - postgresql-common
       - "postgresql-{{ postgresql_version }}"
       - "postgresql-client-{{ postgresql_version }}"
+      - postgresql-contrib
+      - libpq-dev
     state: absent
     purge: yes
 
@@ -30,3 +32,19 @@
     name: postgres
     state: absent
     remove: yes
+
+- name: remove dependencies for ansible postgres
+  pip:
+    name:
+      - psycopg2
+    executable: pip3
+    state: absent
+
+- name: uninstall dependencies for ansible pip
+  apt:
+    name:
+      - python3-pip
+      - virtualenv
+      - python-setuptools
+    update_cache: yes
+    state: absent

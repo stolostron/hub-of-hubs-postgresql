@@ -1,1 +1,2 @@
 postgresql_version: 10
+managedclusters_db: managedclusters

@@ -3,13 +3,25 @@
   apt:
     name:
       - postgresql
+      - postgresql-contrib
+      - libpq-dev
     state: present
 
-- name: dump the current databases as a sanity check
-  shell: psql -c '\l'
-  become: yes
-  become_user: postgres
-  register: databases_psql_result
+# from https://superuser.com/a/1326644
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
 
-- debug:
-    msg: "{{ databases_psql_result.stdout_lines }}"
+- name: install dependencies for ansible pip
+  apt:
+    name:
+      - python3-pip
+      - virtualenv
+      - python-setuptools
+    update_cache: yes
+
+- name: install dependencies for ansible postgres
+  pip:
+    name:
+      - psycopg2
+    executable: pip3

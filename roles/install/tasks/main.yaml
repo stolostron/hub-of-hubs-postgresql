@@ -1,3 +1,15 @@
 ---
 - name: install
   import_tasks: install.yaml
+
+- name: create databases
+  import_tasks: create_databases.yaml
+
+- name: dump the current databases as a sanity check
+  shell: psql -c '\l'
+  become: yes
+  become_user: postgres
+  register: databases_psql_result
+
+- debug:
+    msg: "{{ databases_psql_result.stdout_lines }}"
