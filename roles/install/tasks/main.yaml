@@ -8,6 +8,9 @@
 - name: create users
   import_tasks: create_users.yaml
 
+- name: set authentication
+  import_tasks: set_authentication.yaml
+
 - name: dump the current databases as a sanity check
   shell: psql -c '\l'
   become: yes
