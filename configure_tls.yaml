@@ -1,0 +1,6 @@
+---
+- name: configure_tls
+  become: true
+  hosts: all
+  roles:
+    - { role: configure_tls, tags: ["configure_tls"] }

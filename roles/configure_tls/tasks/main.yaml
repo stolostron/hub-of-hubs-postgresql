@@ -1,0 +1,43 @@
+---
+- name: enable TLS access for the HoH Process user
+  postgresql_pg_hba:
+    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    contype: hostssl
+    users: "{{ hoh_process_user }}"
+    source: 0.0.0.0/0
+    databases: "{{ managedclusters_db }}"
+    method: scram-sha-256
+    create: true
+
+- name: set certificate file
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: '^ssl_cert_file'
+    line: ssl_cert_file = '/etc/postgresql/{{ postgresql_version }}/main/server.crt'
+    state: present
+
+- name: set key file
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: '^ssl_key_file'
+    line: ssl_key_file = '/etc/postgresql/{{ postgresql_version }}/main/server.key'
+    state: present
+
+- name: set TLS on
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: '^ssl '
+    line: ssl = on
+    state: present
+
+- name: set listen on all addresses
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: '^listen_addresses'
+    line: listen_addresses = '0.0.0.0'
+    state: present
+
+- name: restart service postgresql
+  service:
+    name: postgresql
+    state: restarted
