@@ -1,14 +1,4 @@
 ---
-- name: enable access for the HoH Process user
-  postgresql_pg_hba:
-    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
-    contype: host
-    users: "{{ hoh_process_user }}"
-    source: 127.0.0.1/32
-    databases: "{{ managedclusters_db }}"
-    method: scram-sha-256
-    create: true
-
 - name: set password encryption
   lineinfile:
     path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
