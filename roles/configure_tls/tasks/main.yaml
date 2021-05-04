@@ -5,7 +5,7 @@
     contype: hostssl
     users: "{{ hoh_process_user }}"
     source: 0.0.0.0/0
-    databases: "{{ managedclusters_db }}"
+    databases: "{{ hoh_db }}"
     method: scram-sha-256
     create: true
 

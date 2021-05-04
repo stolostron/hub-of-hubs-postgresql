@@ -1,6 +1,6 @@
 ---
 - name: create databases
   postgresql_db:
-    name: "{{ managedclusters_db }}"
+    name: "{{ hoh_db }}"
   become: yes
   become_user: postgres
