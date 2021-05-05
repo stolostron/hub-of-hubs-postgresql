@@ -1,0 +1,15 @@
+---
+- debug:
+    msg: creating table {{ name }} schema {{ schema }} database {{ database }}
+
+- name: create table {{ name }}
+  postgresql_table:
+    name: "{{ schema }}.{{ name }}"
+    db: "{{ database }}"
+    columns:
+      - id serial primary key
+      - payload jsonb
+      - created_at timestamp not null default now()
+      - updated_at timestamp not null default now()
+  become: yes
+  become_user: postgres

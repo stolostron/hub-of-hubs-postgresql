@@ -18,3 +18,24 @@
     database: "{{ hoh_db }}"
   become: yes
   become_user: postgres
+
+- name: create policies table
+  vars:
+    name: policies
+    schema: "{{ spec_schema }}"
+    database: "{{ hoh_db }}"
+  include_tasks: create_table.yaml
+
+- name: create placementrules table
+  vars:
+    name: placementrules
+    schema: "{{ spec_schema }}"
+    database: "{{ hoh_db }}"
+  include_tasks: create_table.yaml
+
+- name: create placementbinding table
+  vars:
+    name: placementbindings
+    schema: "{{ spec_schema }}"
+    database: "{{ hoh_db }}"
+  include_tasks: create_table.yaml
