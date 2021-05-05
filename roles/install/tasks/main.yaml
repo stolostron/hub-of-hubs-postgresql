@@ -3,6 +3,7 @@
   import_tasks: install.yaml
 
 - name: create databases
+  tags: db
   import_tasks: create_databases.yaml
 
 - name: create users
