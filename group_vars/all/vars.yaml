@@ -1,3 +1,5 @@
 postgresql_version: 10
 hoh_db: hoh
 hoh_process_user: hoh_process_user
+spec_schema: spec
+status_schema: status

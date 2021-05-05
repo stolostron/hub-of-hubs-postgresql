@@ -1,6 +1,20 @@
 ---
-- name: create databases
+- name: create database
   postgresql_db:
     name: "{{ hoh_db }}"
+  become: yes
+  become_user: postgres
+
+- name: create spec schema
+  postgresql_schema:
+    name: "{{ spec_schema }}"
+    database: "{{ hoh_db }}"
+  become: yes
+  become_user: postgres
+
+- name: create status schema
+  postgresql_schema:
+    name: "{{ status_schema }}"
+    database: "{{ hoh_db }}"
   become: yes
   become_user: postgres
