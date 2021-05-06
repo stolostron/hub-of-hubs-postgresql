@@ -12,7 +12,7 @@ PGSSLMODE=verify-full psql -h hohdb.dev10.red-chesterfield.com -U hoh_process_us
 * Insert a Policy from a YAML file into `policies` table:
 
 ```
-hoh=> \set policy `yq r -d'*'  ~/dev/ACMSamples/policies/pod_security_policy/policy-psp.yaml -j | jq -c '.[] | select (.kind == "Policy")'`
+hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AC-Access-Control/policy-roles-no-wildcards.yaml | yq r -d'*' - -j | jq -c '.[] | select (.kind == "Policy")'`
 insert into spec.policies (payload) values(:'policy');
 ```
 
