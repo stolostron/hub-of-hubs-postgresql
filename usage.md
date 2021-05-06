@@ -33,3 +33,9 @@ hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'reme
 (1 row)
 
 ```
+
+* Update remediation action of a policy to be `enforce`:
+
+```
+update spec.policies set payload = jsonb_set(payload, '{spec,remediationAction}', '"enforce"', true) where payload -> 'metadata' ->> 'name' = 'policy-podsecuritypolicy';
+```
