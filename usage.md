@@ -26,9 +26,11 @@ insert into spec.policies (payload) values(:'policy');
 
 ```
 select payload -> 'metadata' -> 'name' as name from spec.policies;
-            name            
-----------------------------
- "policy-podsecuritypolicy"
+             name              
+-------------------------------
+ "policy-openshift-audit-logs"
+ "policy-disallowed-roles"
+(2 rows)
 
 ```
 
@@ -38,13 +40,16 @@ select payload -> 'metadata' -> 'name' as name from spec.policies;
 hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies;
             name            |  action  
 ----------------------------+----------
- "policy-podsecuritypolicy" | "inform"
-(1 row)
+             name              |  action  
+-------------------------------+----------
+ "policy-openshift-audit-logs" | "inform"
+ "policy-disallowed-roles"     | "inform"
+ (2 rows)
 
 ```
 
 * Update remediation action of a policy to be `enforce`:
 
 ```
-update spec.policies set payload = jsonb_set(payload, '{spec,remediationAction}', '"enforce"', true) where payload -> 'metadata' ->> 'name' = 'policy-podsecuritypolicy';
+update spec.policies set payload = jsonb_set(payload, '{spec,remediationAction}', '"enforce"', true) where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
 ```
