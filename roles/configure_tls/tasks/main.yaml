@@ -9,6 +9,16 @@
     method: scram-sha-256
     create: true
 
+- name: enable TLS access for the transport bridge user
+  postgresql_pg_hba:
+    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    contype: hostssl
+    users: "{{ transport_bridge_user }}"
+    source: 0.0.0.0/0
+    databases: "{{ hoh_db }}"
+    method: scram-sha-256
+    create: true
+
 - name: set certificate file
   lineinfile:
     path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
