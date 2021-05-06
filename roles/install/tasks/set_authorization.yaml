@@ -20,6 +20,17 @@
   become: yes
   become_user: postgres
 
+- name: set permissions on id sequences for hoh_process_user
+  postgresql_privs:
+    db: "{{ hoh_db }}"
+    privs: SELECT,USAGE
+    type: sequence
+    objs: policies_id_seq,placementrules_id_seq,placementbindings_id_seq
+    schema: "{{ spec_schema }}"
+    role: "{{ hoh_process_user }}"
+  become: yes
+  become_user: postgres
+
 - name: set permissions on status schema for hoh_process_user
   postgresql_privs:
     db: "{{ hoh_db }}"
