@@ -54,7 +54,7 @@ ansible-playbook configure_tls.yaml -i production --ask-vault-pass -l acm
 1. Use `psql` on the client machine:
 
 ```
-PGSSLMODE=verify-full psql -h <the PostgreSQL VM host> -U hoh_process_user -W -d managedclusters
+PGSSLMODE=verify-full psql -h <the PostgreSQL VM host> -U hoh_process_user -W -d hoh
 ```
 
 ## To uninstall
