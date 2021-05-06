@@ -1,7 +1,14 @@
 ---
-- name: create users
+- name: create hoh process user
   postgresql_user:
     db: "{{ hoh_db }}"
     name: "{{ hoh_process_user }}"
+  become: yes
+  become_user: postgres
+
+- name: create transport bridge user
+  postgresql_user:
+    db: "{{ hoh_db }}"
+    name: "{{ transport_bridge_user }}"
   become: yes
   become_user: postgres
