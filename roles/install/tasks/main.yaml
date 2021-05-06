@@ -3,11 +3,13 @@
   import_tasks: install.yaml
 
 - name: create databases
-  tags: db
   import_tasks: create_databases.yaml
 
 - name: create users
   import_tasks: create_users.yaml
+
+- name: set authorization
+  import_tasks: set_authorization.yaml
 
 - name: set authentication
   import_tasks: set_authentication.yaml
