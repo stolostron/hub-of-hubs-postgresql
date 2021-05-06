@@ -16,6 +16,12 @@ hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-manage
 insert into spec.policies (payload) values(:'policy');
 ```
 
+Another policy:
+```
+hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AU-Audit-and-Accountability/policy-openshift-audit-logs-sample.yaml | yq r -d'*' - -j | jq -c '.[] | select (.kind == "Policy")'`
+insert into spec.policies (payload) values(:'policy');
+```
+
 * Select policy name from the `policies` table:
 
 ```
