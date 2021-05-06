@@ -1,5 +1,8 @@
 # Commands to work with Hub-of-Hubs database
 
+* Configure `root.crt` on the client machine. For example, for
+[Let's encrypt](https://letsencrypt.org/) certificates, run `curl -s https://letsencrypt.org/certs/trustid-x3-root.pem --output ~/.postgresql/root.crt`.
+
 * Connect to the database by `psql`:
 
 ```
