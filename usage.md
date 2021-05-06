@@ -22,6 +22,7 @@ hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-manage
 insert into spec.policies (payload) values(:'policy');
 ```
 
+
 * Select policy name from the `policies` table:
 
 ```
@@ -52,4 +53,16 @@ hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'reme
 
 ```
 update spec.policies set payload = jsonb_set(payload, '{spec,remediationAction}', '"enforce"', true) where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
+```
+
+* Find matching placement rules and placement bindings:
+
+```
+select pr.payload -> 'metadata' -> 'name' as policyrulename, pb.payload -> 'metadata' -> 'name' as placementbindingname from spec.placementrules pr INNER JOIN  spec.placementbindings pb ON pr.payload -> 'metadata' ->> 'name' = pb.payload -> 'placementRef' ->> 'name';
+             policyrulename              |         placementbindingname          
+-----------------------------------------+---------------------------------------
+ "placement-policy-disallowed-roles"     | "binding-policy-disallowed-roles"
+ "placement-policy-openshift-audit-logs" | "binding-policy-openshift-audit-logs"
+(2 rows)
+
 ```
