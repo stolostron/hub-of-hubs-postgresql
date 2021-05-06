@@ -1,6 +1,6 @@
 # Install and configure Hub-of-Hubs database
 
-PostgreSQL serves as the database of Hub-of-Hubs.
+PostgreSQL serves as the database of Hub-of-Hubs. This repository contains Ansible playbooks to install, configure and uninstall the database. For common commands to work with the database, see [usage.md](usage.md).
 
 ## Initial setup
 
