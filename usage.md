@@ -16,10 +16,20 @@ hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-manage
 insert into spec.policies (payload) values(:'policy');
 ```
 
-Another policy:
+Insert policies, placementrules and placementbindings:
 ```
-hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AC-Access-Control/policy-roles-no-wildcards.yaml | yq eval 'select(documentIndex == 0)' - -j`
+\set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AU-Audit-and-Accountability/policy-openshift-audit-logs-sample.yaml | yq eval 'select(.kind == "Policy")' - -j`
 insert into spec.policies (payload) values(:'policy');
+\set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AC-Access-Control/policy-roles-no-wildcards.yaml | yq eval 'select(.kind == "Policy")' - -j`
+insert into spec.policies (payload) values(:'policy');
+\set placementbinding `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AU-Audit-and-Accountability/policy-openshift-audit-logs-sample.yaml | yq eval 'select(.kind == "PlacementBinding")' - -j`
+insert into spec.placementbindings (payload) values(:'placementbinding');
+\set placementbinding `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AC-Access-Control/policy-roles-no-wildcards.yaml | yq eval 'select(.kind == "PlacementBinding")' - -j`
+insert into spec.placementbindings (payload) values(:'placementbinding');
+\set placementrule `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AU-Audit-and-Accountability/policy-openshift-audit-logs-sample.yaml | yq eval 'select(.kind == "PlacementRule")' - -j`
+insert into spec.placementrules (payload) values(:'placementrule');
+\set placementrule `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AC-Access-Control/policy-roles-no-wildcards.yaml | yq eval 'select(.kind == "PlacementRule")' - -j`
+insert into spec.placementrules (payload) values(:'placementrule');
 ```
 
 
