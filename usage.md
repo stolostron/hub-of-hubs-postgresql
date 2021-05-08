@@ -38,12 +38,9 @@ select payload -> 'metadata' -> 'name' as name from spec.policies;
 * Select policy name and remediation action from the `policies` table:
 
 ```
-hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies;
-            name            |  action  
-----------------------------+----------
+hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
              name              |  action  
 -------------------------------+----------
- "policy-openshift-audit-logs" | "inform"
  "policy-disallowed-roles"     | "inform"
  (2 rows)
 
