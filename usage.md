@@ -21,7 +21,6 @@ Insert policies, placementrules and placementbindings using instructions in [tes
 PGSSLMODE=verify-full psql -h hohdb.dev10.red-chesterfield.com -U hoh_process_user -W -d hoh -f test/insertpolicies.psql
 ```
 
-
 * Select policy name from the `policies` table:
 
 ```
@@ -56,6 +55,16 @@ select payload -> 'metadata' ->> 'name' as name, (payload ->> 'apiVersion')||'/'
 * select group and kind
 ```
 select payload -> 'metadata' ->> 'name' as name, split_part(payload ->> 'apiVersion', '/', 1) as group, payload ->> 'kind' as kind,payload -> 'spec' ->> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
+```
+
+* select name, remediation policy, created at and updated at:
+
+```
+select created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies;
+         created_at         |         updated_at         |             name              |  action  
+----------------------------+----------------------------+-------------------------------+----------
+ 2021-05-08 14:28:42.125552 | 2021-05-08 14:28:42.125552 | "policy-openshift-audit-logs" | "inform"
+ 2021-05-08 14:28:42.948361 | 2021-05-08 14:28:42.948361 | "policy-disallowed-roles"     | "inform"
 ```
 
 * Update remediation action of a policy to be `enforce`:
@@ -96,4 +105,3 @@ select p.payload -> 'metadata' ->> 'name' as policy, pb.payload -> 'metadata' ->
  policy-openshift-audit-logs | binding-policy-openshift-audit-logs | placement-policy-openshift-audit-logs
 
 ```
-
