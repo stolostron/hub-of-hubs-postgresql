@@ -91,5 +91,10 @@ select json_build_object( 'name',p.payload -> 'metadata' ->> 'name', 'kind', p.p
 * select matching policy, placement rule and placement binding
 ```
 select p.payload -> 'metadata' ->> 'name' as policy, pb.payload -> 'metadata' ->> 'name' as binding, pr.payload -> 'metadata' ->> 'name' as placementrule from spec.policies p INNER JOIN spec.placementbindings pb ON pb.payload -> 'subjects' @> json_build_array(json_build_object( 'name',p.payload -> 'metadata' ->> 'name', 'kind', p.payload ->> 'kind', 'apiGroup', split_part(p.payload ->> 'apiVersion', '/',1)))::jsonb INNER JOIN spec.placementrules pr ON pr.payload -> 'metadata' ->> 'name' = pb.payload -> 'placementRef' ->> 'name' AND pr.payload ->> 'kind' = pb.payload -> 'placementRef' ->> 'kind' AND split_part(pr.payload ->> 'apiVersion', '/', 1) = pb.payload -> 'placementRef' ->> 'apiGroup';
+           policy            |               binding               |             placementrule             
+-----------------------------+-------------------------------------+---------------------------------------
+ policy-disallowed-roles     | binding-policy-disallowed-roles     | placement-policy-disallowed-roles
+ policy-openshift-audit-logs | binding-policy-openshift-audit-logs | placement-policy-openshift-audit-logs
 
 ```
+
