@@ -42,8 +42,16 @@ hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'reme
              name              |  action  
 -------------------------------+----------
  "policy-disallowed-roles"     | "inform"
- (2 rows)
+ (1 row)
 
+```
+
+* select GVK
+```
+select payload -> 'metadata' ->> 'name' as name, (payload ->> 'apiVersion')||'/'||(payload ->> 'kind') as gvk,payload -> 'spec' ->> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
+          name           |                     gvk                     | action  
+-------------------------+---------------------------------------------+---------
+ policy-disallowed-roles | policy.open-cluster-management.io/v1/Policy | enforce
 ```
 
 * Update remediation action of a policy to be `enforce`:
