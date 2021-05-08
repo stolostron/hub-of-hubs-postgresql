@@ -27,7 +27,7 @@
     - /var/log/postgresql
     - /etc/postgresql
 
-- name: Remove the user 'postgres'
+- name: Remove the user postgres
   user:
     name: postgres
     state: absent
