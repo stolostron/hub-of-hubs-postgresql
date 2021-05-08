@@ -76,3 +76,14 @@ select pr.payload -> 'metadata' -> 'name' as policyrulename, pb.payload -> 'meta
 (2 rows)
 
 ```
+
+* select name, kind, group as json
+
+```
+select json_build_object( 'name',p.payload -> 'metadata' ->> 'name', 'kind', p.payload ->> 'kind', 'apiGroup', split_part(p.payload ->> 'apiVersion', '/',1)) as name_kind_group from spec.policies p;
+                                                name_kind_group                                                
+---------------------------------------------------------------------------------------------------------------
+ {"name" : "policy-openshift-audit-logs", "kind" : "Policy", "apiGroup" : "policy.open-cluster-management.io"}
+ {"name" : "policy-disallowed-roles", "kind" : "Policy", "apiGroup" : "policy.open-cluster-management.io"}
+(2 rows)
+```
