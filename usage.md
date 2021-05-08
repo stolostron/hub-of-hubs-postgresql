@@ -68,7 +68,7 @@ update spec.policies set payload = jsonb_set(payload, '{spec,remediationAction}'
 * Find matching placement rules and placement bindings:
 
 ```
-select pr.payload -> 'metadata' -> 'name' as policyrulename, pb.payload -> 'metadata' -> 'name' as placementbindingname from spec.placementrules pr INNER JOIN  spec.placementbindings pb ON pr.payload -> 'metadata' ->> 'name' = pb.payload -> 'placementRef' ->> 'name' AND pr.payload ->> 'kind' = pb.payload -> 'placementRef' ->> 'kind';
+select pr.payload -> 'metadata' -> 'name' as policyrulename, pb.payload -> 'metadata' -> 'name' as placementbindingname from spec.placementrules pr INNER JOIN  spec.placementbindings pb ON pr.payload -> 'metadata' ->> 'name' = pb.payload -> 'placementRef' ->> 'name' AND pr.payload ->> 'kind' = pb.payload -> 'placementRef' ->> 'kind' AND split_part(pr.payload ->> 'apiVersion', '/', 1) = pb.payload -> 'placementRef' ->> 'apiGroup';
              policyrulename              |         placementbindingname          
 -----------------------------------------+---------------------------------------
  "placement-policy-disallowed-roles"     | "binding-policy-disallowed-roles"
