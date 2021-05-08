@@ -12,7 +12,7 @@ PGSSLMODE=verify-full psql -h hohdb.dev10.red-chesterfield.com -U hoh_process_us
 * Insert a Policy from a YAML file into `policies` table:
 
 ```
-hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AU-Audit-and-Accountability/policy-openshift-audit-logs-sample.yaml | yq eval 'select(documentIndex == 0)' - -j`
+hoh=> \set policy `curl -s https://raw.githubusercontent.com/open-cluster-management/policy-collection/main/community/AU-Audit-and-Accountability/policy-openshift-audit-logs-sample.yaml | yq eval 'select(.kind == "Policy")' - -j`
 insert into spec.policies (payload) values(:'policy');
 ```
 
