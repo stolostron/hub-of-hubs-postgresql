@@ -54,6 +54,11 @@ select payload -> 'metadata' ->> 'name' as name, (payload ->> 'apiVersion')||'/'
  policy-disallowed-roles | policy.open-cluster-management.io/v1/Policy | enforce
 ```
 
+* select group and kind
+```
+select payload -> 'metadata' ->> 'name' as name, split_part(payload ->> 'apiVersion', '/', 1) as group, payload ->> 'kind' as kind,payload -> 'spec' ->> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
+```
+
 * Update remediation action of a policy to be `enforce`:
 
 ```
