@@ -13,12 +13,27 @@
 
   # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: create set_timestamp trigger
+  vars:
+    set_timestamp_trigger: set_timestamp
   postgresql_query:
     db: "{{ hoh_db }}"
+    # transaction logic based on https://stackoverflow.com/a/61974663/553720
     query: |
-      CREATE TRIGGER set_timestamp
-      BEFORE UPDATE ON {{ schema }}.{{ name }}
-      FOR EACH ROW
-      EXECUTE PROCEDURE trigger_set_timestamp();
+      DO $$
+      BEGIN
+        IF NOT EXISTS(SELECT *
+          FROM information_schema.triggers
+          WHERE event_object_table = '{{ name }}'
+          AND event_object_schema = '{{ schema }}'
+          AND trigger_name = '{{ set_timestamp_trigger }}'
+        )
+        THEN
+          CREATE TRIGGER {{ set_timestamp_trigger }}
+          BEFORE UPDATE ON {{ schema }}.{{ name }}
+          FOR EACH ROW
+          EXECUTE PROCEDURE trigger_set_timestamp();
+        END IF;
+      END;
+      $$
   become: yes
   become_user: postgres
