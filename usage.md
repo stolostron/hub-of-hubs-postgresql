@@ -23,7 +23,7 @@ PGSSLMODE=verify-full psql -h hohdb.dev10.red-chesterfield.com -U hoh_process_us
 
 * Select policy name from the `policies` table:
 
-```
+```sql
 select payload -> 'metadata' -> 'name' as name from spec.policies;
              name              
 -------------------------------
@@ -35,7 +35,7 @@ select payload -> 'metadata' -> 'name' as name from spec.policies;
 
 * Select policy name and remediation action from the `policies` table:
 
-```
+```sql
 hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
              name              |  action  
 -------------------------------+----------
@@ -45,7 +45,7 @@ hoh=> select payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'reme
 ```
 
 * select GVK
-```
+```sql
 select payload -> 'metadata' ->> 'name' as name, (payload ->> 'apiVersion')||'/'||(payload ->> 'kind') as gvk,payload -> 'spec' ->> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
           name           |                     gvk                     | action  
 -------------------------+---------------------------------------------+---------
@@ -53,7 +53,7 @@ select payload -> 'metadata' ->> 'name' as name, (payload ->> 'apiVersion')||'/'
 ```
 
 * select group and kind
-```
+```sql
 select payload -> 'metadata' ->> 'name' as name, split_part(payload ->> 'apiVersion', '/', 1) as group, payload ->> 'kind' as kind,payload -> 'spec' ->> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
 ```
 
@@ -69,13 +69,13 @@ select created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload 
 
 * Update remediation action of a policy to be `enforce`:
 
-```
+```sql
 update spec.policies set payload = jsonb_set(payload, '{spec,remediationAction}', '"enforce"', true) where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
 ```
 
 * Find matching placement rules and placement bindings:
 
-```
+```sql
 select pr.payload -> 'metadata' -> 'name' as policyrulename, pb.payload -> 'metadata' -> 'name' as placementbindingname from spec.placementrules pr INNER JOIN  spec.placementbindings pb ON pr.payload -> 'metadata' ->> 'name' = pb.payload -> 'placementRef' ->> 'name' AND pr.payload ->> 'kind' = pb.payload -> 'placementRef' ->> 'kind' AND split_part(pr.payload ->> 'apiVersion', '/', 1) = pb.payload -> 'placementRef' ->> 'apiGroup';
              policyrulename              |         placementbindingname          
 -----------------------------------------+---------------------------------------
@@ -87,7 +87,7 @@ select pr.payload -> 'metadata' -> 'name' as policyrulename, pb.payload -> 'meta
 
 * select name, kind, group as json
 
-```
+```sql
 select json_build_object( 'name',p.payload -> 'metadata' ->> 'name', 'kind', p.payload ->> 'kind', 'apiGroup', split_part(p.payload ->> 'apiVersion', '/',1)) as name_kind_group from spec.policies p;
                                                 name_kind_group                                                
 ---------------------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ select json_build_object( 'name',p.payload -> 'metadata' ->> 'name', 'kind', p.p
 ```
 
 * select matching policy, placement rule and placement binding
-```
+```sql
 select p.payload -> 'metadata' ->> 'name' as policy, pb.payload -> 'metadata' ->> 'name' as binding, pr.payload -> 'metadata' ->> 'name' as placementrule from spec.policies p INNER JOIN spec.placementbindings pb ON pb.payload -> 'subjects' @> json_build_array(json_build_object( 'name',p.payload -> 'metadata' ->> 'name', 'kind', p.payload ->> 'kind', 'apiGroup', split_part(p.payload ->> 'apiVersion', '/',1)))::jsonb INNER JOIN spec.placementrules pr ON pr.payload -> 'metadata' ->> 'name' = pb.payload -> 'placementRef' ->> 'name' AND pr.payload ->> 'kind' = pb.payload -> 'placementRef' ->> 'kind' AND split_part(pr.payload ->> 'apiVersion', '/', 1) = pb.payload -> 'placementRef' ->> 'apiGroup';
            policy            |               binding               |             placementrule             
 -----------------------------+-------------------------------------+---------------------------------------
@@ -107,7 +107,7 @@ select p.payload -> 'metadata' ->> 'name' as policy, pb.payload -> 'metadata' ->
 ```
 
 * select policies updated within the last hour
-```
+```sql
 select created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies where updated_at > now() - interval '1 hour';
          created_at         |         updated_at         |           name            |  action  
 ----------------------------+----------------------------+---------------------------+----------
