@@ -1,4 +1,4 @@
-The database contains a single `database` construct - `hoh`. The `hoh` database contains two schemas `spec` and `status`. 
+The database contains a single `database` construct: `hoh`. The `hoh` database contains two schemas `spec` and `status`. 
 The Hub-of-Hubs logic updates the tables in the `spec` schema, the transport logic updates tables in the `status` schema. 
 Both components read tables from both schemas.
 
