@@ -13,3 +13,15 @@
       - updated_at timestamp not null default now()
   become: yes
   become_user: postgres
+
+  # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
+- name: create set_timestamp trigger
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    query: |
+      CREATE TRIGGER set_timestamp
+      BEFORE UPDATE ON {{ schema }}.{{ name }}
+      FOR EACH ROW
+      EXECUTE PROCEDURE trigger_set_timestamp();
+  become: yes
+  become_user: postgres
