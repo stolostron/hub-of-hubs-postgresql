@@ -1,5 +1,7 @@
 # Commands to work with Hub-of-Hubs database
 
+* [install psql on your system](https://blog.timescale.com/tutorials/how-to-install-psql-on-mac-ubuntu-debian-windows/)
+
 * Configure `root.crt` on the client machine. For example, for
 [Let's encrypt](https://letsencrypt.org/) certificates, run `curl -s https://letsencrypt.org/certs/trustid-x3-root.pem --output ~/.postgresql/root.crt`.
 
