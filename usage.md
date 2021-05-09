@@ -1,5 +1,7 @@
 # Commands to work with Hub-of-Hubs database
 
+## Prerequisites
+
 * [install psql on your system](https://blog.timescale.com/tutorials/how-to-install-psql-on-mac-ubuntu-debian-windows/)
 
 * Configure `root.crt` on the client machine. For example, for
@@ -11,6 +13,7 @@
 PGSSLMODE=verify-full psql -h hohdb.dev10.red-chesterfield.com -U hoh_process_user -W -d hoh
 ```
 
+# Queries
 * Insert a Policy from a YAML file into `policies` table:
 
 ```
