@@ -1,8 +1,5 @@
 ---
-- debug:
-    msg: creating table {{ name }} schema {{ schema }} database {{ database }}
-
-- name: create table {{ name }}
+- name: create table {{ name }} schema {{ schema }} database {{ database }}
   postgresql_table:
     name: "{{ schema }}.{{ name }}"
     db: "{{ database }}"
