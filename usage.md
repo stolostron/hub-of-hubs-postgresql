@@ -105,3 +105,13 @@ select p.payload -> 'metadata' ->> 'name' as policy, pb.payload -> 'metadata' ->
  policy-openshift-audit-logs | binding-policy-openshift-audit-logs | placement-policy-openshift-audit-logs
 
 ```
+
+* select policies updated within the last hour
+```
+select created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies where updated_at > now() - interval '1 hour';
+         created_at         |         updated_at         |           name            |  action  
+----------------------------+----------------------------+---------------------------+----------
+ 2021-05-08 14:28:42.948361 | 2021-05-09 07:04:48.173653 | "policy-disallowed-roles" | "inform"
+(1 row)
+
+```
