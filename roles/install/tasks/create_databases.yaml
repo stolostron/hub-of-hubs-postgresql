@@ -34,23 +34,10 @@
   become: yes
   become_user: postgres
 
-- name: create policies table
-  vars:
-    name: policies
-    schema: "{{ spec_schema }}"
-    database: "{{ hoh_db }}"
-  include_tasks: create_table.yaml
-
-- name: create placementrules table
-  vars:
-    name: placementrules
-    schema: "{{ spec_schema }}"
-    database: "{{ hoh_db }}"
-  include_tasks: create_table.yaml
-
-- name: create placementbinding table
-  vars:
-    name: placementbindings
-    schema: "{{ spec_schema }}"
-    database: "{{ hoh_db }}"
-  include_tasks: create_table.yaml
+- name: create tables
+  include_tasks: create_tables.yaml
+  loop:
+    - spec
+    - status
+  loop_control:
+    loop_var: schema

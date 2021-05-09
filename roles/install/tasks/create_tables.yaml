@@ -1,0 +1,11 @@
+---
+- name: create policies table
+  vars:
+    database: "{{ hoh_db }}"
+  include_tasks: create_table.yaml
+  loop:
+    - policies
+    - placementrules
+    - placementbindings
+  loop_control:
+    loop_var: name
