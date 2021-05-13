@@ -1,7 +1,7 @@
 ---
 - name: create table managed_clusters
   postgresql_table:
-    name: "{{ status_schema }}.managed_clusters"
+    name: "{{ status_schema }}.{{ managed_clusters_table_name }}"
     db: "{{ hoh_db }}"
     columns:
       - id uuid primary key
@@ -11,3 +11,9 @@
       - updated_at timestamp not null default now()
   become: yes
   become_user: postgres
+
+- name: add timestamp trigger
+  vars:
+    table: "{{ managed_clusters_table_name }}"
+    schema: "{{ status_schema }}"
+  include_tasks: create_timestamp_trigger.yaml
