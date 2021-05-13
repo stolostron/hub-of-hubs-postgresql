@@ -1,0 +1,18 @@
+---
+- name: create table {{ name }} schema {{ schema }} database {{ database }}
+  postgresql_table:
+    name: "{{ schema }}.{{ name }}"
+    db: "{{ database }}"
+    columns:
+      - id serial primary key
+      - payload jsonb
+      - created_at timestamp not null default now()
+      - updated_at timestamp not null default now()
+  become: yes
+  become_user: postgres
+
+  # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
+- name: add timestamp trigger
+  vars:
+    table: "{{ name }}"
+  include_tasks: create_timestamp_trigger.yaml

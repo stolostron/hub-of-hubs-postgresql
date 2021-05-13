@@ -34,5 +34,8 @@
   become: yes
   become_user: postgres
 
+- name: create spec tables
+  import_tasks: create_spec_tables.yaml
+
 - name: create status tables
   import_tasks: create_status_tables.yaml
