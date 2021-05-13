@@ -1,11 +1,13 @@
 ---
-- name: create policies table
-  vars:
-    database: "{{ hoh_db }}"
-  include_tasks: create_table.yaml
-  loop:
-    - policies
-    - placementrules
-    - placementbindings
-  loop_control:
-    loop_var: name
+- name: create table managed_clusters
+  postgresql_table:
+    name: "{{ status_schema }}.managed_clusters"
+    db: "{{ hoh_db }}"
+    columns:
+      - id uuid primary key
+      - leaf_hub_id uuid
+      - status jsonb
+      - created_at timestamp not null default now()
+      - updated_at timestamp not null default now()
+  become: yes
+  become_user: postgres

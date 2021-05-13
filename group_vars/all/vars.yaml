@@ -4,3 +4,5 @@ hoh_process_user: hoh_process_user
 transport_bridge_user: transport_bridge_user
 spec_schema: spec
 status_schema: status
+# according to Kubernetes DNS label standard https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-label-names
+cluster_name_length_limit: 63

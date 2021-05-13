@@ -35,9 +35,4 @@
   become_user: postgres
 
 - name: create tables
-  include_tasks: create_tables.yaml
-  loop:
-    - spec
-    - status
-  loop_control:
-    loop_var: schema
+  import_tasks: create_tables.yaml
