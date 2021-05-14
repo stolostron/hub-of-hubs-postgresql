@@ -1,4 +1,21 @@
 ---
+- name: delete tables
+  tags: tables
+  postgresql_table:
+    name: "{{ table_name }}"
+    db: "{{ hoh_db }}"
+    state: absent
+  loop:
+    - "{{ spec_schema }}.policies"
+    - "{{ spec_schema }}.placementrules"
+    - "{{ spec_schema }}.placementbindings"
+    - "{{ status_schema }}.{{ managed_clusters_table }}"
+    - "{{ status_schema }}.{{ policies_table }}"
+  loop_control:
+    loop_var: table_name
+  become: yes
+  become_user: postgres
+
 - name: Stop service postgresql, if started
   service:
     name: postgresql

@@ -64,3 +64,19 @@ Run:
 ```
 ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm
 ```
+
+## To drop all the tables
+
+Run:
+
+```
+ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm --tags tables
+```
+
+## To recreate the tables:
+
+Run:
+
+```
+ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags tables
+```
