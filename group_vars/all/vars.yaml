@@ -6,4 +6,5 @@ spec_schema: spec
 status_schema: status
 # according to Kubernetes DNS label standard https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-label-names
 cluster_name_length_limit: 63
-managed_clusters_table_name: managed_clusters
+managed_clusters_table: managed_clusters
+policies_table: policies
