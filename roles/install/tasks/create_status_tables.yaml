@@ -55,3 +55,24 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
   include_tasks: create_timestamp_trigger.yaml
+
+- name: create table {{ aggregated_policies_table }}
+  postgresql_table:
+    name: "{{ status_schema }}.{{ aggregated_policies_table }}"
+    db: "{{ hoh_db }}"
+    columns:
+      - policy_id uuid primary key
+      - leaf_hub_id uuid
+      - enforcement {{ spec_schema }}.{{ enforcement_type }}
+      - applied_clusters int
+      - compliant_clusters int
+      - created_at timestamp not null default now()
+      - updated_at timestamp not null default now()
+  become: yes
+  become_user: postgres
+
+- name: add timestamp trigger
+  vars:
+    table: "{{ aggregated_policies_table }}"
+    schema: "{{ status_schema }}"
+  include_tasks: create_timestamp_trigger.yaml
