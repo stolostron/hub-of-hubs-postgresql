@@ -9,11 +9,10 @@
     query: |
       DO $$
       BEGIN
-        IF NOT EXISTS(SELECT *
-          FROM information_schema.triggers
-          WHERE event_object_table = '{{ table }}'
-          AND event_object_schema = '{{ schema }}'
-          AND trigger_name = '{{ set_timestamp_trigger }}'
+        IF NOT EXISTS(SELECT 1
+          FROM pg_trigger
+          WHERE tgrelid = '{{schema}}.{{ table }}'::regclass
+          AND tgname = '{{ set_timestamp_trigger }}'
         )
         THEN
           CREATE TRIGGER {{ set_timestamp_trigger }}
