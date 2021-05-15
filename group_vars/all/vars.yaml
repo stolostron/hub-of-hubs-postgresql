@@ -8,3 +8,4 @@ status_schema: status
 cluster_name_length_limit: 63
 managed_clusters_table: managed_clusters
 policies_table: policies
+enforcement_type: enforcement

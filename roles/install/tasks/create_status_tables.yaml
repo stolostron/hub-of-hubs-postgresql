@@ -18,6 +18,24 @@
     schema: "{{ status_schema }}"
   include_tasks: create_timestamp_trigger.yaml
 
+- name: create enforcement type
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    query: |
+      DO $$
+      BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_type t
+            LEFT JOIN pg_namespace p ON t.typnamespace=p.oid
+            WHERE t.typname='{{ enforcement_type }}' AND p.nspname='{{ spec_schema }}'
+          ) THEN
+              CREATE TYPE {{ spec_schema }}.{{ enforcement_type }} AS  ENUM ('enforce', 'inform');
+          END IF;
+      END
+      $$;
+  become: yes
+  become_user: postgres
+
 - name: create table policies
   postgresql_table:
     name: "{{ status_schema }}.{{ policies_table }}"
@@ -25,7 +43,8 @@
     columns:
       - policy_id uuid primary key
       - managed_cluster_id uuid
-      - status jsonb
+      - compliance boolean
+      - enforcement {{ spec_schema }}.{{ enforcement_type }}
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
   become: yes

@@ -16,6 +16,14 @@
   become: yes
   become_user: postgres
 
+- name: delete types
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    query: DROP TYPE {{ spec_schema}}.{{ enforcement_type }}
+  become: yes
+  become_user: postgres
+
 - name: Stop service postgresql, if started
   service:
     name: postgresql
