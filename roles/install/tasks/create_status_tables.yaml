@@ -36,7 +36,7 @@
   become: yes
   become_user: postgres
 
-- name: create table policies
+- name: create table {{ policies_table }}
   postgresql_table:
     name: "{{ status_schema }}.{{ policies_table }}"
     db: "{{ hoh_db }}"
