@@ -9,3 +9,14 @@
       - id integer primary key
   become: yes
   become_user: postgres
+
+- name: create table {{ transport_internal_schema }}.{{ policy_mapping_table }}
+  postgresql_table:
+    name: "{{ transport_internal_schema }}.{{ policy_mapping_table }}"
+    db: "{{ hoh_db }}"
+    columns:
+      - leaf_hub_id uuid
+      - policy_id uuid
+      - id integer primary key
+  become: yes
+  become_user: postgres

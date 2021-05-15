@@ -12,3 +12,4 @@ policies_table: compliance
 aggregated_policies_table: aggregated_compliance
 enforcement_type: enforcement
 leaf_hub_cluster_mapping_table: leaf_hub_cluster_mapping
+policy_mapping_table: policy_mapping
