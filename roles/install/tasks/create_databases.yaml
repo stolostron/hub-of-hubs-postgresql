@@ -48,3 +48,7 @@
 - name: create status tables
   tags: tables
   import_tasks: create_status_tables.yaml
+
+- name: create transport_internal tables
+  tags: tables
+  import_tasks: create_transport_internal_tables.yaml
