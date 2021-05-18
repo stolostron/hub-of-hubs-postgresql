@@ -12,7 +12,6 @@
     - "{{ status_schema }}.{{ managed_clusters_table }}"
     - "{{ status_schema }}.{{ policies_table }}"
     - "{{ status_schema }}.{{ aggregated_policies_table }}"
-    - "{{ transport_internal_schema }}.{{ leaf_hub_cluster_mapping_table }}"
   loop_control:
     loop_var: table_name
   become: yes
