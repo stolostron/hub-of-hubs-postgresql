@@ -43,6 +43,7 @@
     columns:
       - policy_id uuid primary key
       - managed_cluster_id uuid
+      - leaf_hub_id uuid
       - compliance boolean
       - enforcement {{ spec_schema }}.{{ enforcement_type }}
       - created_at timestamp not null default now()
