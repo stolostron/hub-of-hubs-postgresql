@@ -52,14 +52,3 @@
     role: "{{ transport_bridge_user }}"
   become: yes
   become_user: postgres
-
-- name: set permissions on transport_internal schema for transport_bridge_user
-  postgresql_privs:
-    db: "{{ hoh_db }}"
-    privs: SELECT,INSERT,UPDATE,DELETE
-    type: table
-    objs: ALL_IN_SCHEMA
-    schema: "{{ transport_internal_schema }}"
-    role: "{{ transport_bridge_user }}"
-  become: yes
-  become_user: postgres

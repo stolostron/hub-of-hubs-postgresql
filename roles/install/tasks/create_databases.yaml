@@ -19,13 +19,6 @@
   become: yes
   become_user: postgres
 
-- name: create status schema
-  postgresql_schema:
-    name: "{{ transport_internal_schema }}"
-    database: "{{ hoh_db }}"
-  become: yes
-  become_user: postgres
-
 # from https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: create trigger_set_timestamp function
   postgresql_query:
