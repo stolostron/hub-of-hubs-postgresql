@@ -4,7 +4,7 @@
     name: "{{ schema }}.{{ name }}"
     db: "{{ database }}"
     columns:
-      - id serial primary key
+      - id uuid primary key
       - payload jsonb
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
