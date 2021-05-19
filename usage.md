@@ -62,14 +62,14 @@ select payload -> 'metadata' ->> 'name' as name, (payload ->> 'apiVersion')||'/'
 select payload -> 'metadata' ->> 'name' as name, split_part(payload ->> 'apiVersion', '/', 1) as group, payload ->> 'kind' as kind,payload -> 'spec' ->> 'remediationAction' as action from spec.policies where payload -> 'metadata' ->> 'name' = 'policy-disallowed-roles';
 ```
 
-* select name, remediation policy, created at and updated at:
+* select id, name, remediation policy, created at,updated at, deleted:
 
 ```
-select created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action from spec.policies;
-         created_at         |         updated_at         |             name              |  action  
-----------------------------+----------------------------+-------------------------------+----------
- 2021-05-08 14:28:42.125552 | 2021-05-08 14:28:42.125552 | "policy-openshift-audit-logs" | "inform"
- 2021-05-08 14:28:42.948361 | 2021-05-08 14:28:42.948361 | "policy-disallowed-roles"     | "inform"
+select id, created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload -> 'spec' -> 'remediationAction' as action, deleted from spec.policies;
+                  id                  |         created_at         |         updated_at         |             name              |  action  | deleted 
+--------------------------------------+----------------------------+----------------------------+-------------------------------+----------+---------
+ a8d197fc-cba6-4a49-be5f-5c22bc684515 | 2021-05-19 09:02:13.169892 | 2021-05-19 09:02:13.169892 | "policy-openshift-audit-logs" | "inform" | f
+ 984b6e12-4cbb-4afd-a71d-3d48931c44bd | 2021-05-19 09:02:13.637738 | 2021-05-19 09:02:13.637738 | "policy-disallowed-roles"     | "inform" | f
 ```
 
 * Update remediation action of a policy to be `enforce`:
