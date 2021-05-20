@@ -21,7 +21,10 @@
   tags: tables
   postgresql_query:
     db: "{{ hoh_db }}"
-    query: DROP TYPE {{ spec_schema}}.{{ enforcement_type }}
+    query: DROP TYPE {{ item }}
+  loop:
+    - "{{ spec_schema}}.{{ enforcement_type }}"
+    - "{{ status_schema}}.{{ compliance_type }}"
   become: yes
   become_user: postgres
 

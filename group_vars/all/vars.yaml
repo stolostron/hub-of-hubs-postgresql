@@ -9,4 +9,5 @@ cluster_name_length_limit: 63
 managed_clusters_table: managed_clusters
 policies_table: compliance
 aggregated_policies_table: aggregated_compliance
-enforcement_type: enforcement
+enforcement_type: enforcement_type
+compliance_type: compliance_type
