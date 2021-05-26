@@ -1,4 +1,22 @@
 ---
+- name: create error type
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    query: |
+      DO $$
+      BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_type t
+            LEFT JOIN pg_namespace p ON t.typnamespace=p.oid
+            WHERE t.typname='{{ error_type }}' AND p.nspname='{{ status_schema }}'
+          ) THEN
+              CREATE TYPE {{ status_schema }}.{{ error_type }} AS  ENUM ('disconnected', 'none');
+          END IF;
+      END
+      $$;
+  become: yes
+  become_user: postgres
+
 - name: create table managed_clusters
   postgresql_table:
     name: "{{ status_schema }}.{{ managed_clusters_table }}"
@@ -7,6 +25,7 @@
       - id uuid primary key
       - leaf_hub_id uuid not null
       - status jsonb not null
+      - error {{ status_schema }}.{{ error_type }} not null
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
   become: yes
@@ -62,6 +81,7 @@
       - policy_id uuid primary key
       - managed_cluster_id uuid not null
       - leaf_hub_id uuid not null
+      - error {{ status_schema }}.{{ error_type }} not null
       - compliance {{ status_schema }}.{{ compliance_type }} not null
       - enforcement {{ spec_schema }}.{{ enforcement_type }} not null
       - created_at timestamp not null default now()
