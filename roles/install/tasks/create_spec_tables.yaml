@@ -2,7 +2,6 @@
 - name: create spec tables
   vars:
     database: "{{ hoh_db }}"
-    schema: "{{ spec_schema }}"
   include_tasks: create_spec_table.yaml
   loop:
     - policies

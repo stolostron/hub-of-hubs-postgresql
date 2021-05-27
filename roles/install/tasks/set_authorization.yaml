@@ -4,7 +4,7 @@
     db: "{{ hoh_db }}"
     privs: USAGE
     type: schema
-    objs: "{{ spec_schema }},{{ status_schema }}"
+    objs: "{{ spec_schema }},{{ status_schema }},{{ history_schema }}"
     role: "{{ hoh_process_user }},{{ transport_bridge_user }}"
   become: yes
   become_user: postgres
@@ -38,6 +38,17 @@
     type: table
     objs: ALL_IN_SCHEMA
     schema: "{{ status_schema }}"
+    role: "{{ hoh_process_user }}"
+  become: yes
+  become_user: postgres
+
+- name: set permissions on history schema for hoh_process_user
+  postgresql_privs:
+    db: "{{ hoh_db }}"
+    privs: SELECT
+    type: table
+    objs: ALL_IN_SCHEMA
+    schema: "{{ history_schema }}"
     role: "{{ hoh_process_user }}"
   become: yes
   become_user: postgres

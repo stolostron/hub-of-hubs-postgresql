@@ -5,19 +5,16 @@
   become: yes
   become_user: postgres
 
-- name: create spec schema
+- name: create schemata
   postgresql_schema:
-    name: "{{ spec_schema }}"
+    name: "{{ item}}"
     database: "{{ hoh_db }}"
   become: yes
   become_user: postgres
-
-- name: create status schema
-  postgresql_schema:
-    name: "{{ status_schema }}"
-    database: "{{ hoh_db }}"
-  become: yes
-  become_user: postgres
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ status_schema }}"
+    - "{{ history_schema }}"
 
 # from https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: create trigger_set_timestamp function
@@ -36,7 +33,12 @@
 
 - name: create spec tables
   tags: tables
-  import_tasks: create_spec_tables.yaml
+  include_tasks: create_spec_tables.yaml
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ history_schema }}"
+  loop_control:
+    loop_var: schema
 
 - name: create status tables
   tags: tables
