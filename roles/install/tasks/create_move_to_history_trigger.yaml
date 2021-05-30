@@ -7,8 +7,8 @@
       CREATE OR REPLACE FUNCTION move_{{ table }}_to_history()
       RETURNS TRIGGER AS $$
       DECLARE
-        name VARCHAR(63) := 'policy-podsecuritypolicy';
-        namespace VARCHAR(63) := 'myproject';
+        name VARCHAR(63) := NEW.payload -> 'metadata' ->> 'name';
+        namespace VARCHAR(63) :=  NEW.payload -> 'metadata' ->> 'namespace';
       BEGIN
         DELETE FROM {{ schema}}.{{ table }} WHERE payload -> 'metadata' ->> 'name' = name AND
         payload -> 'metadata' ->> 'namespace' = namespace;
