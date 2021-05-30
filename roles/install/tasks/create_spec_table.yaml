@@ -1,5 +1,6 @@
 ---
 - name: create table {{ name }} schema {{ schema }} database {{ database }}
+  tags: tables
   postgresql_table:
     name: "{{ schema }}.{{ name }}"
     db: "{{ database }}"
@@ -14,6 +15,7 @@
 
   # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: add timestamp trigger
+  tags: tables
   vars:
     table: "{{ name }}"
   include_tasks: create_timestamp_trigger.yaml

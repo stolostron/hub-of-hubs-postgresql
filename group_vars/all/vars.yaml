@@ -13,3 +13,5 @@ aggregated_policies_table: aggregated_compliance
 enforcement_type: enforcement_type
 compliance_type: compliance_type
 error_type: error_type
+set_timestamp_trigger: set_timestamp
+move_to_history_trigger: move_to_history

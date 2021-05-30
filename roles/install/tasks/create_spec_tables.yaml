@@ -1,5 +1,6 @@
 ---
 - name: create spec tables
+  tags: tables
   vars:
     database: "{{ hoh_db }}"
   include_tasks: create_spec_table.yaml

@@ -18,6 +18,7 @@
 
 # from https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: create trigger_set_timestamp function
+  tags: tables
   postgresql_query:
     db: "{{ hoh_db }}"
     query: |

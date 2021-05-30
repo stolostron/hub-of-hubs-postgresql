@@ -1,8 +1,7 @@
 ---
 # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: create set_timestamp trigger
-  vars:
-    set_timestamp_trigger: set_timestamp
+  tags: tables
   postgresql_query:
     db: "{{ hoh_db }}"
     # transaction logic based on https://stackoverflow.com/a/61974663/553720
