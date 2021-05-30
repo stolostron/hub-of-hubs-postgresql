@@ -32,6 +32,19 @@
   become: yes
   become_user: postgres
 
+- name: delete functions
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    query: DROP FUNCTION {{ item }}
+  loop:
+    - trigger_set_timestamp
+    - move_policies_to_history
+    - move_placementrules_to_history
+    - move_placementbindings_to_history
+  become: yes
+  become_user: postgres
+
 - name: Stop service postgresql, if started
   service:
     name: postgresql

@@ -19,3 +19,10 @@
   vars:
     table: "{{ name }}"
   include_tasks: create_timestamp_trigger.yaml
+
+- name: add move_to_history trigger
+  tags: tables
+  vars:
+    table: "{{ name }}"
+  include_tasks: create_move_to_history_trigger.yaml
+  when: schema != history_schema

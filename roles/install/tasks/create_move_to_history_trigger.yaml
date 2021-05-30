@@ -1,0 +1,43 @@
+---
+- name: create move_{{ table }}_to_history function
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    query: |
+      CREATE OR REPLACE FUNCTION move_{{ table }}_to_history()
+      RETURNS TRIGGER AS $$
+      DECLARE
+        name VARCHAR(63) := 'policy-podsecuritypolicy';
+        namespace VARCHAR(63) := 'myproject';
+      BEGIN
+        DELETE FROM {{ schema}}.{{ table }} WHERE payload -> 'metadata' ->> 'name' = name AND
+        payload -> 'metadata' ->> 'namespace' = namespace;
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+  become: yes
+  become_user: postgres
+
+- name: create move_to_history_trigger trigger
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    # transaction logic based on https://stackoverflow.com/a/61974663/553720
+    query: |
+      DO $$
+      BEGIN
+        IF NOT EXISTS(SELECT 1
+          FROM pg_trigger
+          WHERE tgrelid = '{{schema}}.{{ table }}'::regclass
+          AND tgname = '{{ move_to_history_trigger }}'
+        )
+        THEN
+          CREATE TRIGGER {{ move_to_history_trigger }}
+          BEFORE INSERT ON {{ schema }}.{{ table }}
+          FOR EACH ROW
+          EXECUTE PROCEDURE move_{{ table }}_to_history();
+        END IF;
+      END;
+      $$
+  become: yes
+  become_user: postgres
