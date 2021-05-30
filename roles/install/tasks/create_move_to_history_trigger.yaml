@@ -6,12 +6,13 @@
     query: |
       CREATE OR REPLACE FUNCTION move_{{ table }}_to_history()
       RETURNS TRIGGER AS $$
-      DECLARE
-        name VARCHAR(63) := NEW.payload -> 'metadata' ->> 'name';
-        namespace VARCHAR(63) :=  NEW.payload -> 'metadata' ->> 'namespace';
       BEGIN
-        DELETE FROM {{ schema}}.{{ table }} WHERE payload -> 'metadata' ->> 'name' = name AND
-        payload -> 'metadata' ->> 'namespace' = namespace;
+        INSERT INTO {{ history_schema }}.{{ table }} SELECT * FROM {{ schema}}.{{ table }}
+        WHERE payload -> 'metadata' ->> 'name' = NEW.payload -> 'metadata' ->> 'name' AND
+        payload -> 'metadata' ->> 'namespace' = NEW.payload -> 'metadata' ->> 'namespace';
+        DELETE FROM {{ schema}}.{{ table }}
+        WHERE payload -> 'metadata' ->> 'name' = NEW.payload -> 'metadata' ->> 'name' AND
+        payload -> 'metadata' ->> 'namespace' = NEW.payload -> 'metadata' ->> 'namespace';
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
