@@ -45,7 +45,7 @@
 - name: set permissions on history schema for hoh_process_user
   postgresql_privs:
     db: "{{ hoh_db }}"
-    privs: SELECT
+    privs: SELECT,INSERT
     type: table
     objs: ALL_IN_SCHEMA
     schema: "{{ history_schema }}"
