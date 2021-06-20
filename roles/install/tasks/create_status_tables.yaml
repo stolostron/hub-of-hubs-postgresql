@@ -28,6 +28,7 @@
       - error {{ status_schema }}.{{ error_type }} not null
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
+      - leaf_hub_updated_at timestamp not null
   become: yes
   become_user: postgres
 
