@@ -25,7 +25,7 @@
       - id uuid primary key
       - leaf_hub_id varchar({{ cluster_name_length_limit }}) not null
       - status jsonb not null
-      - error {{ status_schema }}.{{ error_type }} not null
+      - error {{ status_schema }}.{{ error_type }} not null default 'none'
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
       - leaf_hub_updated_at timestamp not null
