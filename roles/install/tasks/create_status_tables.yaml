@@ -80,7 +80,7 @@
     db: "{{ hoh_db }}"
     columns:
       - policy_id uuid primary key
-      - managed_cluster_id uuid not null
+      - cluster_name varchar({{ cluster_name_length_limit }}) not null
       - leaf_hub_id varchar({{ cluster_name_length_limit }}) not null
       - error {{ status_schema }}.{{ error_type }} not null default 'none'
       - compliance {{ status_schema }}.{{ compliance_type }} not null default 'unknown'
