@@ -119,3 +119,24 @@ select created_at, updated_at, payload -> 'metadata' -> 'name' as name, payload 
 (1 row)
 
 ```
+
+* print field from type jsonb as pretty json 
+```sql
+select jsonb_pretty(payload) as payload from status.managed_clusters where cluster_name='cluster6';
+                              payload                              
+-------------------------------------------------------------------
+ {                                                                +
+     "kind": "ManagedCluster",                                    +
+     "spec": {                                                    +
+         "hubAcceptsClient": true,                                +
+         "leaseDurationSeconds": 60                               +
+     },                                                           +
+     "status": {                                                  +
+         "version": {                                             +
+             "kubernetes": "v1.19.1"                              +
+         },                                                       +
+         "capacity": {                                            +
+             "cpu": "8",                                          +
+....
+
+```
