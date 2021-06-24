@@ -49,7 +49,7 @@
             LEFT JOIN pg_namespace p ON t.typnamespace=p.oid
             WHERE t.typname='{{ compliance_type }}' AND p.nspname='{{ status_schema }}'
           ) THEN
-              CREATE TYPE {{ status_schema }}.{{ compliance_type }} AS  ENUM ('Compliant', 'NonCompliant', 'Unknown');
+              CREATE TYPE {{ status_schema }}.{{ compliance_type }} AS  ENUM ('compliant', 'non_compliant', 'unknown');
           END IF;
       END
       $$;
