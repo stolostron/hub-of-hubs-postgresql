@@ -2,6 +2,8 @@
 
 PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-cluster-management/hub-of-hubs) . This repository contains Ansible playbooks to install, configure and uninstall the database. For common commands to work with the database, see [usage.md](usage.md).
 
+![DatabaseDiagram](images/HubOfHubsDatabase.png)
+
 ## Design points
 
 * We use three schemas: `spec`, `status` and `history`.
