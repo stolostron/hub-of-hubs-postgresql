@@ -159,3 +159,9 @@ select p.payload -> 'metadata' ->> 'name' as policyname, p.payload -> 'metadata'
 --------------------------+-----------------+--------------+---------------+---------------
  policy-podsecuritypolicy | myproject       | cluster3     | hub1          | non_compliant
 ```
+
+* count the number of non-compliant clusters (each non-compliant cluster is counted once)
+
+```sql
+select count(distinct cluster_name) from status.compliance where compliance = 'non_compliant';
+```
