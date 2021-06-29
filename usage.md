@@ -165,3 +165,21 @@ select p.payload -> 'metadata' ->> 'name' as policyname, p.payload -> 'metadata'
 ```sql
 select count(distinct cluster_name) from status.compliance where compliance = 'non_compliant';
 ```
+* select policies with counts of non_compliant clusters
+
+```sql
+select p.payload -> 'metadata' ->> 'name' as policyname, p.payload -> 'metadata' ->> 'namespace' as policynamespace, count(c.cluster_name) as non_compliant_count from spec.policies p INNER JOIN status.compliance c ON p.id = c.policy_id where c.compliance = 'non_compliant' GROUP BY policyname, policynamespace;
+        policyname        | policynamespace | non_compliant_count 
+--------------------------+-----------------+---------------------
+ policy-podsecuritypolicy | myproject       |                   2
+```
+
+* select policies with counts of compliant clusters:
+
+```sql
+select p.payload -> 'metadata' ->> 'name' as policyname, p.payload -> 'metadata' ->> 'namespace' as policynamespace, count(c.cluster_name) as compliant_count from spec.policies p INNER JOIN status.compliance c ON p.id = c.policy_id where c.compliance = 'compliant' GROUP BY policyname, policynamespace;
+        policyname        | policynamespace | compliant_count 
+--------------------------+-----------------+-----------------
+ policy-podsecuritypolicy | myproject       |               1
+
+```
