@@ -203,3 +203,20 @@ select distinct leaf_hub_name from status.compliance where compliance = 'non_com
  hub2
 (2 rows)
 ```
+
+* update the compliance in status.compliance
+
+```sql
+update status.compliance set compliance = 'non_compliant';
+UPDATE 3
+```
+
+```sql
+update status.compliance set compliance = 'compliant';
+UPDATE 3
+```
+
+```sql
+update status.compliance set compliance = 'non_compliant' where cluster_name = 'cluster0';
+UPDATE 1
+```
