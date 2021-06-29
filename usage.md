@@ -183,3 +183,23 @@ select p.payload -> 'metadata' ->> 'name' as policyname, p.payload -> 'metadata'
  policy-podsecuritypolicy | myproject       |               1
 
 ```
+
+* select distinct clusters that are non compliant
+```sql
+ select distinct cluster_name from status.compliance where compliance = 'non_compliant';
+ cluster_name 
+--------------
+ cluster3
+ cluster7
+(2 rows)
+```
+
+* select distinct leaf hubs that are non compliant
+```sql
+select distinct leaf_hub_name from status.compliance where compliance = 'non_compliant';
+ leaf_hub_name 
+---------------
+ hub1
+ hub2
+(2 rows)
+```
