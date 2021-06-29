@@ -140,3 +140,13 @@ select jsonb_pretty(payload) as payload from status.managed_clusters where clust
 ....
 
 ```
+
+* select policy name, namespace, cluster and leaf hub names from the status.compliance table
+
+```sql
+select p.payload -> 'metadata' ->> 'name' as policyname, p.payload -> 'metadata' ->> 'namespace' as policynamespace, c.cluster_name, c.leaf_hub_name, c.compliance from spec.policies p INNER JOIN status.compliance c ON p.id = c.policy_id;
+        policyname        | policynamespace | cluster_name | leaf_hub_name |  compliance   
+--------------------------+-----------------+--------------+---------------+---------------
+ policy-podsecuritypolicy | myproject       | cluster0     | hub1          | compliant
+ policy-podsecuritypolicy | myproject       | cluster3     | hub1          | non_complianta
+```
