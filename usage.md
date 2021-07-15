@@ -220,3 +220,9 @@ UPDATE 3
 update status.compliance set compliance = 'non_compliant' where cluster_name = 'cluster0';
 UPDATE 1
 ```
+
+* show managed clusters
+
+```sql
+select cluster_name, leaf_hub_name, payload -> 'metadata' -> 'labels' as labels from status.managed_clusters order by cluster_name;
+```
