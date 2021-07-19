@@ -1,27 +1,26 @@
 ---
+  # using shell inbstead of dnf task due to a certificate problem
+- name: install postgresql RPM
+  shell: dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+  args:
+      warn: false
+
+- name: Disable the built-in PostgreSQL module
+  shell: dnf -qy module disable postgresql
+  args:
+      warn: false
+
 - name: install postgresql
-  apt:
+  dnf:
     name:
-      - postgresql
-      - postgresql-contrib
-      - libpq-dev
-    state: present
+      - "postgresql{{ postgresql_version }}-server"
+      - "postgresql{{ postgresql_version }}-contrib"
 
-# from https://superuser.com/a/1326644
-- name: Run the equivalent of "apt-get update" as a separate step
-  apt:
-    update_cache: yes
+- name: initialize the server
+  shell: "/usr/pgsql-{{ postgresql_version }}/bin/postgresql-{{ postgresql_version }}-setup initdb"
 
-- name: install dependencies for ansible pip
-  apt:
-    name:
-      - python3-pip
-      - virtualenv
-      - python-setuptools
-    update_cache: yes
-
-- name: install dependencies for ansible postgres
-  pip:
-    name:
-      - psycopg2
-    executable: pip3
+- name: start the server
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    enabled: true
+    state: started
