@@ -1,50 +1,29 @@
 ---
 - name: Stop service postgresql, if started
-  service:
-    name: postgresql
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
     state: stopped
   ignore_errors: yes
 
 - name: uninstall postgresql
-  apt:
+  dnf:
     name:
-      - postgresql
-      - postgresql-client-common
-      - postgresql-common
-      - "postgresql-{{ postgresql_version }}"
-      - "postgresql-client-{{ postgresql_version }}"
-      - postgresql-contrib
-      - libpq-dev
+      - "postgresql{{ postgresql_version }}-contrib"
+      - "postgresql{{ postgresql_version }}-server"
+      - "postgresql{{ postgresql_version }}"
+      - "postgresql{{ postgresql_version }}-libs"
     state: absent
-    purge: yes
 
 - name: Delete postgresql directories
   file:
     state: absent
     path: '{{ item }}'
   loop:
-    - /var/lib/postgresql
-    - /var/log/postgresql
-    - /etc/postgresql
+    - /var/lib/pgsql
+    - "/usr/pgsql-{{ postgresql_version }}/"
 
 - name: Remove the user postgres
   user:
     name: postgres
     state: absent
     remove: yes
-
-- name: remove dependencies for ansible postgres
-  pip:
-    name:
-      - psycopg2
-    executable: pip3
-    state: absent
-
-- name: uninstall dependencies for ansible pip
-  apt:
-    name:
-      - python3-pip
-      - virtualenv
-      - python-setuptools
-    update_cache: yes
-    state: absent
