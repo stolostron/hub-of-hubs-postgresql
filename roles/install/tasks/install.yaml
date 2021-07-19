@@ -5,11 +5,6 @@
   args:
       warn: false
 
-- name: Disable the built-in PostgreSQL module
-  shell: dnf -qy module disable postgresql
-  args:
-      warn: false
-
 - name: install postgresql
   dnf:
     name:
