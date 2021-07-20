@@ -50,7 +50,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 sudo -u postgres psql -c '\password hoh_process_user'
 ```
 
-1. Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the `/etc/postgresql/{{ postgresql_version }}/main/` directory.
+1. Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
 
 1. Configure TLS:
 
