@@ -44,28 +44,28 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 
 ## Post installation tasks
 
-1. Set password for the user `hoh_process_user`:
+1.  Set password for the user `hoh_process_user`:
 
-```
-sudo -u postgres psql -c '\password hoh_process_user'
-```
+    ```
+    sudo -u postgres psql -c '\password hoh_process_user'
+    ```
 
-1. Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
+1.  Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
 
-1. Configure TLS:
+1.  Configure TLS:
 
-```
-ansible-playbook configure_tls.yaml -i production --ask-vault-pass -l acm
-```
+    ```
+    ansible-playbook configure_tls.yaml -i production --ask-vault-pass -l acm
+    ```
 
-1. Create `root.crt` on the client machine, put it into `~/.postgresql/root.crt`. For example, for
+1.  Create `root.crt` on the client machine, put it into `~/.postgresql/root.crt`. For example, for
 [Let's encrypt](https://letsencrypt.org/) certificates, run `curl https://letsencrypt.org/certs/trustid-x3-root.pem --output ~/.postgresql/root.crt`.
 
-1. Use `psql` on the client machine:
+1.  Use `psql` on the client machine:
 
-```
-PGSSLMODE=verify-full psql -h <the PostgreSQL VM host> -U hoh_process_user -W -d hoh
-```
+    ```
+    PGSSLMODE=verify-full psql -h <the PostgreSQL VM host> -U hoh_process_user -W -d hoh
+    ```
 
 ## To uninstall
 
