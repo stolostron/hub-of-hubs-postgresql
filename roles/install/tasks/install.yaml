@@ -10,6 +10,7 @@
     name:
       - "postgresql{{ postgresql_version }}-server"
       - "postgresql{{ postgresql_version }}-contrib"
+      - "postgresql{{ postgresql_version }}-devel"
 
 - name: initialize the server
   shell: "/usr/pgsql-{{ postgresql_version }}/bin/postgresql-{{ postgresql_version }}-setup initdb"
@@ -21,3 +22,17 @@
     name: "postgresql-{{ postgresql_version }}"
     enabled: true
     state: started
+
+- name: create a softlink for pg_config
+  file:
+    src: /usr/pgsql-{{ postgresql_version }}/bin/pg_config
+    dest: /usr/sbin/pg_config
+    state: link
+
+- name: install dependencies for ansible postgres
+  pip:
+    name:
+      - psycopg2
+    executable: pip3
+    extra_args: "--user"
+  become: false

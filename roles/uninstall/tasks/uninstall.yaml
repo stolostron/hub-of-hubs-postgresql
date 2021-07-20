@@ -1,4 +1,17 @@
 ---
+- name: delete dependencies for ansible postgres
+  pip:
+    name:
+      - psycopg2
+    executable: pip3
+    state: absent
+  become: false
+
+- name: delete softlink for pg_config
+  file:
+    path: /usr/sbin/pg_config
+    state: absent
+
 - name: Stop service postgresql, if started
   systemd:
     name: "postgresql-{{ postgresql_version }}"
