@@ -44,7 +44,7 @@
   lineinfile:
     path: "{{ postgresql_configuration_directory }}/postgresql.conf"
     regexp: '^listen_addresses'
-    line: listen_addresses = '0.0.0.0'
+    line: listen_addresses = '*'
     state: present
 
 - name: restart service postgresql
