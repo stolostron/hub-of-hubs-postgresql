@@ -5,7 +5,6 @@
       - psycopg2
     executable: pip3
     state: absent
-  become: false
 
 - name: delete softlink for pg_config
   file:

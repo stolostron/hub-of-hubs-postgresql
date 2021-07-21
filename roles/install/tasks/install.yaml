@@ -34,5 +34,3 @@
     name:
       - psycopg2
     executable: pip3
-    extra_args: "--user"
-  become: false
