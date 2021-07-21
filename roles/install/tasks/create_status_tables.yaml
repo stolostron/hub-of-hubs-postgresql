@@ -106,7 +106,7 @@
       - leaf_hub_id varchar({{ cluster_name_length_limit }}) not null
       - enforcement {{ spec_schema }}.{{ enforcement_type }} not null
       - applied_clusters int not null
-      - compliant_clusters int not null
+      - non_compliant_clusters int not null
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
   become: yes
