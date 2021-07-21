@@ -90,3 +90,9 @@ Run:
 ```
 ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags tables
 ```
+
+## To change the database
+
+```
+ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags tables -e "hoh_db=hoh2"
+```
