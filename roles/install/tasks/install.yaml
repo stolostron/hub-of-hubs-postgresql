@@ -15,7 +15,7 @@
 - name: initialize the server
   shell: "/usr/pgsql-{{ postgresql_version }}/bin/postgresql-{{ postgresql_version }}-setup initdb"
   args:
-    creates: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
+    creates: "{{ postgresql_configuration_directory }}/pg_hba.conf"
 
 - name: start the server
   systemd:
