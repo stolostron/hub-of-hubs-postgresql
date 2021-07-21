@@ -6,7 +6,8 @@
     line: password_encryption = scram-sha-256
     state: present
 
-- name: reload service postgresql
-  service:
-    name: postgresql
+- name: reload the server
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    enabled: true
     state: reloaded

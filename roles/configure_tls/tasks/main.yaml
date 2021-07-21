@@ -47,7 +47,8 @@
     line: listen_addresses = '*'
     state: present
 
-- name: restart service postgresql
-  service:
-    name: postgresql
+- name: restart the server
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    enabled: true
     state: restarted
