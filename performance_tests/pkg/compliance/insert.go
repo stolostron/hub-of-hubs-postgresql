@@ -14,9 +14,12 @@ import (
 )
 
 const (
-	insertSize       = 1000
-	columnSize       = 7
-	goRoutinesNumber = 50
+	insertSize                   = 1000
+	columnSize                   = 7
+	goRoutinesNumber             = 50
+	maxNumberOfClusters          = 1000000
+	maxNumberOfLeafHubs          = 1000
+	compliantToNonCompliantRatio = 1000
 )
 
 func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
@@ -26,6 +29,7 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	}
 
 	entry := time.Now()
+
 	defer func() {
 		now := time.Now()
 		elapsed := now.Sub(entry)
@@ -33,11 +37,13 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	}()
 
 	var wg sync.WaitGroup
-	insertNumber := n / 1000
+
+	insertNumber := n / insertSize
 	c := make(chan int, insertNumber)
 
 	for i := 0; i < goRoutinesNumber; i++ {
 		wg.Add(1)
+
 		go insertRows(ctx, dbConnectionPool, c, &wg)
 	}
 
@@ -47,14 +53,16 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	close(c)
 
 	wg.Wait()
+
 	return nil
 }
 
 func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup) {
 	defer wg.Done()
+
 	for range c {
 		if err := doInsertRows(ctx, dbConnectionPool); err != nil {
-			fmt.Printf("failed to insert rows: %w\n", err)
+			fmt.Printf("failed to insert rows: %v\n", err)
 			break
 		}
 	}
@@ -68,22 +76,28 @@ func doInsertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
 		if err != nil {
 			return fmt.Errorf("failed to generate row: %w", err)
 		}
+
 		rows = append(rows, row...)
 	}
 
 	var sb strings.Builder
+
 	sb.WriteString("INSERT INTO status.compliance values")
 
 	for i := 0; i < insertSize; i++ {
 		sb.WriteString("(")
+
 		for j := 0; j < columnSize; j++ {
 			sb.WriteString("$")
 			sb.WriteString(strconv.Itoa(i*columnSize + j + 1))
+
 			if j < columnSize-1 {
 				sb.WriteString(", ")
 			}
 		}
+
 		sb.WriteString(")")
+
 		if i < insertSize-1 {
 			sb.WriteString(", ")
 		}
@@ -97,23 +111,25 @@ func doInsertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
 	return nil
 }
 
+/* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
 func generateRow() ([]interface{}, error) {
 	policyID, err := uuid.NewV4()
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate UUID: %w", err)
 	}
 
-	clusterName := fmt.Sprintf("cluster%d", rand.Intn(1000000))
-	leafHubName := fmt.Sprintf("hub%d", rand.Intn(1000))
+	clusterName := fmt.Sprintf("cluster%d", rand.Intn(maxNumberOfClusters))
+	leafHubName := fmt.Sprintf("hub%d", rand.Intn(maxNumberOfLeafHubs))
 
-	error := "none"
+	errorValue := "none"
 	compliance := "compliant"
-	if rand.Intn(1000) == 0 {
+
+	if rand.Intn(compliantToNonCompliantRatio) == 0 {
 		compliance = "non_compliant"
 	}
 
-	remediationAction := "inform"
+	action := "inform"
 	resourceVersion := strconv.Itoa(rand.Int())
 
-	return []interface{}{policyID, clusterName, leafHubName, error, compliance, remediationAction, resourceVersion}, nil
+	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}, nil
 }

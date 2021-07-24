@@ -55,14 +55,14 @@ func doMain() int {
 
 	dbConnectionPool, err := pgxpool.Connect(ctx, databaseURL)
 	if err != nil {
-		fmt.Errorf("Failed to connect to the database: %w", err)
+		fmt.Printf("Failed to connect to the database: %v", err)
 		return 1
 	}
 	defer dbConnectionPool.Close()
 
 	err = compliance.RunInsert(ctx, dbConnectionPool, rowsNumber)
 	if err != nil {
-		fmt.Errorf("Failed to run compliance.RunInsert: %w", err)
+		fmt.Printf("Failed to run compliance.RunInsert: %v", err)
 		return 1
 	}
 

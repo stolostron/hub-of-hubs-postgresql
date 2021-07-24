@@ -1,0 +1,7 @@
+linters:
+  enable-all: true
+  disable:
+    - nlreturn
+    - exhaustivestruct
+    - godox
+    - forbidigo
