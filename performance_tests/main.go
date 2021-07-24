@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -12,7 +13,7 @@ import (
 )
 
 const (
-	rowsNumber                           = "ROWS_NUMBER"
+	environmentVariableRowsNumber                           = "ROWS_NUMBER"
 	environmentVariableDatabaseURL       = "DATABASE_URL"
 )
 
@@ -32,13 +33,24 @@ func doMain() int {
 
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 	if !found {
-		fmt.Errorf("Not found environment variable %s\n", environmentVariableDatabaseURL)
+		fmt.Printf("Not found environment variable %s\n", environmentVariableDatabaseURL)
 		return 1
 	}
 
-	rowsNumber, found := os.LookupEnv(rowsNumber)
+	rowsNumberString, found := os.LookupEnv(environmentVariableRowsNumber)
 	if !found {
-		fmt.Errorf("Not found environment variable %s\n", rowsNumber)
+		fmt.Printf("Not found environment variable %s\n", environmentVariableRowsNumber)
+		return 1
+	}
+
+	rowsNumber, err := strconv.Atoi(rowsNumberString)
+	if err != nil {
+		fmt.Printf("%s must be an integer\n", environmentVariableRowsNumber)
+		return 1
+	}
+
+	if rowsNumber % 1000 != 0 {
+		fmt.Printf("%s must be a multiple of 1000\n", environmentVariableRowsNumber)
 		return 1
 	}
 
@@ -49,7 +61,7 @@ func doMain() int {
 	}
 	defer dbConnectionPool.Close()
 
-	err = compliance.RunInsert(ctx, dbConnectionPool, 1000)
+	err = compliance.RunInsert(ctx, dbConnectionPool, rowsNumber)
 	if err != nil {
 		fmt.Errorf("Failed to run compliance.RunInsert: %w", err)
 		return 1
