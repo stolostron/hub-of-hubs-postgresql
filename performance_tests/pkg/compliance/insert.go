@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -14,6 +15,7 @@ import (
 
 const insertSize = 1000
 const columnSize = 7
+const goRoutinesNumber = 50
 
 func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
 	_, err := dbConnectionPool.Exec(ctx, "DELETE from status.compliance")
@@ -29,16 +31,36 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 		fmt.Printf("compliance RunInsert: elapsed %v\n", elapsed)
 	}()
 
-	err = insertRows(ctx, dbConnectionPool)
+	var wg sync.WaitGroup
+	insertNumber := n/1000;
+	c := make(chan int, insertNumber)
 
-	if err != nil {
-		return fmt.Errorf("failed to insert rows: %w", err)
+	for i := 0; i < goRoutinesNumber; i++ {
+		wg.Add(1)
+		go insertRows(ctx, dbConnectionPool, c, &wg)
 	}
 
+	for i := 0; i < insertNumber; i++ {
+	  c <- i
+	}
+	close(c)
+
+	wg.Wait()
 	return nil
 }
 
-func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
+func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for range c {
+		if err := doInsertRows(ctx, dbConnectionPool); err != nil {
+			fmt.Printf("failed to insert rows: %w\n", err)
+			break
+		}
+
+	}
+}
+
+func doInsertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
 	rows := make([]interface{}, 0, insertSize*columnSize)
 
 	for i := 0; i < insertSize; i++ {
