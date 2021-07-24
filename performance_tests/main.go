@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"strconv"
@@ -13,14 +13,13 @@ import (
 )
 
 const (
-	environmentVariableRowsNumber                           = "ROWS_NUMBER"
-	environmentVariableDatabaseURL       = "DATABASE_URL"
+	environmentVariableRowsNumber  = "ROWS_NUMBER"
+	environmentVariableDatabaseURL = "DATABASE_URL"
 )
 
 func doMain() int {
 	ctx, cancelContext := context.WithCancel(context.Background())
 	defer cancelContext()
-
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
@@ -49,7 +48,7 @@ func doMain() int {
 		return 1
 	}
 
-	if rowsNumber % 1000 != 0 {
+	if rowsNumber%1000 != 0 {
 		fmt.Printf("%s must be a multiple of 1000\n", environmentVariableRowsNumber)
 		return 1
 	}

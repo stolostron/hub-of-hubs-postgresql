@@ -1,25 +1,26 @@
 package compliance
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/gofrs/uuid"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-const insertSize = 1000
-const columnSize = 7
-const goRoutinesNumber = 50
+const (
+	insertSize       = 1000
+	columnSize       = 7
+	goRoutinesNumber = 50
+)
 
 func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
 	_, err := dbConnectionPool.Exec(ctx, "DELETE from status.compliance")
-
 	if err != nil {
 		return fmt.Errorf("failed to clean the table before the test: %w", err)
 	}
@@ -32,7 +33,7 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	}()
 
 	var wg sync.WaitGroup
-	insertNumber := n/1000;
+	insertNumber := n / 1000
 	c := make(chan int, insertNumber)
 
 	for i := 0; i < goRoutinesNumber; i++ {
@@ -41,7 +42,7 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	}
 
 	for i := 0; i < insertNumber; i++ {
-	  c <- i
+		c <- i
 	}
 	close(c)
 
@@ -56,7 +57,6 @@ func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int,
 			fmt.Printf("failed to insert rows: %w\n", err)
 			break
 		}
-
 	}
 }
 
@@ -64,11 +64,11 @@ func doInsertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
 	rows := make([]interface{}, 0, insertSize*columnSize)
 
 	for i := 0; i < insertSize; i++ {
-	    row, err := generateRow()
-	    if err != nil {
-		return fmt.Errorf("failed to generate row: %w", err)
-	    }
-	    rows = append(rows, row...)
+		row, err := generateRow()
+		if err != nil {
+			return fmt.Errorf("failed to generate row: %w", err)
+		}
+		rows = append(rows, row...)
 	}
 
 	var sb strings.Builder
@@ -79,12 +79,12 @@ func doInsertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
 		for j := 0; j < columnSize; j++ {
 			sb.WriteString("$")
 			sb.WriteString(strconv.Itoa(i*columnSize + j + 1))
-			if j < columnSize - 1 {
+			if j < columnSize-1 {
 				sb.WriteString(", ")
 			}
 		}
 		sb.WriteString(")")
-		if i < insertSize - 1 {
+		if i < insertSize-1 {
 			sb.WriteString(", ")
 		}
 	}
@@ -104,16 +104,16 @@ func generateRow() ([]interface{}, error) {
 	}
 
 	clusterName := fmt.Sprintf("cluster%d", rand.Intn(1000000))
-	leafHubName := fmt.Sprintf("hub%d",rand.Intn(1000))
+	leafHubName := fmt.Sprintf("hub%d", rand.Intn(1000))
 
 	error := "none"
 	compliance := "compliant"
 	if rand.Intn(1000) == 0 {
-	   compliance = "non_compliant"
+		compliance = "non_compliant"
 	}
 
 	remediationAction := "inform"
 	resourceVersion := strconv.Itoa(rand.Int())
 
-	return []interface{}{ policyID, clusterName, leafHubName, error, compliance, remediationAction, resourceVersion }, nil
+	return []interface{}{policyID, clusterName, leafHubName, error, compliance, remediationAction, resourceVersion}, nil
 }
