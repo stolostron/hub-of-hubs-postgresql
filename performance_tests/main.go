@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/open-cluster-management/hub-of-hubs-postgresql/performance_tests/pkg/compliance"
@@ -16,17 +17,18 @@ const (
 )
 
 func doMain() int {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c)
-
 	ctx, cancelContext := context.WithCancel(context.Background())
 	defer cancelContext()
 
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
-		<-c
+		s := <-c
+		fmt.Println("got signal", s)
 		cancelContext()
 	}()
-
 
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 	if !found {
