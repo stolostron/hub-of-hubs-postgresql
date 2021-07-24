@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -13,8 +14,16 @@ import (
 )
 
 const (
-	environmentVariableRowsNumber  = "ROWS_NUMBER"
-	environmentVariableDatabaseURL = "DATABASE_URL"
+	environmentVariableRowsNumber           = "ROWS_NUMBER"
+	environmentVariableDatabaseURL          = "DATABASE_URL"
+	environmentVariableInsertMultipleValues = "INSERT_MULTIPLE_VALUES"
+	environmentVariableInsertCopy           = "INSERT_COPY"
+)
+
+var (
+	errEnvironmentVariableNotFound    = errors.New("not found environment variable")
+	errEnvironmentVariableWrongType   = errors.New("wrong type of environment variable")
+	errEnvironmentVariableWrongFormat = errors.New("wrong format of environment variable")
 )
 
 func doMain() int {
@@ -30,26 +39,9 @@ func doMain() int {
 		cancelContext()
 	}()
 
-	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
-	if !found {
-		fmt.Printf("Not found environment variable %s\n", environmentVariableDatabaseURL)
-		return 1
-	}
-
-	rowsNumberString, found := os.LookupEnv(environmentVariableRowsNumber)
-	if !found {
-		fmt.Printf("Not found environment variable %s\n", environmentVariableRowsNumber)
-		return 1
-	}
-
-	rowsNumber, err := strconv.Atoi(rowsNumberString)
+	databaseURL, rowsNumber, insertMultipleValues, insertCopy, err := readEnvironmentVariables()
 	if err != nil {
-		fmt.Printf("%s must be an integer\n", environmentVariableRowsNumber)
-		return 1
-	}
-
-	if rowsNumber%1000 != 0 {
-		fmt.Printf("%s must be a multiple of 1000\n", environmentVariableRowsNumber)
+		fmt.Printf("Failed to read environment variables: %v", err)
 		return 1
 	}
 
@@ -60,13 +52,72 @@ func doMain() int {
 	}
 	defer dbConnectionPool.Close()
 
-	err = compliance.RunInsert(ctx, dbConnectionPool, rowsNumber)
+	err = runTests(ctx, dbConnectionPool, rowsNumber, insertMultipleValues, insertCopy)
 	if err != nil {
-		fmt.Printf("Failed to run compliance.RunInsert: %v", err)
+		fmt.Printf("Failed to run tests: %v", err)
 		return 1
 	}
 
 	return 0
+}
+
+func readEnvironmentVariables() (string, int, bool, bool, error) {
+	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
+
+	if !found {
+		return "", 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableDatabaseURL)
+	}
+
+	rowsNumberString, found := os.LookupEnv(environmentVariableRowsNumber)
+	if !found {
+		return "", 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableRowsNumber)
+	}
+
+	rowsNumber, err := strconv.Atoi(rowsNumberString)
+	if err != nil {
+		return "", 0, false, false, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
+			environmentVariableRowsNumber)
+	}
+
+	if rowsNumber%1000 != 0 {
+		return "", 0, false, false, fmt.Errorf("%w: %s must be a multiple of 1000", errEnvironmentVariableWrongFormat,
+			environmentVariableRowsNumber)
+	}
+
+	insertMultipleValues := false
+	_, found = os.LookupEnv(environmentVariableInsertMultipleValues)
+
+	if found {
+		insertMultipleValues = true
+	}
+
+	insertCopy := false
+	_, found = os.LookupEnv(environmentVariableInsertCopy)
+
+	if found {
+		insertCopy = true
+	}
+
+	return databaseURL, rowsNumber, insertMultipleValues, insertCopy, nil
+}
+
+func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, rowsNumber int, insertMultipleValues,
+	insertCopy bool) error {
+	if insertMultipleValues {
+		err := compliance.RunInsertByInsertWithMultipleValues(ctx, dbConnectionPool, rowsNumber)
+		if err != nil {
+			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
+		}
+	}
+
+	if insertCopy {
+		err := compliance.RunInsertByCopy(ctx, dbConnectionPool, rowsNumber)
+		if err != nil {
+			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func main() {

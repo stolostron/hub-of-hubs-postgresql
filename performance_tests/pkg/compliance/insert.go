@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -22,7 +23,16 @@ const (
 	compliantToNonCompliantRatio = 1000
 )
 
-func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
+func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
+	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByInsertWithMultipleValues, "INSERT with multiple values")
+}
+
+func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
+	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByCopy, "COPY")
+}
+
+func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
+	insertFunc func(context.Context, *pgxpool.Pool) error, description string) error {
 	_, err := dbConnectionPool.Exec(ctx, "DELETE from status.compliance")
 	if err != nil {
 		return fmt.Errorf("failed to clean the table before the test: %w", err)
@@ -33,7 +43,7 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	defer func() {
 		now := time.Now()
 		elapsed := now.Sub(entry)
-		fmt.Printf("compliance RunInsert: elapsed %v\n", elapsed)
+		fmt.Printf("compliance RunInsert %s: elapsed %v\n", description, elapsed)
 	}()
 
 	var wg sync.WaitGroup
@@ -44,7 +54,7 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	for i := 0; i < goRoutinesNumber; i++ {
 		wg.Add(1)
 
-		go insertRows(ctx, dbConnectionPool, c, &wg)
+		go insertRows(ctx, dbConnectionPool, c, &wg, insertFunc)
 	}
 
 	for i := 0; i < insertNumber; i++ {
@@ -57,18 +67,19 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error
 	return nil
 }
 
-func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup) {
+func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup,
+	insertFunc func(context.Context, *pgxpool.Pool) error) {
 	defer wg.Done()
 
 	for range c {
-		if err := doInsertRows(ctx, dbConnectionPool); err != nil {
+		if err := insertFunc(ctx, dbConnectionPool); err != nil {
 			fmt.Printf("failed to insert rows: %v\n", err)
 			break
 		}
 	}
 }
 
-func doInsertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
+func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
 	rows := make([]interface{}, 0, insertSize*columnSize)
 
 	for i := 0; i < insertSize; i++ {
@@ -132,4 +143,26 @@ func generateRow() ([]interface{}, error) {
 	resourceVersion := strconv.Itoa(rand.Int())
 
 	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}, nil
+}
+
+func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
+	rows := make([][]interface{}, 0, insertSize)
+
+	for i := 0; i < insertSize; i++ {
+		row, err := generateRow()
+		if err != nil {
+			return fmt.Errorf("failed to generate row: %w", err)
+		}
+
+		rows = append(rows, row)
+	}
+
+	_, err := dbConnectionPool.CopyFrom(ctx, pgx.Identifier{"status", "compliance"},
+		[]string{"policy_id", "cluster_name", "leaf_hub_name", "error", "compliance", "enforcement", "resource_version"},
+		pgx.CopyFromRows(rows))
+	if err != nil {
+		return fmt.Errorf("insert into database failed: %w", err)
+	}
+
+	return nil
 }
