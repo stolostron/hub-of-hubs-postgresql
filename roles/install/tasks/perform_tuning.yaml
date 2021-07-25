@@ -1,0 +1,19 @@
+- name: set max connections number
+  lineinfile:
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
+    regexp: '^max_connections'
+    line: max_connections = {{ max_connections }}
+    state: present
+
+- name: set shared_buffers
+  lineinfile:
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
+    regexp: '^shared_buffers'
+    line: shared_buffers = {{ shared_buffers }}
+    state: present
+
+- name: restart the server
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    enabled: true
+    state: restarted
