@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	insertSize                   = 1000
+	multipleInsertSize           = 1000
+	copyInsertSize               = 10000
 	columnSize                   = 7
 	goRoutinesNumber             = 50
 	maxNumberOfClusters          = 1000000
@@ -24,15 +25,15 @@ const (
 )
 
 func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
-	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByInsertWithMultipleValues, "INSERT with multiple values")
+	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByInsertWithMultipleValues, "INSERT with multiple values", multipleInsertSize)
 }
 
 func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
-	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByCopy, "COPY")
+	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByCopy, "COPY", copyInsertSize)
 }
 
 func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
-	insertFunc func(context.Context, *pgxpool.Pool) error, description string) error {
+	insertFunc func(context.Context, *pgxpool.Pool, int) error, description string, insertSize int) error {
 	_, err := dbConnectionPool.Exec(ctx, "DELETE from status.compliance")
 	if err != nil {
 		return fmt.Errorf("failed to clean the table before the test: %w", err)
@@ -54,7 +55,7 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
 	for i := 0; i < goRoutinesNumber; i++ {
 		wg.Add(1)
 
-		go insertRows(ctx, dbConnectionPool, c, &wg, insertFunc)
+		go insertRows(ctx, dbConnectionPool, c, &wg, insertFunc, insertSize)
 	}
 
 	for i := 0; i < insertNumber; i++ {
@@ -68,18 +69,18 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
 }
 
 func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup,
-	insertFunc func(context.Context, *pgxpool.Pool) error) {
+	insertFunc func(context.Context, *pgxpool.Pool, int) error, insertSize int) {
 	defer wg.Done()
 
 	for range c {
-		if err := insertFunc(ctx, dbConnectionPool); err != nil {
+		if err := insertFunc(ctx, dbConnectionPool, insertSize); err != nil {
 			fmt.Printf("failed to insert rows: %v\n", err)
 			break
 		}
 	}
 }
 
-func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
+func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, insertSize int) error {
 	rows := make([]interface{}, 0, insertSize*columnSize)
 
 	for i := 0; i < insertSize; i++ {
@@ -145,7 +146,7 @@ func generateRow() ([]interface{}, error) {
 	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}, nil
 }
 
-func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool) error {
+func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, insertSize int) error {
 	rows := make([][]interface{}, 0, insertSize)
 
 	for i := 0; i < insertSize; i++ {
