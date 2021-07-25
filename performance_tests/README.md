@@ -20,8 +20,16 @@ Set the `DATABASE_URL` according to the PostgreSQL URL format, plus the maximal 
 python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1])" 'YourPassword'
 ```
 
-Run the test:
+Run the tests.
+
+Insert by inserting multiple values:
 
 ```
-ROWS_NUMBER=1000 ./performance_tests
+ROWS_NUMBER=1000 INSERT_MULTIPLE_VALUES= ./bin/performance_tests
+```
+
+Insert by the COPY protocol:
+
+```
+ROWS_NUMBER=1000 INSERT_COPY= ./bin/performance_tests
 ```
