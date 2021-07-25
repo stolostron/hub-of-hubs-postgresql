@@ -15,6 +15,7 @@ import (
 
 const (
 	environmentVariableRowsNumber           = "ROWS_NUMBER"
+	environmentVariableBatchSize            = "BATCH_SIZE"
 	environmentVariableDatabaseURL          = "DATABASE_URL"
 	environmentVariableInsertMultipleValues = "INSERT_MULTIPLE_VALUES"
 	environmentVariableInsertCopy           = "INSERT_COPY"
@@ -39,49 +40,60 @@ func doMain() int {
 		cancelContext()
 	}()
 
-	databaseURL, rowsNumber, insertMultipleValues, insertCopy, err := readEnvironmentVariables()
+	databaseURL, rowsNumber, batchSize, insertMultipleValues, insertCopy, err := readEnvironmentVariables()
 	if err != nil {
-		fmt.Printf("Failed to read environment variables: %v", err)
+		fmt.Printf("Failed to read environment variables: %v\n", err)
 		return 1
 	}
 
 	dbConnectionPool, err := pgxpool.Connect(ctx, databaseURL)
 	if err != nil {
-		fmt.Printf("Failed to connect to the database: %v", err)
+		fmt.Printf("Failed to connect to the database: %v\n", err)
 		return 1
 	}
 	defer dbConnectionPool.Close()
 
-	err = runTests(ctx, dbConnectionPool, rowsNumber, insertMultipleValues, insertCopy)
+	err = runTests(ctx, dbConnectionPool, rowsNumber, batchSize, insertMultipleValues, insertCopy)
 	if err != nil {
-		fmt.Printf("Failed to run tests: %v", err)
+		fmt.Printf("Failed to run tests: %v\n", err)
 		return 1
 	}
 
 	return 0
 }
 
-func readEnvironmentVariables() (string, int, bool, bool, error) {
+func readEnvironmentVariables() (string, int, int, bool, bool, error) {
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 
 	if !found {
-		return "", 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableDatabaseURL)
+		return "", 0, 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableDatabaseURL)
 	}
 
 	rowsNumberString, found := os.LookupEnv(environmentVariableRowsNumber)
 	if !found {
-		return "", 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableRowsNumber)
+		return "", 0, 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableRowsNumber)
 	}
 
 	rowsNumber, err := strconv.Atoi(rowsNumberString)
 	if err != nil {
-		return "", 0, false, false, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
+		return "", 0, 0, false, false, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
 			environmentVariableRowsNumber)
 	}
 
-	if rowsNumber%1000 != 0 {
-		return "", 0, false, false, fmt.Errorf("%w: %s must be a multiple of 1000", errEnvironmentVariableWrongFormat,
-			environmentVariableRowsNumber)
+	batchSizeString, found := os.LookupEnv(environmentVariableBatchSize)
+	if !found {
+		return "", 0, 0, false, false, fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableBatchSize)
+	}
+
+	batchSize, err := strconv.Atoi(batchSizeString)
+	if err != nil {
+		return "", 0, 0, false, false, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
+			environmentVariableBatchSize)
+	}
+
+	if rowsNumber%batchSize != 0 {
+		return "", 0, 0, false, false, fmt.Errorf("%w: %s must be a multiple of %s", errEnvironmentVariableWrongFormat,
+			environmentVariableRowsNumber, environmentVariableBatchSize)
 	}
 
 	insertMultipleValues := false
@@ -98,20 +110,20 @@ func readEnvironmentVariables() (string, int, bool, bool, error) {
 		insertCopy = true
 	}
 
-	return databaseURL, rowsNumber, insertMultipleValues, insertCopy, nil
+	return databaseURL, rowsNumber, batchSize, insertMultipleValues, insertCopy, nil
 }
 
-func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, rowsNumber int, insertMultipleValues,
+func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, rowsNumber, batchSize int, insertMultipleValues,
 	insertCopy bool) error {
 	if insertMultipleValues {
-		err := compliance.RunInsertByInsertWithMultipleValues(ctx, dbConnectionPool, rowsNumber)
+		err := compliance.RunInsertByInsertWithMultipleValues(ctx, dbConnectionPool, rowsNumber, batchSize)
 		if err != nil {
 			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
 		}
 	}
 
 	if insertCopy {
-		err := compliance.RunInsertByCopy(ctx, dbConnectionPool, rowsNumber)
+		err := compliance.RunInsertByCopy(ctx, dbConnectionPool, rowsNumber, batchSize)
 		if err != nil {
 			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
 		}

@@ -15,22 +15,20 @@ import (
 )
 
 const (
-	multipleInsertSize           = 1000
-	copyInsertSize               = 10000
 	columnSize                   = 7
-	goRoutinesNumber             = 50
+	goRoutinesNumber             = 500
 	maxNumberOfClusters          = 1000000
 	maxNumberOfLeafHubs          = 1000
 	compliantToNonCompliantRatio = 1000
 )
 
-func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
+func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n, batchSize int) error {
 	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByInsertWithMultipleValues, "INSERT with multiple values",
-		multipleInsertSize)
+		batchSize)
 }
 
-func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
-	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByCopy, "COPY", copyInsertSize)
+func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, n, batchSize int) error {
+	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByCopy, "COPY", batchSize)
 }
 
 func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
