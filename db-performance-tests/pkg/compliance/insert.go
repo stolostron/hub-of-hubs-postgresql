@@ -44,7 +44,7 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
 	defer func() {
 		now := time.Now()
 		elapsed := now.Sub(entry)
-		fmt.Printf("compliance RunInsert %s: elapsed %v\n", description, elapsed)
+		fmt.Printf("compliance RunInsert %s %d rows by batch of %d rows: elapsed %v\n", description, n, insertSize, elapsed)
 	}()
 
 	var wg sync.WaitGroup
