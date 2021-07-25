@@ -25,13 +25,13 @@ Run the tests.
 Insert by inserting multiple values:
 
 ```
-ROWS_NUMBER=1000 INSERT_MULTIPLE_VALUES= ./bin/db-performance-tests
+ROWS_NUMBER=100000 BATCH_SIZE=10000 INSERT_MULTIPLE_VALUES= ./bin/db-performance-tests
 ```
 
 Insert by the COPY protocol:
 
 ```
-ROWS_NUMBER=1000 INSERT_COPY= ./bin/db-performance-tests
+ROWS_NUMBER=100000 BATCH_SIZE=10000 INSERT_COPY= ./bin/db-performance-tests
 ```
 
 # Build image
@@ -56,8 +56,10 @@ make build-images
     IMAGE_TAG=latest COMPONENT=$(basename $(pwd)) envsubst < deploy/operator.yaml.template | kubectl apply -n myproject --kubeconfig $TOP_HUB_CONFIG -f -
     ```
 
-1. Connect to the pod:
+1.  Connect to the pod:
 
-```
-kubectl exec -it -n myproject --kubeconfig $TOP_HUB_CONFIG $(kubectl get pods -l name=db-performance-tests -n myproject --kubeconfig $TOP_HUB_CONFIG  -o jsonpath='{.items..metadata.name}') -- bash
-```
+    ```
+    kubectl exec -it -n myproject --kubeconfig $TOP_HUB_CONFIG $(kubectl get pods -l name=db-performance-tests -n myproject --kubeconfig $TOP_HUB_CONFIG  -o jsonpath='{.items..metadata.name}') -- bash
+    ```
+
+1.  Run the tests (the executable is `db-performance-tests`, available via the `PATH` environment variable)
