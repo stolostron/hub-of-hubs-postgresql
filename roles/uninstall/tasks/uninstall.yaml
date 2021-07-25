@@ -31,7 +31,7 @@
     state: absent
     path: '{{ item }}'
   loop:
-    - /var/lib/pgsql
+    - /var/lib/pgsql/{{ postgresql_version }}
     - "/usr/pgsql-{{ postgresql_version }}/"
 
 - name: Remove the user postgres
