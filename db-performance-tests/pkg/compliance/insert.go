@@ -25,7 +25,8 @@ const (
 )
 
 func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
-	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByInsertWithMultipleValues, "INSERT with multiple values", multipleInsertSize)
+	return doRunInsert(ctx, dbConnectionPool, n, insertRowsByInsertWithMultipleValues, "INSERT with multiple values",
+		multipleInsertSize)
 }
 
 func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int) error {
