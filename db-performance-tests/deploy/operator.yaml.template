@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${COMPONENT}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: ${COMPONENT}
+  template:
+    metadata:
+      labels:
+        name: ${COMPONENT}
+    spec:
+      serviceAccountName: ${COMPONENT}
+      containers:
+        - name: ${COMPONENT}
+          image: ${REGISTRY}/${COMPONENT}:${IMAGE_TAG}
+          command: ["/bin/sh", "-ec", "while :; do echo '.'; sleep 5 ; done"]
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: hub-of-hubs-database-secret
+                  key: url
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ${COMPONENT}
+subjects:
+- kind: ServiceAccount
+  name: ${COMPONENT}
+roleRef:
+  kind: Role
+  name: ${COMPONENT}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ${COMPONENT}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${COMPONENT}
