@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -83,12 +82,7 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 	rows := make([]interface{}, 0, insertSize*columnSize)
 
 	for i := 0; i < insertSize; i++ {
-		row, err := generateRow()
-		if err != nil {
-			return fmt.Errorf("failed to generate row: %w", err)
-		}
-
-		rows = append(rows, row...)
+		rows = append(rows, generateRow()...)
 	}
 
 	var sb strings.Builder
@@ -123,12 +117,8 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 }
 
 /* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
-func generateRow() ([]interface{}, error) {
-	policyID, err := uuid.NewV4()
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate UUID: %w", err)
-	}
-
+func generateRow() []interface{} {
+	policyID := policyUUIDs[rand.Intn(maxNumberOfPolicies)]
 	clusterName := fmt.Sprintf("cluster%d", rand.Intn(maxNumberOfClusters))
 	leafHubName := fmt.Sprintf("hub%d", rand.Intn(maxNumberOfLeafHubs))
 
@@ -142,19 +132,14 @@ func generateRow() ([]interface{}, error) {
 	action := "inform"
 	resourceVersion := strconv.Itoa(rand.Int())
 
-	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}, nil
+	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}
 }
 
 func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, insertSize int) error {
 	rows := make([][]interface{}, 0, insertSize)
 
 	for i := 0; i < insertSize; i++ {
-		row, err := generateRow()
-		if err != nil {
-			return fmt.Errorf("failed to generate row: %w", err)
-		}
-
-		rows = append(rows, row)
+		rows = append(rows, generateRow())
 	}
 
 	_, err := dbConnectionPool.CopyFrom(ctx, pgx.Identifier{"status", "compliance"},
