@@ -89,16 +89,6 @@
   become: yes
   become_user: postgres
 
-- name: create index on policy_id
-  postgresql_idx:
-    name: "{ policies_table }}_policy_id_idx"
-    table: "{{ policies_table }}"
-    schema: "{{ status_schema }}"
-    db: "{{ hoh_db }}"
-    columns: policy_id
-  become: yes
-  become_user: postgres
-
 - name: create table {{ aggregated_policies_table }}
   postgresql_table:
     name: "{{ status_schema }}.{{ aggregated_policies_table }}"
