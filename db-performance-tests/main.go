@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"strconv"
@@ -36,26 +37,26 @@ func doMain() int {
 
 	go func() {
 		s := <-c
-		fmt.Println("got signal", s)
+		log.Println("got signal", s)
 		cancelContext()
 	}()
 
 	databaseURL, rowsNumber, batchSize, insertMultipleValues, insertCopy, err := readEnvironmentVariables()
 	if err != nil {
-		fmt.Printf("Failed to read environment variables: %v\n", err)
+		log.Panicf("Failed to read environment variables: %v\n", err)
 		return 1
 	}
 
 	dbConnectionPool, err := pgxpool.Connect(ctx, databaseURL)
 	if err != nil {
-		fmt.Printf("Failed to connect to the database: %v\n", err)
+		log.Printf("Failed to connect to the database: %v\n", err)
 		return 1
 	}
 	defer dbConnectionPool.Close()
 
 	err = runTests(ctx, dbConnectionPool, rowsNumber, batchSize, insertMultipleValues, insertCopy)
 	if err != nil {
-		fmt.Printf("Failed to run tests: %v\n", err)
+		log.Printf("Failed to run tests: %v\n", err)
 		return 1
 	}
 

@@ -3,6 +3,7 @@ package compliance
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -42,7 +43,7 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, n int,
 	defer func() {
 		now := time.Now()
 		elapsed := now.Sub(entry)
-		fmt.Printf("compliance RunInsert %s %d rows by batch of %d rows: elapsed %v\n", description, n, insertSize, elapsed)
+		log.Printf("compliance RunInsert %s %d rows by batch of %d rows: elapsed %v\n", description, n, insertSize, elapsed)
 	}()
 
 	var wg sync.WaitGroup
@@ -72,7 +73,7 @@ func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int,
 
 	for range c {
 		if err := insertFunc(ctx, dbConnectionPool, insertSize); err != nil {
-			fmt.Printf("failed to insert rows: %v\n", err)
+			log.Printf("failed to insert rows: %v\n", err)
 			break
 		}
 	}
