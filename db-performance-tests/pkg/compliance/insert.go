@@ -16,7 +16,7 @@ import (
 const (
 	columnSize                   = 7
 	goRoutinesNumber             = 500
-	maxNumberOfClusters          = 1000000
+	clustersPerLeafHub           = 1000
 	maxNumberOfLeafHubs          = 1000
 	compliantToNonCompliantRatio = 1000
 )
@@ -119,8 +119,10 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 /* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
 func generateRow() []interface{} {
 	policyID := policyUUIDs[rand.Intn(maxNumberOfPolicies)]
-	clusterName := fmt.Sprintf("cluster%d", rand.Intn(maxNumberOfClusters))
-	leafHubName := fmt.Sprintf("hub%d", rand.Intn(maxNumberOfLeafHubs))
+	leafHubIndex := rand.Intn(maxNumberOfLeafHubs)
+	clusterIndex := leafHubIndex*clustersPerLeafHub + rand.Intn(clustersPerLeafHub)
+	leafHubName := fmt.Sprintf("hub%d", leafHubIndex)
+	clusterName := fmt.Sprintf("cluster%d", clusterIndex)
 
 	errorValue := "none"
 	compliance := "compliant"
