@@ -85,6 +85,16 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 		rows = append(rows, generateRow()...)
 	}
 
+	err := doInsertRowsByInsertWithMultipleValues(ctx, dbConnectionPool, rows, insertSize)
+	if err != nil {
+		return fmt.Errorf("insert into database failed: %w", err)
+	}
+
+	return nil
+}
+
+func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, rows []interface{},
+	insertSize int) error {
 	var sb strings.Builder
 
 	sb.WriteString("INSERT INTO status.compliance values")
