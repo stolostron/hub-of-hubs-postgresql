@@ -1,7 +1,7 @@
 postgresql_version: 13
 postgresql_configuration_directory: /var/lib/pgsql/{{ postgresql_version }}/data
 max_connections: 550
-shared_buffers: 4GB
+shared_buffers: 48GB
 hoh_db: hoh
 hoh_process_user: hoh_process_user
 transport_bridge_user: transport_bridge_user
