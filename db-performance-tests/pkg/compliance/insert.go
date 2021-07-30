@@ -20,6 +20,8 @@ const (
 	clustersPerLeafHub           = 1000
 	maxNumberOfLeafHubs          = 1000
 	compliantToNonCompliantRatio = 1000
+	DefaultRowsNumber            = 100000
+	DefaultBatchSize             = 2000
 )
 
 func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n, batchSize int) error {
