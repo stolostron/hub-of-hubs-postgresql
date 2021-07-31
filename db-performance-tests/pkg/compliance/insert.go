@@ -22,6 +22,8 @@ const (
 	compliantToNonCompliantRatio = 1000
 	DefaultRowsNumber            = 100000
 	DefaultBatchSize             = 2000
+	compliantString              = "compliant"
+	nonCompliantString           = "non_compliant"
 )
 
 func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, n, batchSize int) error {
@@ -138,10 +140,10 @@ func generateRow() []interface{} {
 	clusterName := fmt.Sprintf("cluster%d", clusterIndex)
 
 	errorValue := "none"
-	compliance := "compliant"
+	compliance := compliantString
 
 	if rand.Intn(compliantToNonCompliantRatio) == 0 {
-		compliance = "non_compliant"
+		compliance = nonCompliantString
 	}
 
 	action := "inform"
