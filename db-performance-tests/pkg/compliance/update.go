@@ -79,17 +79,10 @@ func updateRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, l
 		return fmt.Errorf("error in scanning non_compliant clusters: %w", err)
 	}
 
-	log.Printf("non compliant set cardinality: %d", nonCompliantSet.Cardinality())
-
 	newNonCompliantSet := generatePolicyClusterSet(leafHubIndex,
 		maxNumberOfPolicies*clustersPerLeafHub/compliantToNonCompliantRatio)
-	log.Printf("new non compliant set cardinality: %d", newNonCompliantSet.Cardinality())
-
 	tuplesToBecomeCompliant := nonCompliantSet.Difference(newNonCompliantSet)
-	log.Printf("tuplesToBecomeCompliant set cardinality: %d", tuplesToBecomeCompliant.Cardinality())
-
 	newTuplesToBecomeNonCompliant := newNonCompliantSet.Difference(nonCompliantSet)
-	log.Printf("newTuplesToBecomeNonCompliant set cardinality: %d", newTuplesToBecomeNonCompliant.Cardinality())
 
 	err = updateCompliance(ctx, dbConnectionPool, tuplesToBecomeCompliant, leafHubName, true)
 	if err != nil {
@@ -224,10 +217,6 @@ func updateComplianceOrInsert(ctx context.Context, dbConnectionPool *pgxpool.Poo
 	if err != nil {
 		return fmt.Errorf("error in scanning existing rows: %w", err)
 	}
-
-	log.Printf("existing set: %v", existingPolicyClusterTuples)
-	log.Printf("policyClusterTuples cardinality: %d", policyClusterTuples.Cardinality())
-	log.Printf("existing tuples cardinality: %d", existingPolicyClusterTuples.Cardinality())
 
 	tuplesToInsert := policyClusterTuples.Difference(existingPolicyClusterTuples)
 	tuplesToUpdate := existingPolicyClusterTuples.Intersect(policyClusterTuples)
