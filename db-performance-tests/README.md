@@ -67,6 +67,10 @@ make build-images
 ## Setting a client on RHEL
 
     ```
+    sudo dnf module install postgresql:13
+    ```
+
+    ```
     sudo dnf install git wget emacs make -y
     git clone https://github.com/open-cluster-management/hub-of-hubs-postgresql
     cd hub-of-hubs-postgresql/
