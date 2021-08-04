@@ -8,5 +8,6 @@
     - policies
     - placementrules
     - placementbindings
+    - configs
   loop_control:
     loop_var: name
