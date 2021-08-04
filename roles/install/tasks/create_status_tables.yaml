@@ -100,6 +100,17 @@
   become: yes
   become_user: postgres
 
+- name: create index on policy_id and compliance
+  postgresql_idx:
+    name: "{{ policies_table }}_policy_id_non_compliant_idx"
+    table: "{{ policies_table }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    columns: policy_id, compliance
+    cond: compliance = 'non_compliant'
+  become: yes
+  become_user: postgres
+
 - name: create index on leaf_hub_name and cluster_name
   postgresql_idx:
     name: "{{ policies_table }}_leaf_hub_cluster_idx"
