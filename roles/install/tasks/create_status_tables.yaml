@@ -103,7 +103,7 @@
     db: "{{ hoh_db }}"
     columns:
       - policy_id uuid primary key
-      - leaf_hub_id varchar({{ cluster_name_length_limit }}) not null
+      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - enforcement {{ spec_schema }}.{{ enforcement_type }} not null
       - applied_clusters int not null
       - non_compliant_clusters int not null
