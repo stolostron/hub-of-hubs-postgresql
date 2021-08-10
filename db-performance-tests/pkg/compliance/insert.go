@@ -110,7 +110,7 @@ func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPoo
 	return nil
 }
 
-func generateInsertByMultipleValues(insertSize int) strings.Builder {
+func generateInsertByMultipleValues(insertSize int) *strings.Builder {
 	var sb strings.Builder
 
 	sb.WriteString("INSERT INTO status.compliance values")
@@ -134,7 +134,7 @@ func generateInsertByMultipleValues(insertSize int) strings.Builder {
 		}
 	}
 
-	return sb
+	return &sb
 }
 
 /* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
