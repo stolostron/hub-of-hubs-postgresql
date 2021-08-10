@@ -146,7 +146,7 @@ func upsert(policyClusterTuples set.Set, leafHubName string, compliant bool, bat
 	}
 
 	rows := generateRowsFromTuples(policyClusterTuples, leafHubName, compliant)
-	sb := generateInsertByMultipleValues(len(rows))
+	sb := generateInsertByMultipleValues(len(rows) / columnSize)
 
 	compliance := compliantString
 	if !compliant {
