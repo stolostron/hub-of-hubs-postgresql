@@ -89,6 +89,8 @@ func updateRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, l
 	upsert(newTuplesToBecomeNonCompliant, leafHubName, false, batch)
 
 	batchResult := dbConnectionPool.SendBatch(context.Background(), batch)
+	defer batchResult.Close()
+
 	for i := 0; i < batch.Len(); i++ {
 		_, err = batchResult.Exec()
 		if err != nil {
