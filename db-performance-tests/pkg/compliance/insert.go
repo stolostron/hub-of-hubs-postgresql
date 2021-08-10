@@ -100,6 +100,17 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 
 func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, rows []interface{},
 	insertSize int) error {
+	sb := generateInsertByMultipleValues(insertSize)
+
+	_, err := dbConnectionPool.Exec(ctx, sb.String(), rows...)
+	if err != nil {
+		return fmt.Errorf("insert into database failed: %w", err)
+	}
+
+	return nil
+}
+
+func generateInsertByMultipleValues(insertSize int) strings.Builder {
 	var sb strings.Builder
 
 	sb.WriteString("INSERT INTO status.compliance values")
@@ -123,22 +134,25 @@ func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPoo
 		}
 	}
 
-	_, err := dbConnectionPool.Exec(ctx, sb.String(), rows...)
-	if err != nil {
-		return fmt.Errorf("insert into database failed: %w", err)
-	}
-
-	return nil
+	return sb
 }
 
 /* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
 func generateRow() []interface{} {
-	policyID := policyUUIDs[rand.Intn(maxNumberOfPolicies)]
+	policyIndex := rand.Intn(maxNumberOfPolicies)
+	policyID := policyUUIDs[policyIndex]
 	leafHubIndex := rand.Intn(maxNumberOfLeafHubs)
 	clusterIndex := leafHubIndex*clustersPerLeafHub + rand.Intn(clustersPerLeafHub)
 	leafHubName := fmt.Sprintf("hub%d", leafHubIndex)
 	clusterName := fmt.Sprintf("cluster%d", clusterIndex)
 
+	errorValue, compliance, action, resourceVersion := generateDerivedColumns(policyID.String(), leafHubName, clusterName)
+
+	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}
+}
+
+/* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
+func generateDerivedColumns(policyID, leafHubName, clusterName string) (string, string, string, string) {
 	errorValue := "none"
 	compliance := compliantString
 
@@ -147,9 +161,9 @@ func generateRow() []interface{} {
 	}
 
 	action := "inform"
-	resourceVersion := strconv.Itoa(rand.Int())
+	resourceVersion := fmt.Sprintf("%s%s%s", policyID, leafHubName, clusterName)
 
-	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action, resourceVersion}
+	return errorValue, compliance, action, resourceVersion
 }
 
 func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, insertSize int) error {
