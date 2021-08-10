@@ -67,7 +67,7 @@ func doMain() int {
 }
 
 // long function of simple environment read, can be long
-//nolint: funlen
+//nolint: funlen, cyclop
 func readEnvironmentVariables() (string, int, int, bool, bool, bool, int, error) {
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 
