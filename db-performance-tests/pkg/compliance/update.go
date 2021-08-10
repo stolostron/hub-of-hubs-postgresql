@@ -37,7 +37,12 @@ func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber 
 
 	c := make(chan int, leafsNumber)
 
-	for i := 0; i < goRoutinesNumber; i++ {
+	goRoutinesNumberToRun := goRoutinesNumber
+	if leafsNumber < goRoutinesNumberToRun {
+		goRoutinesNumberToRun = leafsNumber
+	}
+
+	for i := 0; i < goRoutinesNumberToRun; i++ {
 		wg.Add(1)
 
 		go updateRows(ctx, dbConnectionPool, c, &wg)
