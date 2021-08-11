@@ -101,6 +101,7 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, rows []interface{},
 	insertSize int) error {
 	sb := generateInsertByMultipleValues(insertSize)
+	sb.WriteString(" ON CONFLICT DO NOTHING")
 
 	_, err := dbConnectionPool.Exec(ctx, sb.String(), rows...)
 	if err != nil {
