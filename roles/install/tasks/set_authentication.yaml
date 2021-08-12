@@ -1,12 +1,13 @@
 ---
 - name: set password encryption
   lineinfile:
-    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
     regexp: '^password_encryption'
     line: password_encryption = scram-sha-256
     state: present
 
-- name: reload service postgresql
-  service:
-    name: postgresql
+- name: reload the server
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    enabled: true
     state: reloaded

@@ -1,7 +1,7 @@
 ---
 - name: enable TLS access for the HoH Process user
   postgresql_pg_hba:
-    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    dest: "{{ postgresql_configuration_directory }}/pg_hba.conf"
     contype: hostssl
     users: "{{ hoh_process_user }}"
     source: 0.0.0.0/0
@@ -11,7 +11,7 @@
 
 - name: enable TLS access for the transport bridge user
   postgresql_pg_hba:
-    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    dest: "{{ postgresql_configuration_directory }}/pg_hba.conf"
     contype: hostssl
     users: "{{ transport_bridge_user }}"
     source: 0.0.0.0/0
@@ -21,33 +21,34 @@
 
 - name: set certificate file
   lineinfile:
-    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
     regexp: '^ssl_cert_file'
-    line: ssl_cert_file = '/etc/postgresql/{{ postgresql_version }}/main/server.crt'
+    line: ssl_cert_file = '{{ postgresql_configuration_directory }}/server.crt'
     state: present
 
 - name: set key file
   lineinfile:
-    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
     regexp: '^ssl_key_file'
-    line: ssl_key_file = '/etc/postgresql/{{ postgresql_version }}/main/server.key'
+    line: ssl_key_file = '{{ postgresql_configuration_directory }}/server.key'
     state: present
 
 - name: set TLS on
   lineinfile:
-    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
     regexp: '^ssl '
     line: ssl = on
     state: present
 
 - name: set listen on all addresses
   lineinfile:
-    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
     regexp: '^listen_addresses'
-    line: listen_addresses = '0.0.0.0'
+    line: listen_addresses = '*'
     state: present
 
-- name: restart service postgresql
-  service:
-    name: postgresql
+- name: restart the server
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    enabled: true
     state: restarted

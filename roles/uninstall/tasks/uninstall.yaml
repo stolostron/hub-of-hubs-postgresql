@@ -1,0 +1,41 @@
+---
+- name: delete dependencies for ansible postgres
+  pip:
+    name:
+      - psycopg2
+    executable: pip3
+    state: absent
+
+- name: delete softlink for pg_config
+  file:
+    path: /usr/sbin/pg_config
+    state: absent
+
+- name: Stop service postgresql, if started
+  systemd:
+    name: "postgresql-{{ postgresql_version }}"
+    state: stopped
+  ignore_errors: yes
+
+- name: uninstall postgresql
+  dnf:
+    name:
+      - "postgresql{{ postgresql_version }}-contrib"
+      - "postgresql{{ postgresql_version }}-server"
+      - "postgresql{{ postgresql_version }}"
+      - "postgresql{{ postgresql_version }}-libs"
+    state: absent
+
+- name: Delete postgresql directories
+  file:
+    state: absent
+    path: '{{ item }}'
+  loop:
+    - /var/lib/pgsql/{{ postgresql_version }}
+    - "/usr/pgsql-{{ postgresql_version }}/"
+
+- name: Remove the user postgres
+  user:
+    name: postgres
+    state: absent
+    remove: yes

@@ -34,6 +34,10 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
     bin_ansible_callbacks = True
     ```
 
+1.  Install `Python3` on the host. On RHEL run: `sudo dnf install python3 python3-devel`.
+
+1.  Disable previous `postgresql`. On RHEL run:  `sudo dnf -qy module disable postgresql`
+
 ## To install
 
 Run:

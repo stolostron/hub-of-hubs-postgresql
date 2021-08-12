@@ -2,6 +2,9 @@
 - name: install
   import_tasks: install.yaml
 
+- name: perform tuning
+  import_tasks: perform_tuning.yaml
+
 - name: create databases
   import_tasks: create_databases.yaml
 
