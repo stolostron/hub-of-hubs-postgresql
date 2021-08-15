@@ -24,9 +24,8 @@ const (
 )
 
 var (
-	errEnvironmentVariableNotFound    = errors.New("not found environment variable")
-	errEnvironmentVariableWrongType   = errors.New("wrong type of environment variable")
-	errEnvironmentVariableWrongFormat = errors.New("wrong format of environment variable")
+	errEnvironmentVariableNotFound  = errors.New("not found environment variable")
+	errEnvironmentVariableWrongType = errors.New("wrong type of environment variable")
 )
 
 func doMain() int {
@@ -65,8 +64,7 @@ func doMain() int {
 	return 0
 }
 
-// long function of simple environment read, can be long
-//nolint: funlen, cyclop
+// long function of simple environment read, can be long.
 func readEnvironmentVariables() (string, int, bool, bool, bool, int, error) {
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 
