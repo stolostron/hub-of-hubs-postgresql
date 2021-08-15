@@ -16,7 +16,6 @@ import (
 
 const (
 	columnSize                   = 7
-	goRoutinesNumber             = 500
 	clustersPerLeafHub           = 1000
 	compliantToNonCompliantRatio = 1000
 	DefaultRowsNumber            = 100000
@@ -55,12 +54,7 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNu
 
 	c := make(chan int, leafHubsNumber)
 
-	goRoutinesNumberToRun := goRoutinesNumber
-	if leafHubsNumber < goRoutinesNumberToRun {
-		goRoutinesNumberToRun = leafHubsNumber
-	}
-
-	for i := 0; i < goRoutinesNumberToRun; i++ {
+	for i := 0; i < leafHubsNumber; i++ {
 		wg.Add(1)
 
 		go insertRows(ctx, dbConnectionPool, c, &wg, insertFunc, batchSize)
