@@ -15,7 +15,6 @@ import (
 )
 
 const (
-	environmentVariableRowsNumber           = "ROWS_NUMBER"
 	environmentVariableBatchSize            = "BATCH_SIZE"
 	environmentVariableDatabaseURL          = "DATABASE_URL"
 	environmentVariableInsertMultipleValues = "INSERT_MULTIPLE_VALUES"
@@ -43,7 +42,7 @@ func doMain() int {
 		cancelContext()
 	}()
 
-	databaseURL, rowsNumber, batchSize, insertMultipleValues, insertCopy, update, leafHubsNumber,
+	databaseURL, batchSize, insertMultipleValues, insertCopy, update, leafHubsNumber,
 		err := readEnvironmentVariables()
 	if err != nil {
 		log.Panicf("Failed to read environment variables: %v\n", err)
@@ -57,7 +56,7 @@ func doMain() int {
 	}
 	defer dbConnectionPool.Close()
 
-	err = runTests(ctx, dbConnectionPool, rowsNumber, batchSize, leafHubsNumber, insertMultipleValues, insertCopy, update)
+	err = runTests(ctx, dbConnectionPool, batchSize, leafHubsNumber, insertMultipleValues, insertCopy, update)
 	if err != nil {
 		log.Printf("Failed to run tests: %v\n", err)
 		return 1
@@ -68,23 +67,12 @@ func doMain() int {
 
 // long function of simple environment read, can be long
 //nolint: funlen, cyclop
-func readEnvironmentVariables() (string, int, int, bool, bool, bool, int, error) {
+func readEnvironmentVariables() (string, int, bool, bool, bool, int, error) {
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 
 	if !found {
-		return "", 0, 0, false, false, false, 0,
+		return "", 0, false, false, false, 0,
 			fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableDatabaseURL)
-	}
-
-	rowsNumberString, found := os.LookupEnv(environmentVariableRowsNumber)
-	if !found {
-		rowsNumberString = fmt.Sprintf("%d", compliance.DefaultRowsNumber)
-	}
-
-	rowsNumber, err := strconv.Atoi(rowsNumberString)
-	if err != nil {
-		return "", 0, 0, false, false, false, 0,
-			fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType, environmentVariableRowsNumber)
 	}
 
 	batchSizeString, found := os.LookupEnv(environmentVariableBatchSize)
@@ -94,14 +82,8 @@ func readEnvironmentVariables() (string, int, int, bool, bool, bool, int, error)
 
 	batchSize, err := strconv.Atoi(batchSizeString)
 	if err != nil {
-		return "", 0, 0, false, false, false, 0,
+		return "", 0, false, false, false, 0,
 			fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType, environmentVariableBatchSize)
-	}
-
-	if rowsNumber%batchSize != 0 {
-		return "", 0, 0, false, false, false, 0,
-			fmt.Errorf("%w: %s must be a multiple of %s", errEnvironmentVariableWrongFormat,
-				environmentVariableRowsNumber, environmentVariableBatchSize)
 	}
 
 	insertMultipleValues := false
@@ -132,24 +114,24 @@ func readEnvironmentVariables() (string, int, int, bool, bool, bool, int, error)
 
 	leafHubsNumber, err := strconv.Atoi(leafHubsNumberString)
 	if err != nil {
-		return "", 0, 0, false, false, false, 0, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
+		return "", 0, false, false, false, 0, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
 			environmentVariableLeafHubsNumber)
 	}
 
-	return databaseURL, rowsNumber, batchSize, insertMultipleValues, insertCopy, update, leafHubsNumber, nil
+	return databaseURL, batchSize, insertMultipleValues, insertCopy, update, leafHubsNumber, nil
 }
 
-func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, rowsNumber, batchSize, leafHubsNumber int,
+func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, batchSize, leafHubsNumber int,
 	insertMultipleValues, insertCopy, update bool) error {
 	if insertMultipleValues {
-		err := compliance.RunInsertByInsertWithMultipleValues(ctx, dbConnectionPool, rowsNumber, batchSize)
+		err := compliance.RunInsertByInsertWithMultipleValues(ctx, dbConnectionPool, leafHubsNumber, batchSize)
 		if err != nil {
 			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
 		}
 	}
 
 	if insertCopy {
-		err := compliance.RunInsertByCopy(ctx, dbConnectionPool, rowsNumber, batchSize)
+		err := compliance.RunInsertByCopy(ctx, dbConnectionPool, leafHubsNumber, batchSize)
 		if err != nil {
 			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
 		}

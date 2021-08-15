@@ -84,7 +84,7 @@ func updateRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, l
 	}
 
 	newNonCompliantSet := generatePolicyClusterSet(leafHubIndex,
-		maxNumberOfPolicies*clustersPerLeafHub/compliantToNonCompliantRatio)
+		policiesNumber*clustersPerLeafHub/compliantToNonCompliantRatio)
 	tuplesToBecomeCompliant := nonCompliantSet.Difference(newNonCompliantSet)
 	newTuplesToBecomeNonCompliant := newNonCompliantSet.Difference(nonCompliantSet)
 
@@ -190,7 +190,7 @@ func generatePolicyClusterSet(leafHubIndex, size int) set.Set {
 	s := set.NewSet()
 
 	for i := 0; i < size; i++ {
-		policyID := policyUUIDs[rand.Intn(maxNumberOfPolicies)]
+		policyID := policyUUIDs[rand.Intn(policiesNumber)]
 		clusterIndex := leafHubIndex*clustersPerLeafHub + rand.Intn(clustersPerLeafHub)
 		clusterName := fmt.Sprintf("cluster%d", clusterIndex)
 

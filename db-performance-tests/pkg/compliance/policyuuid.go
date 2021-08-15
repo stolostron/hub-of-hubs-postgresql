@@ -4,7 +4,7 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-const maxNumberOfPolicies = 100
+const policiesNumber = 100
 
 //nolint:gochecknoglobals
 var policyUUIDs []uuid.UUID
