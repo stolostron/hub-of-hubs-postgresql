@@ -82,29 +82,35 @@ func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int,
 	}
 }
 
-func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex,
-	batchSize int) error {
-	rows := make([]interface{}, 0, clustersPerLeafHub*policiesNumber*columnSize)
+func generateRowsForLeafHub(leafHubIndex int) [][]interface{} {
+	rows := make([][]interface{}, 0, clustersPerLeafHub*policiesNumber)
 
 	for clusterIndex := 0; clusterIndex < clustersPerLeafHub; clusterIndex++ {
 		for policyIndex := 0; policyIndex < policiesNumber; policyIndex++ {
-			rows = append(rows, generateRow(leafHubIndex, clusterIndex, policyIndex)...)
+			rows = append(rows, generateRow(leafHubIndex, clusterIndex, policyIndex))
 		}
 	}
 
+	return rows
+}
+
+func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex,
+	batchSize int) error {
+	rows := generateRowsForLeafHub(leafHubIndex)
+
 	var wg sync.WaitGroup
 
-	batchesNumber := len(rows) / columnSize / batchSize
-	c := make(chan []interface{}, batchesNumber)
+	batchesNumber := len(rows) / batchSize
+	c := make(chan [][]interface{}, batchesNumber)
 
 	for i := 0; i < batchesNumber; i++ {
 		wg.Add(1)
 
-		go insertRowsBatchByInsertWithMultipleValues(ctx, dbConnectionPool, c, &wg)
+		go insertRowsBatch(ctx, dbConnectionPool, c, &wg, doInsertRowsByInsertWithMultipleValues)
 	}
 
 	for i := 0; i < batchesNumber; i++ {
-		c <- rows[i*batchSize*columnSize : (i+1)*batchSize*columnSize]
+		c <- rows[i*batchSize : (i+1)*batchSize]
 	}
 	close(c)
 
@@ -113,24 +119,34 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 	return nil
 }
 
-func insertRowsBatchByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool,
-	c chan []interface{}, wg *sync.WaitGroup) {
+func insertRowsBatch(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan [][]interface{}, wg *sync.WaitGroup,
+	doInsertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error) {
 	defer wg.Done()
 
 	for rows := range c {
-		err := doInsertRowsByInsertWithMultipleValues(ctx, dbConnectionPool, rows)
+		err := doInsertFunc(ctx, dbConnectionPool, rows)
 		if err != nil {
 			log.Printf("failed to insert rows: %v\n", err)
 		}
 	}
 }
 
+func flatten(rows [][]interface{}) []interface{} {
+	resultRows := make([]interface{}, 0, len(rows)*columnSize)
+
+	for _, row := range rows {
+		resultRows = append(resultRows, row...)
+	}
+
+	return resultRows
+}
+
 func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool,
-	rows []interface{}) error {
-	sb := generateInsertByMultipleValues(len(rows) / columnSize)
+	rows [][]interface{}) error {
+	sb := generateInsertByMultipleValues(len(rows))
 	sb.WriteString(" ON CONFLICT DO NOTHING")
 
-	_, err := dbConnectionPool.Exec(ctx, sb.String(), rows...)
+	_, err := dbConnectionPool.Exec(ctx, sb.String(), flatten(rows)...)
 	if err != nil {
 		return fmt.Errorf("insert into database failed: %w", err)
 	}
