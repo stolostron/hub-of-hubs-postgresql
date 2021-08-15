@@ -92,15 +92,37 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 		}
 	}
 
-	for i := 0; i < len(rows)/columnSize/batchSize; i++ {
-		err := doInsertRowsByInsertWithMultipleValues(ctx, dbConnectionPool,
-			rows[i*batchSize*columnSize:(i+1)*batchSize*columnSize])
-		if err != nil {
-			return fmt.Errorf("insert into database failed: %w", err)
-		}
+	var wg sync.WaitGroup
+
+	batchesNumber := len(rows) / columnSize / batchSize
+	c := make(chan []interface{}, batchesNumber)
+
+	for i := 0; i < batchesNumber; i++ {
+		wg.Add(1)
+
+		go insertRowsBatchByInsertWithMultipleValues(ctx, dbConnectionPool, c, &wg)
 	}
 
+	for i := 0; i < batchesNumber; i++ {
+		c <- rows[i*batchSize*columnSize : (i+1)*batchSize*columnSize]
+	}
+	close(c)
+
+	wg.Wait()
+
 	return nil
+}
+
+func insertRowsBatchByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool,
+	c chan []interface{}, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	for rows := range c {
+		err := doInsertRowsByInsertWithMultipleValues(ctx, dbConnectionPool, rows)
+		if err != nil {
+			log.Printf("failed to insert rows: %v\n", err)
+		}
+	}
 }
 
 func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool,
