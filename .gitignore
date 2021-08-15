@@ -6,3 +6,5 @@ production
 
 # the vault file with credentials
 group_vars/acm/vault
+group_vars/acm3/vault
+group_vars/acm-perf/vault
