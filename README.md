@@ -98,5 +98,9 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags table
 ## To change the database
 
 ```
-ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags tables -e "hoh_db=hoh2"
+ansible-playbook install.yaml -i production --ask-vault-pass -l acm -e "hoh_db=hoh2"
 ```
+
+## To tune the database
+
+ansible-playbook install.yaml -i production --ask-vault-pass -l acm -e "max_connections=550 shared_buffers=24GB random_page_cost=1.5"
