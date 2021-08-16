@@ -82,7 +82,8 @@ func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int,
 func generateRowsForLeafHub(leafHubIndex int) [][]interface{} {
 	rows := make([][]interface{}, 0, clustersPerLeafHub*policiesNumber)
 
-	for clusterIndex := 0; clusterIndex < clustersPerLeafHub; clusterIndex++ {
+	beginClusterIndex, endClusterIndex := leafHubIndex*clustersPerLeafHub, (leafHubIndex+1)*clustersPerLeafHub
+	for clusterIndex := beginClusterIndex; clusterIndex < endClusterIndex; clusterIndex++ {
 		for policyIndex := 0; policyIndex < policiesNumber; policyIndex++ {
 			rows = append(rows, generateRow(leafHubIndex, clusterIndex, policyIndex))
 		}
