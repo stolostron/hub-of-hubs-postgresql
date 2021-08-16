@@ -35,7 +35,7 @@ func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHu
 }
 
 func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber int,
-	insertFunc func(context.Context, *pgxpool.Pool, int, int) error, description string, batchSize int) error {
+	insertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error, description string, batchSize int) error {
 	_, err := dbConnectionPool.Exec(ctx, "DELETE from status.compliance")
 	if err != nil {
 		return fmt.Errorf("failed to clean the table before the test: %w", err)
@@ -71,14 +71,11 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNu
 }
 
 func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup,
-	insertFunc func(context.Context, *pgxpool.Pool, int, int) error, batchSize int) {
+	insertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error, batchSize int) {
 	defer wg.Done()
 
 	for leafHubIndex := range c {
-		if err := insertFunc(ctx, dbConnectionPool, leafHubIndex, batchSize); err != nil {
-			log.Printf("failed to insert rows for leafHub %d: %v\n", leafHubIndex, err)
-			break
-		}
+		insertRowsForLeafHub(ctx, dbConnectionPool, leafHubIndex, batchSize, insertFunc)
 	}
 }
 
@@ -94,8 +91,8 @@ func generateRowsForLeafHub(leafHubIndex int) [][]interface{} {
 	return rows
 }
 
-func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex,
-	batchSize int) error {
+func insertRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex,
+	batchSize int, insertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error) {
 	rows := generateRowsForLeafHub(leafHubIndex)
 
 	var wg sync.WaitGroup
@@ -106,7 +103,7 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 	for i := 0; i < batchesNumber; i++ {
 		wg.Add(1)
 
-		go insertRowsBatch(ctx, dbConnectionPool, c, &wg, doInsertRowsByInsertWithMultipleValues)
+		go insertRowsBatch(ctx, dbConnectionPool, c, &wg, insertFunc)
 	}
 
 	for i := 0; i < batchesNumber; i++ {
@@ -115,16 +112,14 @@ func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool 
 	close(c)
 
 	wg.Wait()
-
-	return nil
 }
 
 func insertRowsBatch(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan [][]interface{}, wg *sync.WaitGroup,
-	doInsertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error) {
+	insertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error) {
 	defer wg.Done()
 
 	for rows := range c {
-		err := doInsertFunc(ctx, dbConnectionPool, rows)
+		err := insertFunc(ctx, dbConnectionPool, rows)
 		if err != nil {
 			log.Printf("failed to insert rows: %v\n", err)
 		}
@@ -141,7 +136,7 @@ func flatten(rows [][]interface{}) []interface{} {
 	return resultRows
 }
 
-func doInsertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool,
+func insertRowsByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool,
 	rows [][]interface{}) error {
 	sb := generateInsertByMultipleValues(len(rows))
 	sb.WriteString(" ON CONFLICT DO NOTHING")
@@ -207,22 +202,12 @@ func generateDerivedColumns(policyID, leafHubName, clusterName string) (string, 
 	return errorValue, compliance, action, resourceVersion
 }
 
-func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex, batchSize int) error {
-	rows := make([][]interface{}, 0, clustersPerLeafHub*policiesNumber)
-
-	for clusterIndex := 0; clusterIndex < clustersPerLeafHub; clusterIndex++ {
-		for policyIndex := 0; policyIndex < policiesNumber; policyIndex++ {
-			rows = append(rows, generateRow(leafHubIndex, clusterIndex, policyIndex))
-		}
-	}
-
-	for i := 0; i < len(rows)/batchSize; i++ {
-		_, err := dbConnectionPool.CopyFrom(ctx, pgx.Identifier{"status", "compliance"},
-			[]string{"policy_id", "cluster_name", "leaf_hub_name", "error", "compliance", "enforcement", "resource_version"},
-			pgx.CopyFromRows(rows[i*batchSize:(i+1)*batchSize]))
-		if err != nil {
-			return fmt.Errorf("insert into database failed: %w", err)
-		}
+func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, rows [][]interface{}) error {
+	_, err := dbConnectionPool.CopyFrom(ctx, pgx.Identifier{"status", "compliance"},
+		[]string{"policy_id", "cluster_name", "leaf_hub_name", "error", "compliance", "enforcement", "resource_version"},
+		pgx.CopyFromRows(rows))
+	if err != nil {
+		return fmt.Errorf("insert into database failed: %w", err)
 	}
 
 	return nil
