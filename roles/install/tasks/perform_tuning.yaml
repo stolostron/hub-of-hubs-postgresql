@@ -12,6 +12,14 @@
     line: shared_buffers = {{ shared_buffers }}
     state: present
 
+
+- name: set random_page_cost
+  lineinfile:
+    path: "{{ postgresql_configuration_directory }}/postgresql.conf"
+    regexp: '^random_page_cost'
+    line: random_page_cost = {{ random_page_cost }}
+    state: present
+
 - name: restart the server
   systemd:
     name: "postgresql-{{ postgresql_version }}"
