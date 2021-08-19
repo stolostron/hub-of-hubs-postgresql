@@ -208,10 +208,10 @@ func generateRowsFromTuples(policyClusterTuples set.Set, leafHubName string,
 			panic("policyClusterTuples contains a member of a wrong type")
 		}
 
-		errorValue, _, action, resourceVersion := generateDerivedColumns(pct.PolicyID.String(), pct.ClusterName, leafHubName)
+		errorValue, _, action := generateDerivedColumns()
 
 		rows = append(rows, pct.PolicyID.String(), pct.ClusterName, leafHubName, errorValue,
-			compliance, action, resourceVersion)
+			compliance, action)
 		return false
 	})
 
