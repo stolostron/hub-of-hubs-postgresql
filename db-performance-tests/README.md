@@ -25,13 +25,13 @@ Run the tests.
 Insert by inserting multiple values:
 
 ```
-ROWS_NUMBER=100000 BATCH_SIZE=10000 INSERT_MULTIPLE_VALUES= ./bin/db-performance-tests
+LEAF_HUBS_NUMBER=1000 BATCH_SIZE=10000 INSERT_MULTIPLE_VALUES= ./bin/db-performance-tests
 ```
 
 Insert by the COPY protocol:
 
 ```
-ROWS_NUMBER=100000 BATCH_SIZE=10000 INSERT_COPY= ./bin/db-performance-tests
+LEAF_HUBS_NUMBER=1000 BATCH_SIZE=20000 INSERT_COPY= ./bin/db-performance-tests
 ```
 
 # Build image
