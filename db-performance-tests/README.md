@@ -66,26 +66,23 @@ make build-images
 
 ## Setting a client on RHEL
 
-    ```
-    sudo dnf module install postgresql:13
-    ```
+```
+sudo dnf module install postgresql:13 -y
+sudo dnf install git wget emacs make -y
+git clone https://github.com/open-cluster-management/hub-of-hubs-postgresql
+cd hub-of-hubs-postgresql/
+git checkout perf
+cd db-performance-tests/
+wget https://golang.org/dl/go1.16.6.linux-amd64.tar.gz
+sha256sum go1.16.6.linux-amd64.tar.gz
+```
 
-    ```
-    sudo dnf install git wget emacs make -y
-    git clone https://github.com/open-cluster-management/hub-of-hubs-postgresql
-    cd hub-of-hubs-postgresql/
-    git checkout perf
-    cd db-performance-tests/
-    wget https://golang.org/dl/go1.16.6.linux-amd64.tar.gz
-    sha256sum go1.16.6.linux-amd64.tar.gz
-    ```
+Verify the checksum at [Go downloads](https://golang.org/dl/).
 
-    Verify the checksum at [Go downloads](https://golang.org/dl/).
-
-    ```
-    sudo tar -zxvf go1.16.6.linux-amd64.tar.gz -C /usr/local/
-    rm -rf go1.16.6.linux-amd64.tar.gz
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-    source ~/.bashrc
-    make build
-    ```
+```
+sudo tar -zxvf go1.16.6.linux-amd64.tar.gz -C /usr/local/
+rm -rf go1.16.6.linux-amd64.tar.gz
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+source ~/.bashrc
+make build
+```
