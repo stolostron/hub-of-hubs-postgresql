@@ -15,14 +15,12 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-const DefaultLeafHubsNumber = 1000
-
 type policyClusterTuple struct {
 	PolicyID    uuid.UUID
 	ClusterName string
 }
 
-func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber int) error {
+func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber, startLeafHubIndex int) error {
 	entry := time.Now()
 
 	rand.Seed(entry.Unix())
@@ -44,7 +42,7 @@ func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber 
 	}
 
 	for i := 0; i < leafsNumber; i++ {
-		c <- i
+		c <- startLeafHubIndex + i
 	}
 	close(c)
 

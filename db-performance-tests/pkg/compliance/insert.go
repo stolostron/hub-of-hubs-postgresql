@@ -20,21 +20,24 @@ const (
 	compliantToNonCompliantRatio = 1000
 	DefaultRowsNumber            = 100000
 	DefaultBatchSize             = 2000
+	DefaultLeafHubsNumber        = 1000
+	DefaultStartLeafHubIndex     = 0
 	compliantString              = "compliant"
 	nonCompliantString           = "non_compliant"
 )
 
 func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber,
-	batchSize int) error {
-	return doRunInsert(ctx, dbConnectionPool, leafHubsNumber, insertRowsByInsertWithMultipleValues,
+	startLeafHubIndex, batchSize int) error {
+	return doRunInsert(ctx, dbConnectionPool, leafHubsNumber, startLeafHubIndex, insertRowsByInsertWithMultipleValues,
 		"INSERT with multiple values", batchSize)
 }
 
-func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber, batchSize int) error {
-	return doRunInsert(ctx, dbConnectionPool, leafHubsNumber, insertRowsByCopy, "COPY", batchSize)
+func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber, startLeafHubIndex,
+	batchSize int) error {
+	return doRunInsert(ctx, dbConnectionPool, leafHubsNumber, startLeafHubIndex, insertRowsByCopy, "COPY", batchSize)
 }
 
-func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber int,
+func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber, startLeafHubIndex int,
 	insertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error, description string, batchSize int) error {
 	entry := time.Now()
 
@@ -56,7 +59,7 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNu
 	}
 
 	for i := 0; i < leafHubsNumber; i++ {
-		c <- i
+		c <- startLeafHubIndex + i
 	}
 	close(c)
 
