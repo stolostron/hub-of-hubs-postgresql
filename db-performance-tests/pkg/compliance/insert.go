@@ -36,11 +36,6 @@ func RunInsertByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHu
 
 func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber int,
 	insertFunc func(context.Context, *pgxpool.Pool, [][]interface{}) error, description string, batchSize int) error {
-	_, err := dbConnectionPool.Exec(ctx, "DELETE from status.compliance")
-	if err != nil {
-		return fmt.Errorf("failed to clean the table before the test: %w", err)
-	}
-
 	entry := time.Now()
 
 	defer func() {
