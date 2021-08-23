@@ -17,7 +17,7 @@
 - name: create unique index on id and leaf_hub_name
   postgresql_idx:
     name: "{{ name }}_id_leaf_hub_name_idx"
-    table: "{{ name }}"
+    table: "local_{{ name }}"
     schema: "{{ schema }}"
     db: "{{ database }}"
     columns: id, leaf_hub_name
