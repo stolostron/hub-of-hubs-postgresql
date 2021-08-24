@@ -24,6 +24,8 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 1.  Create `vault` file with following variables:
     - `ansible_user`: contains the user of the machine where you install the database
     - `vault_ansible_ssh_private_key_file`: the path to the SSH private key file to connect to the machine
+    
+    Put the `vault` file into [group_vars/acm](group_vars/acm).
 
 1.  For formatting multiple lines output, add the following lines to your `ansible.cfg`:
 
