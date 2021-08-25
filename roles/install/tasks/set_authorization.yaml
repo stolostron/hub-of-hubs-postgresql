@@ -4,7 +4,7 @@
     db: "{{ hoh_db }}"
     privs: USAGE
     type: schema
-    objs: "{{ spec_schema }},{{ status_schema }},{{ history_schema }}"
+    objs: "{{ spec_schema }},{{ status_schema }},{{ history_schema }},{{ local_spec_schema }},{{ local_status_schema }}"
     role: "{{ hoh_process_user }},{{ transport_bridge_user }}"
   become: yes
   become_user: postgres
