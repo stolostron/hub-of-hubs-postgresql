@@ -63,3 +63,25 @@
     role: "{{ transport_bridge_user }}"
   become: yes
   become_user: postgres
+
+- name: set permissions on local status schema for transport_bridge_user
+  postgresql_privs:
+    db: "{{ hoh_db }}"
+    privs: SELECT,INSERT,UPDATE,DELETE
+    type: table
+    objs: ALL_IN_SCHEMA
+    schema: "{{ local_status_schema }}"
+    role: "{{ transport_bridge_user }}"
+  become: yes
+  become_user: postgres
+
+- name: set permissions on local spec schema for transport_bridge_user
+  postgresql_privs:
+    db: "{{ hoh_db }}"
+    privs: SELECT,INSERT,UPDATE,DELETE
+    type: table
+    objs: ALL_IN_SCHEMA
+    schema: "{{ local_spec_schema }}"
+    role: "{{ transport_bridge_user }}"
+  become: yes
+  become_user: postgres

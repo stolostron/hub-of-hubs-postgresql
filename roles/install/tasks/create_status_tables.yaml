@@ -80,10 +80,10 @@
     database: "{{ hoh_db }}"
   include_tasks: create_status_policies_table.yaml
   loop:
-    - "{{ policies_table }}"
-    - "local_{{ policies_table }}"
+    - "{{ status_schema }}"
+    - "{{ local_status_schema }}"
   loop_control:
-    loop_var: table_name
+    loop_var: schema
 
 - name: create table {{ aggregated_policies_table }}
   postgresql_table:

@@ -1,13 +1,11 @@
 ---
-- name: create spec tables
+- name: create local spec tables
   tags: tables
   vars:
     database: "{{ hoh_db }}"
-  include_tasks: create_spec_table.yaml
+  include_tasks: create_local_spec_table.yaml
   loop:
     - policies
     - placementrules
-    - placementbindings
-    - configs
   loop_control:
     loop_var: name
