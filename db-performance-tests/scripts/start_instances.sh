@@ -8,7 +8,7 @@ set -o nounset
 
 postgresql_port=5432
 
-instance_ids=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$VM_NAME_PREFIX*"  --output json | jq -r '.Reservations[].Instances[].InstanceId')
+instance_ids=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$VM_NAME"  --output json | jq -r '.Reservations[].Instances[].InstanceId')
 
 echo handling "$instance_ids"
 

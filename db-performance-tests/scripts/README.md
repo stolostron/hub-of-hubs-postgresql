@@ -1,21 +1,27 @@
 # Running a command on multiple VMs
 
-## Start multiple VMs by a name prefix
+In the following commands, `VM_NAME` specifies the instance names pattern. Examples:
+
+* `VM_NAME=veisenbe-postgresql-perf-client1`
+* `VM_NAME='veisenbe-postgresql-perf-client1,VM_NAME_PREFIX=veisenbe-postgresql-perf-clien2'`
+* `VM_NAME='veisenbe-postgresql-perf-client*'`
+
+## Start multiple VMs
 
 ```
-VM_NAME_PREFIX=veisenbe-postgresql-perf-client  SECURITY_GROUP=veisenbe-postgresql-sg ./start_instances.sh
+VM_NAME='veisenbe-postgresql-perf-client*'  SECURITY_GROUP=veisenbe-postgresql-sg ./start_instances.sh
 ```
 
-## Run command on multiple VMs by a name prefix
+## Run command on multiple VMs
 
 ```
-VM_NAME_PREFIX=veisenbe-postgresql-perf-client COMMAND="export DATABASE_URL=\"$DATABASE_URL\"; export LEAF_HUBS_NUMBER=1; export START_LEAF_HUB_INDEX=0; export UPDATE=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
+VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export DATABASE_URL=\"$DATABASE_URL\"; export UPDATE=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
 ```
 
-## Stop multiple VMs by a name prefix
+## Stop multiple VMs
 
 ```
-VM_NAME_PREFIX=veisenbe-postgresql-perf-client  SECURITY_GROUP=veisenbe-postgresql-sg ./stop_instances.sh
+VM_NAME='veisenbe-postgresql-perf-client*'  SECURITY_GROUP=veisenbe-postgresql-sg ./stop_instances.sh
 ```
 
 ## Linting
