@@ -15,7 +15,7 @@ VM_NAME='veisenbe-postgresql-perf-client*'  SECURITY_GROUP=veisenbe-postgresql-s
 ## Run command on multiple VMs
 
 ```
-VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export DATABASE_URL=\"$DATABASE_URL\"; export UPDATE=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
+VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export UPDATE=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
 ```
 
 ## Stop multiple VMs
