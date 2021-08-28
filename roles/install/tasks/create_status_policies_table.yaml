@@ -52,5 +52,6 @@
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
     columns: policy_id, leaf_hub_name, cluster_name
+    unique: true
   become: yes
   become_user: postgres

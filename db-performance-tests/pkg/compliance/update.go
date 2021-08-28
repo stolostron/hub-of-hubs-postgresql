@@ -81,14 +81,19 @@ func updateRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, l
 	tuplesToBecomeCompliant := nonCompliantSet.Difference(newNonCompliantSet)
 	newTuplesToBecomeNonCompliant := newNonCompliantSet.Difference(nonCompliantSet)
 
-	err = updateCompliance(ctx, dbConnectionPool, tuplesToBecomeCompliant, leafHubName, true)
-	if err != nil {
-		return fmt.Errorf("failed to make previous non-compliant tuples compliant: %w", err)
-	}
+	batch := &pgx.Batch{}
 
-	err = updateComplianceOrInsert(ctx, dbConnectionPool, newTuplesToBecomeNonCompliant, leafHubName, false)
-	if err != nil {
-		return fmt.Errorf("failed to make new tuples non-compliant: %w", err)
+	updateCompliance(tuplesToBecomeCompliant, leafHubName, true, batch)
+	upsert(newTuplesToBecomeNonCompliant, leafHubName, false, batch)
+
+	batchResult := dbConnectionPool.SendBatch(context.Background(), batch)
+	defer batchResult.Close()
+
+	for i := 0; i < batch.Len(); i++ {
+		_, err = batchResult.Exec()
+		if err != nil {
+			return fmt.Errorf("failed to execute batch item %d: %w", i, err)
+		}
 	}
 
 	return nil
@@ -114,10 +119,9 @@ func getPolicyClusterTupleSet(rows pgx.Rows) (set.Set, error) {
 	return s, nil
 }
 
-func updateCompliance(ctx context.Context, dbConnectionPool *pgxpool.Pool, policyClusterTuples set.Set,
-	leafHubName string, compliant bool) error {
+func updateCompliance(policyClusterTuples set.Set, leafHubName string, compliant bool, batch *pgx.Batch) {
 	if policyClusterTuples.Cardinality() < 1 {
-		return nil
+		return
 	}
 
 	compliance := compliantString
@@ -125,13 +129,28 @@ func updateCompliance(ctx context.Context, dbConnectionPool *pgxpool.Pool, polic
 		compliance = nonCompliantString
 	}
 
-	_, err := dbConnectionPool.Exec(ctx, fmt.Sprintf(`UPDATE status.compliance SET compliance = '%s'
+	batch.Queue(fmt.Sprintf(`UPDATE status.compliance SET compliance = '%s'
 		WHERE leaf_hub_name = '%s' AND (%s)`, compliance, leafHubName, sqlConditionFromTuples(policyClusterTuples)))
-	if err != nil {
-		return fmt.Errorf("error in updating compliance: %w", err)
+}
+
+func upsert(policyClusterTuples set.Set, leafHubName string, compliant bool, batch *pgx.Batch) {
+	if policyClusterTuples.Cardinality() < 1 {
+		return
 	}
 
-	return nil
+	rows := generateRowsFromTuples(policyClusterTuples, leafHubName, compliant)
+	sb := generateInsertByMultipleValues(len(rows) / columnSize)
+
+	compliance := compliantString
+	if !compliant {
+		compliance = nonCompliantString
+	}
+
+	sb.WriteString(" ON CONFLICT(policy_id, cluster_name, leaf_hub_name) DO UPDATE SET compliance = '")
+	sb.WriteString(compliance)
+	sb.WriteString("'")
+
+	batch.Queue(sb.String(), rows...)
 }
 
 func sqlConditionFromTuples(policyClusterTuples set.Set) string {
@@ -175,8 +194,8 @@ func generatePolicyClusterSet(leafHubIndex, size int) set.Set {
 }
 
 func generateRowsFromTuples(policyClusterTuples set.Set, leafHubName string,
-	compliant bool) [][]interface{} {
-	rows := make([][]interface{}, 0, policyClusterTuples.Cardinality())
+	compliant bool) []interface{} {
+	rows := make([]interface{}, 0, policyClusterTuples.Cardinality()*columnSize)
 
 	compliance := compliantString
 	if !compliant {
@@ -191,57 +210,10 @@ func generateRowsFromTuples(policyClusterTuples set.Set, leafHubName string,
 
 		errorValue, _, action := generateDerivedColumns()
 
-		rows = append(rows, []interface{}{
-			pct.PolicyID.String(), pct.ClusterName, leafHubName, errorValue,
-			compliance, action,
-		})
+		rows = append(rows, pct.PolicyID.String(), pct.ClusterName, leafHubName, errorValue,
+			compliance, action)
 		return false
 	})
 
 	return rows
-}
-
-func updateComplianceOrInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, policyClusterTuples set.Set,
-	leafHubName string, compliant bool) error {
-	existingRows, err := dbConnectionPool.Query(ctx, fmt.Sprintf(`SELECT policy_id, cluster_name FROM status.compliance
-		WHERE leaf_hub_name = '%s' AND (%s)`, leafHubName, sqlConditionFromTuples(policyClusterTuples)))
-	if err != nil {
-		return fmt.Errorf("error in getting non_compliant clusters: %w", err)
-	}
-
-	existingPolicyClusterTuples, err := getPolicyClusterTupleSet(existingRows)
-	if err != nil {
-		return fmt.Errorf("error in scanning existing rows: %w", err)
-	}
-
-	tuplesToInsert := policyClusterTuples.Difference(existingPolicyClusterTuples)
-	tuplesToUpdate := existingPolicyClusterTuples.Intersect(policyClusterTuples)
-
-	err = updateCompliance(ctx, dbConnectionPool, tuplesToUpdate, leafHubName, compliant)
-	if err != nil {
-		return fmt.Errorf("failed to update compliance of existing tuples: %w", err)
-	}
-
-	err = insert(ctx, dbConnectionPool, tuplesToInsert, leafHubName, compliant)
-	if err != nil {
-		return fmt.Errorf("failed to insert new tuples: %w", err)
-	}
-
-	return nil
-}
-
-func insert(ctx context.Context, dbConnectionPool *pgxpool.Pool, policyClusterTuples set.Set,
-	leafHubName string, compliant bool) error {
-	if policyClusterTuples.Cardinality() < 1 {
-		return nil
-	}
-
-	rows := generateRowsFromTuples(policyClusterTuples, leafHubName, compliant)
-
-	err := insertRowsByInsertWithMultipleValues(ctx, dbConnectionPool, rows)
-	if err != nil {
-		return fmt.Errorf("error in inserting non_compliant clusters: %w", err)
-	}
-
-	return nil
 }
