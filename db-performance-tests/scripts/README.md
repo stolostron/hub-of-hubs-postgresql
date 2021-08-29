@@ -18,6 +18,10 @@ VM_NAME='veisenbe-postgresql-perf-client*'  SECURITY_GROUP=veisenbe-postgresql-s
 VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export UPDATE=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
 ```
 
+### git pull and build
+
+VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="cd hub-of-hubs-postgresql/db-performance-tests; git checkout perf; git pull; make build" ./run_command.sh
+
 ## Stop multiple VMs
 
 ```
