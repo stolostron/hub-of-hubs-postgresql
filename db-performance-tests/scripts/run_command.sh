@@ -19,7 +19,7 @@ public_dns_names=$(aws ec2 describe-instances  --instance-ids $instance_ids --ou
 
 start_time=$(date +"%s")
 
-total_leaf_hubs_number=1000
+total_leaf_hubs_number=${TOTAL_LEAF_HUBS:-1000}
 max_connections_number=48
 max_connections_number_per_instance=$(( $max_connections_number / $instance_ids_number ))
 leaf_hubs_number_per_instance=$(( $total_leaf_hubs_number  / $instance_ids_number ))
