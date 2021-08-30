@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/open-cluster-management/hub-of-hubs-postgresql/performance_tests/pkg/clusters"
 	"github.com/open-cluster-management/hub-of-hubs-postgresql/performance_tests/pkg/compliance"
 )
 
@@ -19,6 +20,7 @@ const (
 	environmentVariableDatabaseURL          = "DATABASE_URL"
 	environmentVariableInsertMultipleValues = "INSERT_MULTIPLE_VALUES"
 	environmentVariableInsertCopy           = "INSERT_COPY"
+	environmentVariableInsertClusters       = "INSERT_CLUSTERS"
 	environmentVariableUpdate               = "UPDATE"
 	environmentVariableUpdateAll            = "UPDATE_ALL"
 	environmentVariableLeafHubsNumber       = "LEAF_HUBS_NUMBER"
@@ -43,8 +45,8 @@ func doMain() int {
 		cancelContext()
 	}()
 
-	databaseURL, batchSize, insertMultipleValues, insertCopy, update, updateAll, leafHubsNumber, startLeafHubIndex,
-		err := readEnvironmentVariables()
+	databaseURL, batchSize, insertMultipleValues, insertCopy, insertClusters, update, updateAll, leafHubsNumber,
+		startLeafHubIndex, err := readEnvironmentVariables()
 	if err != nil {
 		log.Panicf("Failed to read environment variables: %v\n", err)
 		return 1
@@ -58,7 +60,7 @@ func doMain() int {
 	defer dbConnectionPool.Close()
 
 	if err = runTests(ctx, dbConnectionPool, batchSize, leafHubsNumber, startLeafHubIndex,
-		insertMultipleValues, insertCopy, update, updateAll); err != nil {
+		insertMultipleValues, insertCopy, insertClusters, update, updateAll); err != nil {
 		log.Printf("Failed to run tests: %v\n", err)
 		return 1
 	}
@@ -68,11 +70,11 @@ func doMain() int {
 
 // long function of simple environment read, can be long.
 //nolint:funlen,cyclop
-func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, error) {
+func readEnvironmentVariables() (string, int, bool, bool, bool, bool, bool, int, int, error) {
 	databaseURL, found := os.LookupEnv(environmentVariableDatabaseURL)
 
 	if !found {
-		return "", 0, false, false, false, false, 0, 0,
+		return "", 0, false, false, false, false, false, 0, 0,
 			fmt.Errorf("%w: %s", errEnvironmentVariableNotFound, environmentVariableDatabaseURL)
 	}
 
@@ -83,7 +85,7 @@ func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, 
 
 	batchSize, err := strconv.Atoi(batchSizeString)
 	if err != nil {
-		return "", 0, false, false, false, false, 0, 0,
+		return "", 0, false, false, false, false, false, 0, 0,
 			fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType, environmentVariableBatchSize)
 	}
 
@@ -99,6 +101,13 @@ func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, 
 
 	if found {
 		insertCopy = true
+	}
+
+	insertClusters := false
+	_, found = os.LookupEnv(environmentVariableInsertClusters)
+
+	if found {
+		insertClusters = true
 	}
 
 	update := false
@@ -122,8 +131,8 @@ func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, 
 
 	leafHubsNumber, err := strconv.Atoi(leafHubsNumberString)
 	if err != nil {
-		return "", 0, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
-			environmentVariableLeafHubsNumber)
+		return "", 0, false, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer",
+			errEnvironmentVariableWrongType, environmentVariableLeafHubsNumber)
 	}
 
 	startLeafHubIndexString, found := os.LookupEnv(environmentVariableStartLeafHubIndex)
@@ -133,15 +142,18 @@ func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, 
 
 	startLeafHubIndex, err := strconv.Atoi(startLeafHubIndexString)
 	if err != nil {
-		return "", 0, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
-			environmentVariableStartLeafHubIndex)
+		return "", 0, false, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer",
+			errEnvironmentVariableWrongType, environmentVariableStartLeafHubIndex)
 	}
 
-	return databaseURL, batchSize, insertMultipleValues, insertCopy, update, updateAll, leafHubsNumber, startLeafHubIndex, nil
+	return databaseURL, batchSize, insertMultipleValues, insertCopy, insertClusters, update, updateAll, leafHubsNumber,
+		startLeafHubIndex, nil
 }
 
+// long function of simple running tests, can be long.
+//nolint:cyclop
 func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, batchSize, leafHubsNumber, startLeafHubIndex int,
-	insertMultipleValues, insertCopy, update, updateAll bool) error {
+	insertMultipleValues, insertCopy, insertClusters, update, updateAll bool) error {
 	if insertMultipleValues {
 		if err := compliance.RunInsertByInsertWithMultipleValues(ctx, dbConnectionPool, leafHubsNumber,
 			startLeafHubIndex, batchSize); err != nil {
@@ -153,6 +165,12 @@ func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, batchSize, le
 		if err := compliance.RunInsertByCopy(ctx, dbConnectionPool, leafHubsNumber, startLeafHubIndex,
 			batchSize); err != nil {
 			return fmt.Errorf("failed to run compliance.RunInsert: %w", err)
+		}
+	}
+
+	if insertClusters {
+		if err := clusters.RunInsert(ctx, dbConnectionPool, leafHubsNumber, startLeafHubIndex); err != nil {
+			return fmt.Errorf("failed to run clusters.RunInsert: %w", err)
 		}
 	}
 
