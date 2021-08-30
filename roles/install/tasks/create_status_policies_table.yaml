@@ -10,6 +10,7 @@
       - error {{ status_schema }}.{{ error_type }} not null
       - compliance {{ status_schema }}.{{ compliance_type }} not null
       - enforcement {{ spec_schema }}.{{ enforcement_type }} not null
+      - resource_version text not null default ''
   become: yes
   become_user: postgres
 
