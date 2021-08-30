@@ -15,14 +15,12 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-const DefaultLeafHubsNumber = 1000
-
 type policyClusterTuple struct {
 	PolicyID    uuid.UUID
 	ClusterName string
 }
 
-func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber int) error {
+func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber, startLeafHubIndex int) error {
 	entry := time.Now()
 
 	rand.Seed(entry.Unix())
@@ -44,7 +42,7 @@ func RunUpdate(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafsNumber 
 	}
 
 	for i := 0; i < leafsNumber; i++ {
-		c <- i
+		c <- startLeafHubIndex + i
 	}
 	close(c)
 
@@ -210,10 +208,10 @@ func generateRowsFromTuples(policyClusterTuples set.Set, leafHubName string,
 			panic("policyClusterTuples contains a member of a wrong type")
 		}
 
-		errorValue, _, action, resourceVersion := generateDerivedColumns(pct.PolicyID.String(), pct.ClusterName, leafHubName)
+		errorValue, _, action := generateDerivedColumns()
 
 		rows = append(rows, pct.PolicyID.String(), pct.ClusterName, leafHubName, errorValue,
-			compliance, action, resourceVersion)
+			compliance, action)
 		return false
 	})
 
