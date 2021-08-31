@@ -14,6 +14,8 @@ VM_NAME='veisenbe-postgresql-perf-client*'  SECURITY_GROUP=veisenbe-postgresql-s
 
 ## Run command on multiple VMs
 
+Set `DATABASE_URL` before running. 
+
 1.  Insert 100 million rows:
 
     ```
