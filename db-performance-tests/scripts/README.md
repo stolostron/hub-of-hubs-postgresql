@@ -31,7 +31,7 @@ Set `DATABASE_URL` before running.
 1.  Update all to be compliant (100 million rows):
 
     ```
-    VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export UPDATE=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
+    VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export UPDATE_ALL=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
     ```
     
 ### git pull and build
