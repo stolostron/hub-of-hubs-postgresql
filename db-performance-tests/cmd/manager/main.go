@@ -122,8 +122,8 @@ func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, 
 
 	leafHubsNumber, err := strconv.Atoi(leafHubsNumberString)
 	if err != nil {
-		return "", 0, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
-			environmentVariableLeafHubsNumber)
+		return "", 0, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer",
+			errEnvironmentVariableWrongType, environmentVariableLeafHubsNumber)
 	}
 
 	startLeafHubIndexString, found := os.LookupEnv(environmentVariableStartLeafHubIndex)
@@ -133,11 +133,12 @@ func readEnvironmentVariables() (string, int, bool, bool, bool, bool, int, int, 
 
 	startLeafHubIndex, err := strconv.Atoi(startLeafHubIndexString)
 	if err != nil {
-		return "", 0, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer", errEnvironmentVariableWrongType,
-			environmentVariableStartLeafHubIndex)
+		return "", 0, false, false, false, false, 0, 0, fmt.Errorf("%w: %s must be an integer",
+			errEnvironmentVariableWrongType, environmentVariableStartLeafHubIndex)
 	}
 
-	return databaseURL, batchSize, insertMultipleValues, insertCopy, update, updateAll, leafHubsNumber, startLeafHubIndex, nil
+	return databaseURL, batchSize, insertMultipleValues, insertCopy, update, updateAll, leafHubsNumber,
+		startLeafHubIndex, nil
 }
 
 func runTests(ctx context.Context, dbConnectionPool *pgxpool.Pool, batchSize, leafHubsNumber, startLeafHubIndex int,
