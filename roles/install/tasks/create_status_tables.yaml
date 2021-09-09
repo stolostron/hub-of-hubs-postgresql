@@ -105,3 +105,14 @@
     table: "{{ aggregated_policies_table }}"
     schema: "{{ status_schema }}"
   include_tasks: create_timestamp_trigger.yaml
+
+- name: create table {{ leaf_hub_heartbeats_table }}
+  postgresql_table:
+    name: "{{ status_schema }}.{{ leaf_hub_heartbeats_table }}"
+    db: "{{ hoh_db }}"
+    columns:
+      - name varchar({{ cluster_name_length_limit }}) not null
+      - last_timestamp timestamp not null default now()
+      - PRIMARY KEY(name)
+  become: yes
+  become_user: postgres
