@@ -9,5 +9,8 @@
     - placementrules
     - placementbindings
     - configs
+    - subscriptions
+    - channels
+    - applications
   loop_control:
     loop_var: name
