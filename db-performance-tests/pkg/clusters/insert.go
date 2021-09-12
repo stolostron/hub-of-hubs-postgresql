@@ -99,7 +99,7 @@ func generateRowsForLeafHub(leafHubIndex int) [][]interface{} {
 func generateInsertByMultipleValues(insertSize int) *strings.Builder {
 	var sb strings.Builder
 
-	sb.WriteString("INSERT INTO status.compliance values")
+	sb.WriteString("INSERT INTO status.managed_clusters values")
 
 	for i := 0; i < insertSize; i++ {
 		sb.WriteString("(")
