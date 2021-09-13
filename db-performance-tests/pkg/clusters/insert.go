@@ -2,7 +2,9 @@ package clusters
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
@@ -10,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	sanitize "github.com/kennygrant/sanitize"
 	cluster "github.com/open-cluster-management/api/cluster/v1"
 )
 
@@ -22,6 +25,12 @@ const (
 
 func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber, startLeafHubIndex int) error {
 	entry := time.Now()
+
+	prototypeManagedCluster := &cluster.ManagedCluster{}
+	err := unmarshalFile("cluster.json", &prototypeManagedCluster)
+	if err != nil {
+		return fmt.Errorf("Error in unmarshalling managed cluster: %w", err)
+	}
 
 	defer func() {
 		now := time.Now()
@@ -36,7 +45,7 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumb
 	for i := 0; i < leafHubsNumber; i++ {
 		wg.Add(1)
 
-		go insertRows(ctx, dbConnectionPool, c, &wg)
+		go insertRows(ctx, dbConnectionPool, c, &wg, prototypeManagedCluster)
 	}
 
 	for i := 0; i < leafHubsNumber; i++ {
@@ -49,11 +58,11 @@ func RunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumb
 	return nil
 }
 
-func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup) {
+func insertRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int, wg *sync.WaitGroup, prototypeManagedCluster *cluster.ManagedCluster) {
 	defer wg.Done()
 
 	for leafHubIndex := range c {
-		err := insertRowsForLeafHub(ctx, dbConnectionPool, leafHubIndex)
+		err := insertRowsForLeafHub(ctx, dbConnectionPool, leafHubIndex, prototypeManagedCluster)
 		if err != nil {
 			log.Printf("failed to insert rows: %v\n", err)
 			return
@@ -71,8 +80,8 @@ func flatten(rows [][]interface{}) []interface{} {
 	return resultRows
 }
 
-func insertRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex int) error {
-	rows := generateRowsForLeafHub(leafHubIndex)
+func insertRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex int, prototypeManagedCluster *cluster.ManagedCluster) error {
+	rows := generateRowsForLeafHub(leafHubIndex, prototypeManagedCluster)
 
 	sb := generateInsertByMultipleValues(len(rows))
 	sb.WriteString(" ON CONFLICT DO NOTHING")
@@ -85,12 +94,12 @@ func insertRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, l
 	return nil
 }
 
-func generateRowsForLeafHub(leafHubIndex int) [][]interface{} {
+func generateRowsForLeafHub(leafHubIndex int, prototypeManagedCluster *cluster.ManagedCluster) [][]interface{} {
 	rows := make([][]interface{}, 0, clustersPerLeafHub)
 
 	beginClusterIndex, endClusterIndex := leafHubIndex*clustersPerLeafHub, (leafHubIndex+1)*clustersPerLeafHub
 	for clusterIndex := beginClusterIndex; clusterIndex < endClusterIndex; clusterIndex++ {
-		rows = append(rows, generateRow(leafHubIndex, clusterIndex))
+		rows = append(rows, generateRow(leafHubIndex, clusterIndex, prototypeManagedCluster))
 	}
 
 	return rows
@@ -123,9 +132,39 @@ func generateInsertByMultipleValues(insertSize int) *strings.Builder {
 	return &sb
 }
 
-func generateRow(leafHubIndex, clusterIndex int) []interface{} {
+// from https://github.com/open-cluster-management/insights-client/blob/main/pkg/monitor/clustermonitor_test.go
+func unmarshalFile(filepath string, resourceType interface{}) error {
+	// open given filepath string
+	rawBytes, err := ioutil.ReadFile("testdata/" + sanitize.Name(filepath))
+	if err != nil {
+		return fmt.Errorf("Unable to read test data: %w", err)
+	}
+
+	// unmarshal file into given resource type
+	err = json.Unmarshal(rawBytes, resourceType)
+	if err != nil {
+		return fmt.Errorf("Unable to unmarshal json to type %T %w", resourceType, err)
+	}
+
+	return nil
+}
+
+func generateRow(leafHubIndex, clusterIndex int, prototypeManagedCluster *cluster.ManagedCluster) []interface{} {
 	leafHubName := fmt.Sprintf("hub%d", leafHubIndex)
 	clusterName := fmt.Sprintf("cluster%d", clusterIndex)
 
-	return []interface{}{clusterName, leafHubName, &cluster.ManagedCluster{}, "none"}
+	managedCluster := &cluster.ManagedCluster{}
+	prototypeManagedCluster.DeepCopyInto(managedCluster)
+	managedCluster.ObjectMeta.SetName(clusterName)
+	managedCluster.ObjectMeta.SetNamespace(clusterName)
+	labels := managedCluster.ObjectMeta.GetLabels()
+	labels["name"] = clusterName
+	managedCluster.ObjectMeta.SetLabels(labels)
+	managedCluster.ObjectMeta.SetSelfLink("")
+	for i, claim := range managedCluster.Status.ClusterClaims {
+		if claim.Name == "id.k8s.io" {
+			managedCluster.Status.ClusterClaims[i] = cluster.ManagedClusterClaim{Name: "id.k8s.io", Value: clusterName}
+		}
+	}
+	return []interface{}{clusterName, leafHubName, managedCluster, "none"}
 }
