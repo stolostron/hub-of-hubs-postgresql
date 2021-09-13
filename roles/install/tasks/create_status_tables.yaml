@@ -29,6 +29,41 @@
   become: yes
   become_user: postgres
 
+- name: create index on leaf_hub_name, cluster_name
+  postgresql_idx:
+    name: "{{ managed_clusters_table }}_leaf_hub_cluster_idx"
+    table: "{{ managed_clusters_table }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    columns: leaf_hub_name, cluster_name
+    idxtype: btree
+    unique: true
+  become: yes
+  become_user: postgres
+
+- name: create index on payload->'metadata'->>'name'
+  postgresql_idx:
+    name: "{{ managed_clusters_table }}_metadata_name_idx"
+    table: "{{ managed_clusters_table }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    columns: "(payload->'metadata'->>'name')"
+    idxtype: btree
+    unique: true
+  become: yes
+  become_user: postgres
+
+- name: create index on payload->'status'->'clusterClaims'
+  postgresql_idx:
+    name: "{{ managed_clusters_table }}_cluster_claims_idx"
+    table: "{{ managed_clusters_table }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    columns: "(payload->'status'->'clusterClaims') jsonb_path_ops"
+    idxtype: gin
+  become: yes
+  become_user: postgres
+
 - name: create compliance type
   postgresql_query:
     db: "{{ hoh_db }}"
