@@ -14,14 +14,14 @@ VM_NAME='veisenbe-postgresql-perf-client*'  SECURITY_GROUP=veisenbe-postgresql-s
 
 ## Run command on multiple VMs
 
-Set `DATABASE_URL` before running. 
+Set `DATABASE_URL` before running.
 
 1.  Insert 100 million rows:
 
     ```
     VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export BATCH_SIZE=10000; export INSERT_COPY=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
     ```
-    
+
 1.  Report compliance (select/update/upsert 100 thousand rows):
 
     ```
@@ -33,7 +33,13 @@ Set `DATABASE_URL` before running.
     ```
     VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export UPDATE_ALL=; hub-of-hubs-postgresql/db-performance-tests/bin/db-performance-tests" ./run_command.sh
     ```
-    
+
+1. Insert 1 million managed clusters:
+
+   ```
+   VM_NAME='veisenbe-postgresql-perf-client*' COMMAND="export INSERT_CLUSTERS=; cd hub-of-hubs-postgresql/db-performance-tests; ./bin/db-performance-tests" ./run_command.sh
+   ```
+
 ### git pull and build
 
 ```

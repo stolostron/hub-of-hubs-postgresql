@@ -34,6 +34,24 @@ Insert by the COPY protocol:
 LEAF_HUBS_NUMBER=1000 BATCH_SIZE=20000 INSERT_COPY= ./bin/db-performance-tests
 ```
 
+Report compliance (select/update/upsert):
+
+```
+UPDATE= LEAF_HUBS_NUMBER=1000 ./bin/db-performance-tests
+```
+
+Update all the clusters to be comliant:
+
+```
+UPDATE_ALL= LEAF_HUBS_NUMBER=1000 ./bin/db-performance-tests
+```
+
+Insert managed clusters:
+
+```
+LEAF_HUBS_NUMBER=1000 BATCH_SIZE=1000 INSERT_CLUSTERS= ./bin/db-performance-tests
+```
+
 # Build image
 
 Define the `REGISTRY` environment variable.
