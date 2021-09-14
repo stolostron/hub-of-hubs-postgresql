@@ -65,13 +65,13 @@
   become: yes
   become_user: postgres
 
-- name: create gin index on payload status
+- name: create index on payload->'status'->'clusterClaims'
   postgresql_idx:
     name: "{{ managed_clusters_table }}_cluster_claims_idx"
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
-    columns: "(payload->'status') jsonb_path_ops"
+    columns: "(payload->'status'->'clusterClaims') jsonb_path_ops"
     idxtype: gin
   become: yes
   become_user: postgres
