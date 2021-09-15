@@ -76,6 +76,17 @@
   become: yes
   become_user: postgres
 
+- name: create index on payload->'metadata'->'labels' ->> 'leafHub'
+  postgresql_idx:
+    name: "{{ managed_clusters_table }}_labels_leafhub_idx"
+    table: "{{ managed_clusters_table }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    columns: "(payload->'metadata'->'labels' ->> 'leafHub')"
+    idxtype: btree
+  become: yes
+  become_user: postgres
+
 - name: create index on payload->'status'->'clusterClaims'
   postgresql_idx:
     name: "{{ managed_clusters_table }}_cluster_claims_idx"
