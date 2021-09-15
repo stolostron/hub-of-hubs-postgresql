@@ -71,7 +71,7 @@
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
-    columns: "(payload->'metadata'->'labels') jsonb_path_ops"
+    columns: "(payload->'metadata'->'labels') jsonb_ops"
     idxtype: gin
   become: yes
   become_user: postgres
