@@ -159,6 +159,7 @@ func generateRow(leafHubIndex, clusterIndex int, prototypeManagedCluster *cluste
 	managedCluster.ObjectMeta.SetNamespace(clusterName)
 	labels := managedCluster.ObjectMeta.GetLabels()
 	labels["name"] = clusterName
+	labels["leafHub"] = leafHubName
 	managedCluster.ObjectMeta.SetLabels(labels)
 	managedCluster.ObjectMeta.SetSelfLink("")
 	for i, claim := range managedCluster.Status.ClusterClaims {
