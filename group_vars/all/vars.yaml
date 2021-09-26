@@ -17,6 +17,7 @@ managed_clusters_table: managed_clusters
 policies_table: compliance
 aggregated_policies_table: aggregated_compliance
 leaf_hub_heartbeats_table: leaf_hub_heartbeats
+subscriptions_table: subscriptions
 enforcement_type: enforcement_type
 compliance_type: compliance_type
 error_type: error_type
