@@ -47,7 +47,7 @@ make build-images
 1.  Create a secret with your database url:
 
     ```
-    kubectl create secret generic hub-of-hubs-database-secret --kubeconfig $TOP_HUB_CONFIG --from-literal=url=$DATABASE_URL -n myproject
+    kubectl create secret generic hub-of-hubs-perf-database-secret --kubeconfig $TOP_HUB_CONFIG --from-literal=url=$DATABASE_URL -n myproject
     ```
 
 1.  Deploy the container:
