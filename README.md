@@ -64,8 +64,14 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ansible-playbook configure_tls.yaml -i production --ask-vault-pass -l acm
     ```
 
+## Psql setup
+
 1.  Create `root.crt` on the client machine, put it into `~/.postgresql/root.crt`. For example, for
-[Let's encrypt](https://letsencrypt.org/) certificates, run `curl https://letsencrypt.org/certs/trustid-x3-root.pem --output ~/.postgresql/root.crt`.
+[Let's encrypt](https://letsencrypt.org/) certificates, run the following commands 
+
+    1. `curl https://letsencrypt.org/certs/trustid-x3-root.pem --output ~/.postgresql/root.crt`
+    1. `curl https://letsencrypt.org/certs/isrgrootx1.pem --output ~/.postgresql/isrgrootx1.crt`
+    1. `cat ~/.postgresql/isrgrootx1.crt >> ~/.postgresql/root.crt`
 
 1.  Use `psql` on the client machine:
 
