@@ -24,6 +24,7 @@ const (
 	DefaultStartLeafHubIndex     = 0
 	compliantString              = "compliant"
 	nonCompliantString           = "non_compliant"
+	maxNumberOfGoRoutines        = 100
 )
 
 func RunInsertByInsertWithMultipleValues(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNumber,
@@ -50,9 +51,9 @@ func doRunInsert(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubsNu
 
 	var wg sync.WaitGroup
 
-	c := make(chan int, leafHubsNumber)
+	c := make(chan int, maxNumberOfGoRoutines)
 
-	for i := 0; i < leafHubsNumber; i++ {
+	for i := 0; i < maxNumberOfGoRoutines; i++ {
 		wg.Add(1)
 
 		go insertRows(ctx, dbConnectionPool, c, &wg, insertFunc, batchSize)
@@ -97,9 +98,9 @@ func insertRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, l
 	var wg sync.WaitGroup
 
 	batchesNumber := len(rows) / batchSize
-	c := make(chan [][]interface{}, batchesNumber)
+	c := make(chan [][]interface{}, maxNumberOfGoRoutines)
 
-	for i := 0; i < batchesNumber; i++ {
+	for i := 0; i < maxNumberOfGoRoutines; i++ {
 		wg.Add(1)
 
 		go insertRowsBatch(ctx, dbConnectionPool, c, &wg, insertFunc)
