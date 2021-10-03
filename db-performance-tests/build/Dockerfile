@@ -13,6 +13,7 @@ RUN go mod download
 COPY Makefile Makefile
 COPY main.go main.go
 COPY pkg/ pkg/
+COPY testdata/ testdata/
 RUN make build
 
 # Stage 2: Copy the binaries from the image builder to the base image
