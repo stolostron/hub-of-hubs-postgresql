@@ -65,7 +65,7 @@ func updateRows(ctx context.Context, dbConnectionPool *pgxpool.Pool, c chan int,
 func updateRowsForLeafHub(ctx context.Context, dbConnectionPool *pgxpool.Pool, leafHubIndex int) error {
 	leafHubName := fmt.Sprintf("hub%d", leafHubIndex)
 
-	nonCompliantRows, err := dbConnectionPool.Query(ctx, fmt.Sprintf(`SELECT policy_id, cluster_name FROM status.compliance
+	nonCompliantRows, err := dbConnectionPool.Query(ctx, fmt.Sprintf(`SELECT id, cluster_name FROM status.compliance
 		WHERE leaf_hub_name = '%s' AND compliance = 'non_compliant'`, leafHubName))
 	if err != nil {
 		return fmt.Errorf("error in getting non_compliant clusters: %w", err)

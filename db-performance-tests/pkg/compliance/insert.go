@@ -201,7 +201,7 @@ func generateDerivedColumns() (string, string, string) {
 
 func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, rows [][]interface{}) error {
 	_, err := dbConnectionPool.CopyFrom(ctx, pgx.Identifier{"status", "compliance"},
-		[]string{"policy_id", "cluster_name", "leaf_hub_name", "error", "compliance", "enforcement"},
+		[]string{"id", "cluster_name", "leaf_hub_name", "error", "compliance", "enforcement"},
 		pgx.CopyFromRows(rows))
 	if err != nil {
 		return fmt.Errorf("insert into database failed: %w", err)

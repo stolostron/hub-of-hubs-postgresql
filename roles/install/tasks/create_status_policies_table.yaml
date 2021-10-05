@@ -4,7 +4,7 @@
     name: "{{ schema }}.{{ policies_table }}"
     db: "{{ hoh_db }}"
     columns:
-      - policy_id uuid not null
+      - id uuid not null
       - cluster_name varchar({{ cluster_name_length_limit }}) not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - error {{ status_schema }}.{{ error_type }} not null
@@ -23,13 +23,13 @@
   become: yes
   become_user: postgres
 
-- name: create index on policy_id and compliance
+- name: create index on id and compliance
   postgresql_idx:
-    name: "{{ policies_table }}_policy_id_non_compliant_idx"
+    name: "{{ policies_table }}_id_non_compliant_idx"
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
-    columns: policy_id, compliance
+    columns: id, compliance
     cond: compliance = 'non_compliant'
   become: yes
   become_user: postgres
@@ -44,24 +44,24 @@
   become: yes
   become_user: postgres
 
-- name: create index on policy_id, leaf_hub_name, cluster_name
+- name: create index on id, leaf_hub_name, cluster_name
   postgresql_idx:
     name: "{{ policies_table }}_policy_leaf_hub_cluster_idx"
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
-    columns: policy_id, leaf_hub_name, cluster_name
+    columns: id, leaf_hub_name, cluster_name
     unique: yes
   become: yes
   become_user: postgres
 
-- name: create index on leaf_hub_name, cluster_name, policy_id
+- name: create index on leaf_hub_name, cluster_name, id
   postgresql_idx:
-    name: "{{ policies_table }}_leaf_hub_cluster_policy_idx"
+    name: "{{ policies_table }}_leaf_hub_cluster_idx"
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
-    columns: leaf_hub_name, cluster_name, policy_id
+    columns: leaf_hub_name, cluster_name, id
     unique: yes
   become: yes
   become_user: postgres
