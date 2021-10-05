@@ -10,7 +10,6 @@
       - payload jsonb not null
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
-      - deleted boolean not null default false
   become: yes
   become_user: postgres
 

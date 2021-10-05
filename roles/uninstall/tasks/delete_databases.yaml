@@ -38,7 +38,6 @@
     db: "{{ hoh_db }}"
     query: DROP TYPE {{ item }}
   loop:
-    - "{{ spec_schema}}.{{ enforcement_type }}"
     - "{{ status_schema}}.{{ compliance_type }}"
     - "{{ status_schema}}.{{ error_type }}"
   become: yes
@@ -54,5 +53,9 @@
     - move_policies_to_history
     - move_placementrules_to_history
     - move_placementbindings_to_history
+    - move_configs_to_history
+    - move_subscriptions_to_history
+    - move_channels_to_history
+    - move_applications_to_history
   become: yes
   become_user: postgres

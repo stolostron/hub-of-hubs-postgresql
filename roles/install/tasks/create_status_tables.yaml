@@ -22,21 +22,23 @@
     name: "{{ status_schema }}.{{ managed_clusters_table }}"
     db: "{{ hoh_db }}"
     columns:
-      - cluster_name varchar({{ cluster_name_length_limit }}) not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
       - error {{ status_schema }}.{{ error_type }} not null
-      - created_at timestamp not null default now()
-      - updated_at timestamp not null default now()
-      - resource_version text not null default ''
   become: yes
   become_user: postgres
 
-- name: add timestamp trigger
-  vars:
+- name: create index on payload->'metadata'->>'name'
+  postgresql_idx:
+    name: "{{ managed_clusters_table }}_metadata_name_idx"
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
-  include_tasks: create_timestamp_trigger.yaml
+    db: "{{ hoh_db }}"
+    columns: "(payload->'metadata'->>'name')"
+    idxtype: btree
+    unique: true
+  become: yes
+  become_user: postgres
 
 - name: create compliance type
   postgresql_query:
@@ -50,24 +52,6 @@
             WHERE t.typname='{{ compliance_type }}' AND p.nspname='{{ status_schema }}'
           ) THEN
               CREATE TYPE {{ status_schema }}.{{ compliance_type }} AS  ENUM ('compliant', 'non_compliant', 'unknown');
-          END IF;
-      END
-      $$;
-  become: yes
-  become_user: postgres
-
-- name: create enforcement type
-  postgresql_query:
-    db: "{{ hoh_db }}"
-    query: |
-      DO $$
-      BEGIN
-          IF NOT EXISTS (
-            SELECT 1 FROM pg_type t
-            LEFT JOIN pg_namespace p ON t.typnamespace=p.oid
-            WHERE t.typname='{{ enforcement_type }}' AND p.nspname='{{ spec_schema }}'
-          ) THEN
-              CREATE TYPE {{ spec_schema }}.{{ enforcement_type }} AS  ENUM ('enforce', 'inform', 'unknown');
           END IF;
       END
       $$;
@@ -92,19 +76,10 @@
     columns:
       - policy_id uuid
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
-      - enforcement {{ spec_schema }}.{{ enforcement_type }} not null
       - applied_clusters int not null
       - non_compliant_clusters int not null
-      - created_at timestamp not null default now()
-      - updated_at timestamp not null default now()
   become: yes
   become_user: postgres
-
-- name: add timestamp trigger
-  vars:
-    table: "{{ aggregated_policies_table }}"
-    schema: "{{ status_schema }}"
-  include_tasks: create_timestamp_trigger.yaml
 
 - name: create table {{ leaf_hub_heartbeats_table }}
   postgresql_table:
@@ -125,7 +100,18 @@
       - id uuid not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - propagation_state text not null
-      - resource_version text not null
       - payload jsonb not null
+  become: yes
+  become_user: postgres
+
+- name: create index on payload->'metadata'->>'resourceVersion'
+  postgresql_idx:
+    name: "{{ subscriptions_table }}_metadata_resource_version_idx"
+    table: "{{ subscriptions_table }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    columns: "(payload->'metadata'->>'resourceVersion')"
+    idxtype: btree
+    unique: true
   become: yes
   become_user: postgres
