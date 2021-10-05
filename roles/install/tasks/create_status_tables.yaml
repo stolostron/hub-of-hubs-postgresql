@@ -99,7 +99,6 @@
     columns:
       - id uuid not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
-      - propagation_state text not null
       - payload jsonb not null
   become: yes
   become_user: postgres
