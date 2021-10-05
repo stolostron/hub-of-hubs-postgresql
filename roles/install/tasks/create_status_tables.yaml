@@ -103,15 +103,3 @@
       - payload jsonb not null
   become: yes
   become_user: postgres
-
-- name: create index on payload->'metadata'->>'resourceVersion'
-  postgresql_idx:
-    name: "{{ subscriptions_table }}_metadata_resource_version_idx"
-    table: "{{ subscriptions_table }}"
-    schema: "{{ status_schema }}"
-    db: "{{ hoh_db }}"
-    columns: "(payload->'metadata'->>'resourceVersion')"
-    idxtype: btree
-    unique: true
-  become: yes
-  become_user: postgres
