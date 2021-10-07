@@ -12,5 +12,6 @@
     - subscriptions
     - channels
     - applications
+    - clusterdeployments
   loop_control:
     loop_var: name
