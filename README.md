@@ -107,7 +107,7 @@ Run:
 ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm --tags tables
 ```
 
-## To recreate the tables:
+## To create the tables:
 
 Run:
 
