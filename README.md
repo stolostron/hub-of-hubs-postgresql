@@ -109,6 +109,10 @@ ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm --tags tab
 
 ## To create the tables:
 
+If you want to add new tables/indexes, run the installation script with tag `tables`.
+
+Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or drop all the tables, see the previous section.
+
 Run:
 
 ```
