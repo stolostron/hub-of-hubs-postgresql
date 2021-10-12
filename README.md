@@ -57,7 +57,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
 
 1.  Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
-    If you have Let's Encrypt setup, run:
+    If you have Let's Encrypt setup, run on your VM:
 
     ```
     sudo /etc/letsencrypt/renewal-hooks/deploy/postgresql.deploy
