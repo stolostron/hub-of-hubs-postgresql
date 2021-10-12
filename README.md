@@ -50,13 +50,18 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 
 ## Post installation tasks
 
-1.  Set password for the user `hoh_process_user`:
+1.  Set password for the user `hoh_process_user`. Run inside the VM the following command for each user:
 
     ```
     sudo -u postgres psql -c '\password hoh_process_user'
     ```
 
 1.  Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
+    If you have Let's Encrypt setup, run:
+
+    ```
+    sudo /etc/letsencrypt/renewal-hooks/deploy/postgresql.deploy
+    ```
 
 1.  Configure TLS:
 
@@ -64,7 +69,13 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ansible-playbook configure_tls.yaml -i production --ask-vault-pass -l acm
     ```
 
-## Psql setup
+## Psql setup (on the client machine)
+
+1.  Create `/.postgresql` directory if not exists:
+
+    ```
+    mkdir -p ~/.postgresql
+    ```
 
 1.  Create `root.crt` on the client machine, put it into `~/.postgresql/root.crt`. For example, for
 [Let's encrypt](https://letsencrypt.org/) certificates, run the following command: 
