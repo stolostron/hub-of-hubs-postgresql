@@ -18,6 +18,7 @@ policies_table: compliance
 aggregated_policies_table: aggregated_compliance
 leaf_hub_heartbeats_table: leaf_hub_heartbeats
 subscriptions_table: subscriptions
+clusterdeployments_table: clusterdeployments
 enforcement_type: enforcement_type
 compliance_type: compliance_type
 error_type: error_type
