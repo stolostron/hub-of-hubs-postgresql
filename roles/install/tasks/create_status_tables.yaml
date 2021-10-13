@@ -114,3 +114,15 @@
       - payload jsonb not null
   become: yes
   become_user: postgres
+
+
+- name: create table {{ secrets_table }}
+  postgresql_table:
+    name: "{{ status_schema }}.{{ secrets_table }}"
+    db: "{{ hoh_db }}"
+    columns:
+      - id uuid not null
+      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
+      - payload jsonb not null
+  become: yes
+  become_user: postgres

@@ -19,8 +19,11 @@ aggregated_policies_table: aggregated_compliance
 leaf_hub_heartbeats_table: leaf_hub_heartbeats
 subscriptions_table: subscriptions
 clusterdeployments_table: clusterdeployments
+secrets_table: secrets
 enforcement_type: enforcement_type
 compliance_type: compliance_type
 error_type: error_type
 set_timestamp_trigger: set_timestamp
 move_to_history_trigger: move_to_history
+vault_ansible_user: ec2-user
+vault_ansible_ssh_private_key_file: /Users/ianzhang/9bin/izhang-far-edge.cer

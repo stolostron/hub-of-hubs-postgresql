@@ -13,5 +13,6 @@
     - channels
     - applications
     - clusterdeployments
+    - secrets
   loop_control:
     loop_var: name
