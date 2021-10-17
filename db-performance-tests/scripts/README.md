@@ -3,7 +3,7 @@
 In the following commands, `VM_NAME` specifies the instance names pattern. Examples:
 
 * `VM_NAME=veisenbe-postgresql-perf-client1`
-* `VM_NAME='veisenbe-postgresql-perf-client1,VM_NAME_PREFIX=veisenbe-postgresql-perf-clien2'`
+* `VM_NAME='veisenbe-postgresql-perf-client1,VM_NAME=veisenbe-postgresql-perf-clien2'`
 * `VM_NAME='veisenbe-postgresql-perf-client*'`
 
 ## Start multiple VMs
