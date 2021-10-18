@@ -1,0 +1,13 @@
+---
+- name: create cluster lifecycle status tables
+  tags: tables
+  vars:
+    database: "{{ hoh_db }}"
+  include_tasks: create_status_clusterlifecycle_table.yaml
+  loop:
+    - clusterdeployments
+    - secrets
+    - machinepools
+    - klusterletaddonconfigs
+  loop_control:
+    loop_var: name

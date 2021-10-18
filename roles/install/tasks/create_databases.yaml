@@ -52,3 +52,7 @@
 - name: create status tables
   tags: tables
   import_tasks: create_status_tables.yaml
+
+- name: create cluster lifecycle status tables
+  tags: tables
+  import_tasks: create_status_clusterlifecycle_tables.yaml

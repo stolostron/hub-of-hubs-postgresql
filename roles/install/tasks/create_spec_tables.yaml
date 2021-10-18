@@ -14,5 +14,7 @@
     - applications
     - clusterdeployments
     - secrets
+    - machinepools
+    - klusterletaddonconfigs
   loop_control:
     loop_var: name
