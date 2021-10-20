@@ -25,6 +25,7 @@
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
       - error {{ status_schema }}.{{ error_type }} not null
+      - deleted boolean not null default false
   become: yes
   become_user: postgres
 
