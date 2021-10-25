@@ -6,6 +6,11 @@ metadata:
 spec:
   image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:centos8-13.4-1
   postgresVersion: 13
+  users:
+  - name: "hoh-process-user"
+    databases: ["hoh"]
+  - name: "transport-bridge-user"
+    databases: ["hoh"]
   instances:
     - name: pgha1
       replicas: 2

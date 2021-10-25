@@ -1,0 +1,7 @@
+---
+- name: install
+  become: true
+  hosts: local
+  connection: local
+  roles:
+    - { role: pgo, tags: ["pgo"]  }

@@ -1,0 +1,7 @@
+- name: PostgreSQL ping "{{ db_login_host }}" server using not default credentials and ssl
+  postgresql_ping:
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"

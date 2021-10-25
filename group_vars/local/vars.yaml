@@ -1,0 +1,4 @@
+db_login_host: a9637aa2200a642e7889d424cec29df3-1992409284.us-east-1.elb.amazonaws.com
+db_login_user: hoh
+db_login_password: "Oy:E@^yiKpH.6?CsK((?I<eo"
+db_ssl_mode: require
