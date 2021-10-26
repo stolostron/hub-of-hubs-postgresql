@@ -27,7 +27,7 @@
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, compliance
-    cond: compliance = 'non_compliant'
+    cond: compliance != 'compliant'
   become: yes
   become_user: postgres
 
@@ -42,7 +42,7 @@
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
     columns: id, compliance
-    cond: compliance = 'non_compliant'
+    cond: compliance != 'compliant'
   become: yes
   become_user: postgres
 
@@ -75,9 +75,9 @@
   become: yes
   become_user: postgres
 
-- name: create index on leaf_hub_name, cluster_name, id
+- name: create index on leaf_hub_name, id
   postgresql_idx:
-    name: "{{ policies_table }}_leaf_hub_cluster_idx"
+    name: "{{ policies_table }}_leaf_hub_id_idx"
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
