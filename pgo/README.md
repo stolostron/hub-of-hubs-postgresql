@@ -40,6 +40,10 @@ PGPASSWORD=$PGPASSWORD PGSSLMODE=require psql -h $PGHOST -U $DB_NAME -d $DB_NAME
 # What's next
 Use ansible-playbook to initialize the database, e.g, creates tables, set up permissions, etc.
 
+0. install the `ansible-playbook` dependency `psycopg2`
+
+`pip3 install psycopg2`
+
 To use the ansible-playbook, you need to
 1. create an inventory file, `production`, such as:
 
@@ -49,17 +53,17 @@ localhost   ansible_connection=local
 ```
 
 2. create varialbes for the `local` host defined in the above inventory file
-The local variables file should be located at `../group_vars/local/vars.yaml`
+The local variables file should be located at `../group_vars/local/vars.yaml`, these varaiables are expected by be set via environment variables.
 
 ```
-db_login_host: a9637aa2200a642e7889d424cec29df3-1992409284.us-east-1.elb.amazonaws.com
-db_login_user: hoh
-db_login_password: "Oy:E@^yiKpH.6?CsK((?I<eo"
+db_login_host: "'{{ lookup('env', 'DB_LOGIN_HOST') }}'"
+db_login_user: "'{{ lookup('env', 'DB_LOGIN_USER') }}'"
+db_login_password: "'{{ lookup('env', 'DB_LOGIN_PASSWORD') }}'"
 db_ssl_mode: require
 ```
 
 3. run the anislbe-playbook with the following command
 
 ```
-sudo ANSIBLE_PYTHON_INTERPRETER=/usr/local/bin/python3 ansible-playbook ../install.yaml -i production --ask-vault-pass -l local
+ANSIBLE_PYTHON_INTERPRETER=/usr/local/bin/python3 ansible-playbook ../install.yaml -i production -l local
 ```
