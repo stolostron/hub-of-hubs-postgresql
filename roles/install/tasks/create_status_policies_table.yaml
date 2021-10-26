@@ -1,8 +1,12 @@
 ---
-- name: create table {{ table_name }}
+- name: create table {{ schema }}.{{ policies_table }}
   postgresql_table:
     name: "{{ schema }}.{{ policies_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid not null
       - cluster_name varchar({{ cluster_name_length_limit }}) not null
@@ -18,6 +22,10 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, compliance
     cond: compliance = 'non_compliant'
   become: yes
@@ -29,6 +37,10 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: id, compliance
     cond: compliance = 'non_compliant'
   become: yes
@@ -40,6 +52,10 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, cluster_name
   become: yes
   become_user: postgres
@@ -50,6 +66,10 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: id, leaf_hub_name, cluster_name
     unique: yes
   become: yes
@@ -61,6 +81,10 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, cluster_name, id
     unique: yes
   become: yes

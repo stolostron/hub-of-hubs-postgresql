@@ -2,13 +2,21 @@
 - name: create database
   postgresql_db:
     name: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
   become: yes
   become_user: postgres
 
-- name: create schemata
+- name: create schema
   postgresql_schema:
-    name: "{{ item}}"
+    name: "{{ item }}"
     database: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
   become: yes
   become_user: postgres
   loop:
@@ -23,6 +31,10 @@
   tags: tables
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     query: |
       CREATE OR REPLACE FUNCTION trigger_set_timestamp()
       RETURNS TRIGGER AS $$

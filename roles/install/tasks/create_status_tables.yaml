@@ -2,6 +2,10 @@
 - name: create error type
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     query: |
       DO $$
       BEGIN
@@ -21,6 +25,10 @@
   postgresql_table:
     name: "{{ status_schema }}.{{ managed_clusters_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
@@ -34,6 +42,10 @@
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: "(payload->'metadata'->>'name')"
     idxtype: btree
     unique: true
@@ -46,6 +58,10 @@
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: "leaf_hub_name, (payload->'metadata'->>'name')"
     idxtype: btree
     unique: true
@@ -55,6 +71,10 @@
 - name: create compliance type
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     query: |
       DO $$
       BEGIN
@@ -85,6 +105,10 @@
   postgresql_table:
     name: "{{ status_schema }}.{{ aggregated_policies_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
@@ -97,6 +121,10 @@
   postgresql_table:
     name: "{{ status_schema }}.{{ leaf_hub_heartbeats_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - name varchar({{ cluster_name_length_limit }}) not null
       - last_timestamp timestamp not null default now()
@@ -108,6 +136,10 @@
   postgresql_table:
     name: "{{ status_schema }}.{{ subscriptions_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null

@@ -1,14 +1,19 @@
 ---
 - name: install
+  when: inventory_hostname not in groups['local']
   import_tasks: install.yaml
 
+
 - name: perform tuning
+  when: inventory_hostname not in groups['local']
   import_tasks: perform_tuning.yaml
 
 - name: create databases
   import_tasks: create_databases.yaml
 
+# for pgo the user is created when operator initialized ../../../pgo/high-availability/ha-postgres.yaml:10,13
 - name: create users
+  when: inventory_hostname not in groups['local']
   import_tasks: create_users.yaml
 
 - name: set authorization
@@ -16,19 +21,12 @@
   import_tasks: set_authorization.yaml
 
 - name: set authentication
+  when: inventory_hostname not in groups['local']
   import_tasks: set_authentication.yaml
 
 - name: dump the current databases as a sanity check
+  when: inventory_hostname not in groups['local']
   shell: psql -c '\l'
-  become: yes
-  become_user: postgres
-  register: databases_psql_result
-
-- debug:
-    msg: "{{ databases_psql_result.stdout_lines }}"
-
-- name: dump the current users as a sanity check
-  shell: psql -c '\du'
   become: yes
   become_user: postgres
   register: databases_psql_result

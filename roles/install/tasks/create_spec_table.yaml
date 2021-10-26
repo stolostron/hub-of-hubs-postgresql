@@ -2,8 +2,12 @@
 - name: create table {{ name }} schema {{ schema }} database {{ database }}
   tags: tables
   postgresql_table:
-    name: "{{ schema }}.{{ name }}"
-    db: "{{ database }}"
+    table: "{{ schema }}.{{ name }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid primary key
       - payload jsonb not null
