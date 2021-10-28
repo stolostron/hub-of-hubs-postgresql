@@ -2,6 +2,10 @@
 - name: set usage permissions on schemas
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: USAGE
     type: schema
     objs: "{{ spec_schema }},{{ status_schema }},{{ history_schema }},{{ local_spec_schema }},{{ local_status_schema }}"
@@ -12,6 +16,10 @@
 - name: set permissions on spec schema for hoh_process_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT,INSERT,UPDATE,DELETE
     type: table
     objs: ALL_IN_SCHEMA
@@ -23,6 +31,10 @@
 - name: set permissions on spec schema for transport_bridge_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT
     type: table
     objs: ALL_IN_SCHEMA
@@ -34,6 +46,10 @@
 - name: set permissions on status schema for hoh_process_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT
     type: table
     objs: ALL_IN_SCHEMA
@@ -45,6 +61,10 @@
 - name: set permissions on history schema for hoh_process_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT,INSERT
     type: table
     objs: ALL_IN_SCHEMA
@@ -56,6 +76,10 @@
 - name: set permissions on status schema for transport_bridge_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT,INSERT,UPDATE,DELETE
     type: table
     objs: ALL_IN_SCHEMA
@@ -67,6 +91,10 @@
 - name: set permissions on local status schema for transport_bridge_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT,INSERT,UPDATE,DELETE
     type: table
     objs: ALL_IN_SCHEMA
@@ -78,6 +106,10 @@
 - name: set permissions on local spec schema for transport_bridge_user
   postgresql_privs:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT,INSERT,UPDATE,DELETE
     type: table
     objs: ALL_IN_SCHEMA

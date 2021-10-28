@@ -65,5 +65,5 @@ db_ssl_mode: require
 3. run the anislbe-playbook with the following command
 
 ```
-ANSIBLE_PYTHON_INTERPRETER=/usr/local/bin/python3 ansible-playbook ../install.yaml -i production -l local
+sudo ANSIBLE_PYTHON_INTERPRETER=/usr/local/bin/python3 ansible-playbook ../pgo.yaml -i ../production --ask-vault-pass -l local
 ```

@@ -3,11 +3,7 @@
   import_tasks: create_tables.yaml
 
 - name: set authorization
-  tags: tables
   import_tasks: set_authorization.yaml
-
-- name: set authentication
-  import_tasks: set_authentication.yaml
 
 - name: list all tables in hoh databases as a sanity check
   tags: tables

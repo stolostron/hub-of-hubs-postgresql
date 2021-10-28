@@ -6,12 +6,15 @@
 - name: perform tuning
   import_tasks: perform_tuning.yaml
 
-- name: create users
+- name: create database
   import_tasks: create_databases.yaml
 
 # for pgo the user is created when operator initialized ../../../pgo/high-availability/ha-postgres.yaml:10,13
 - name: create users
   import_tasks: create_users.yaml
+
+- name: set authentication
+  import_tasks: set_authentication.yaml
 
 - name: dump the current databases as a sanity check
   shell: psql -c '\l'
