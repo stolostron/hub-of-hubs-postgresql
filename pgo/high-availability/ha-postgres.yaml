@@ -11,6 +11,8 @@ spec:
     databases: ["hoh"]
   - name: "transport-bridge-user"
     databases: ["hoh"]
+  - name: "hoh"
+    databases: ["hoh"]
   instances:
     - name: pgha1
       replicas: 2
