@@ -1,13 +1,13 @@
 # Why?
-If we can the hoh postgres DB runs inside cluster as an operator, it will make it easier for people to test/try our Hoh.
+If we can run the hoh postgres DB inside cluster as an operator to test/try our the Hub-of-Hubs setup.
 
 # What does it do
-1. install [PostgreSQL Operator](https://access.crunchydata.com/documentation/postgres-operator/v5/)
+1. installs [PostgreSQL Operator](https://access.crunchydata.com/documentation/postgres-operator/v5/)
 2. set up hoh database and expose the db as a `LoadBalancer` service
-3. the database with 2 users created `./high-availability/ha-postgres.yaml:10,13`, these user will be used at the anisble-playbook as well.
+3. the database with 2 users created `./high-availability/ha-postgres.yaml:10,13`, these users will be used by the anisble-playbook as well.
 
 # How to do
-1. make sure your `KUBECONFIG` is pointing to hoh cluster
+1. make sure your `KUBECONFIG` is pointing the HoH cluster
 2. run `./setup.sh`
 
 If above run without issue, you should able to connect to the hoh DB which sits inside your hoh cluster. Followings are command for you

@@ -1,0 +1,20 @@
+---
+- name: create tables
+  import_tasks: create_tables.yaml
+
+- name: set authorization
+  tags: tables
+  import_tasks: set_authorization.yaml
+
+- name: set authentication
+  import_tasks: set_authentication.yaml
+
+- name: dump the current databases as a sanity check
+  postgresql_info:
+    filter: "!settings,!roles"
+  become: yes
+  become_user: postgres
+  register: databases_psql_result
+
+- debug:
+    msg: "{{ databases_psql_result.stdout_lines }}"

@@ -1,7 +1,7 @@
 ---
-- name: install
+- name: create table
   become: true
   hosts: local
   connection: local
   roles:
-    - { role: pgo, tags: ["pgo"]  }
+    - { role: create_tables, tags: ["create_tables"]  }

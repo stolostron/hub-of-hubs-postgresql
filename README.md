@@ -14,7 +14,7 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 * We do not use foreign keys [due to performance considerations](http://bonesmoses.org/2014/05/14/foreign-keys-are-not-free/).
 
 ## Use postgres as an operator in your Hub of hub cluster
-You can follow [instruction](./pgo/README.md), which will help you:
+You can follow the [instructions](./pgo/README.md) to:
 - set up and expose the postgres as an service, to be consumed by ansible
 - use this ansible to set up database schema, tables, and permissions, etc...
 
