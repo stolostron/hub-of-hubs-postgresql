@@ -17,8 +17,9 @@
   shell: psql -c '\l'
   become: yes
   become_user: postgres
-  register: databases_psql_result
+  register: databases_psql_databases_result
 
-- debug:
-    msg: "{{ databases_psql_result.stdout_lines }}"
+- name: database sanity debug
+  ansible.builtin.debug:
+    msg: "{{ databases_psql_databases_result.stdout_lines }}"
 

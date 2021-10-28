@@ -9,12 +9,11 @@
 - name: set authentication
   import_tasks: set_authentication.yaml
 
-- name: dump the current databases as a sanity check
-  postgresql_info:
-    filter: "!settings,!roles"
-  become: yes
-  become_user: postgres
-  register: databases_psql_result
-
-- debug:
-    msg: "{{ databases_psql_result.stdout_lines }}"
+- name: list all tables in hoh databases as a sanity check
+  tags: tables
+  include_tasks: output_table_info.yaml
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ status_schema }}"
+  loop_control:
+    loop_var: schema
