@@ -10,8 +10,9 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
 1. make sure your `KUBECONFIG` is pointing the HoH cluster
 2. run `./setup.sh`
 
-If above run without issue, you should able to connect to the hoh DB which sits inside your hoh cluster. Followings are command for you
-get hoh DB creds and how to connect to it.
+If the command above does not produce any errors, you should able to connect to the Hoh DB sits inside your hoh cluster.
+
+You can use the following commands to get HoH DB credentials and to connect to the database.
 ```
 PG_NAMESPACE="hoh-postgres"
 DB_NAME="hoh"

@@ -24,8 +24,6 @@ PGHOST="$(kubectl get svc -n "${PG_NAMESPACE}" "${HOH_PGBOUNCER}" -o jsonpath='{
 echo "postgres secret name: " $PG_CLUSTER_USER_SECRET_NAME
 echo "postgres host: "$PGHOST
 echo "postgres user: " $PGUSER
-echo "postgres password: " $PGPASSWORD
 
 # load file from tpl to db hoh
-echo "PGPASSWORD='$PGPASSWORD' PGSSLMODE=require psql -h $PGHOST -U $DB_NAME -d $DB_NAME"
 PGPASSWORD='$PGPASSWORD' PGSSLMODE=require psql -h $PGHOST -U $DB_NAME -d $DB_NAME
