@@ -18,8 +18,7 @@
           END IF;
       END
       $$;
-  become: yes
-  become_user: postgres
+
 
 - name: create table managed_clusters
   postgresql_table:
@@ -33,8 +32,7 @@
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
       - error {{ status_schema }}.{{ error_type }} not null
-  become: yes
-  become_user: postgres
+
 
 - name: create index on payload->'metadata'->>'name'
   postgresql_idx:
@@ -49,8 +47,7 @@
     columns: "(payload->'metadata'->>'name')"
     idxtype: btree
     unique: true
-  become: yes
-  become_user: postgres
+
 
 - name: create index on leaf_hub_name, payload->'metadata'->>'name'
   postgresql_idx:
@@ -65,8 +62,7 @@
     columns: "leaf_hub_name, (payload->'metadata'->>'name')"
     idxtype: btree
     unique: true
-  become: yes
-  become_user: postgres
+
 
 - name: create compliance type
   postgresql_query:
@@ -87,8 +83,7 @@
           END IF;
       END
       $$;
-  become: yes
-  become_user: postgres
+
 
 - name: create policies tables
   tags: tables
@@ -114,8 +109,7 @@
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - applied_clusters int not null
       - non_compliant_clusters int not null
-  become: yes
-  become_user: postgres
+
 
 - name: create table {{ leaf_hub_heartbeats_table }}
   postgresql_table:
@@ -129,8 +123,7 @@
       - name varchar({{ cluster_name_length_limit }}) not null
       - last_timestamp timestamp not null default now()
       - PRIMARY KEY(name)
-  become: yes
-  become_user: postgres
+
 
 - name: create table {{ subscriptions_table }}
   postgresql_table:
@@ -144,5 +137,4 @@
       - id uuid not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
-  become: yes
-  become_user: postgres
+

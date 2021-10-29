@@ -7,8 +7,6 @@
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
     query: "SELECT schemaname,tablename FROM pg_catalog.pg_tables where schemaname='{{ schema }}';"
-  become: yes
-  become_user: postgres
   register: list_all_tables_result
 
 - name: all tables as a sanity check output

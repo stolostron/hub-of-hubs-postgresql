@@ -25,5 +25,4 @@
         END IF;
       END;
       $$
-  become: yes
-  become_user: postgres
+

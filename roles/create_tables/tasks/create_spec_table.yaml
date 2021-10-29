@@ -14,8 +14,7 @@
       - created_at timestamp not null default now()
       - updated_at timestamp not null default now()
       - deleted boolean not null default false
-  become: yes
-  become_user: postgres
+
 
   # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
 - name: add timestamp trigger

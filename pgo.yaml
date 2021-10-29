@@ -1,6 +1,5 @@
 ---
 - name: create table
-  become: true
   hosts: local
   connection: local
   roles:

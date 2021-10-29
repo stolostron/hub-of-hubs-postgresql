@@ -15,8 +15,8 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 
 ## Use postgres as an operator in your Hub of hub cluster
 You can follow the [instructions](./pgo/README.md) to:
-- set up and expose the postgres as an service, to be consumed by ansible
-- use this ansible to set up database schema, tables, and permissions, etc...
+- set up a postgres
+- use this ansible to set up database schema, tables, and permissions, etc... on the postgres inside your Hoh cluster
 
 ## Initial setup
 
@@ -30,7 +30,7 @@ You can follow the [instructions](./pgo/README.md) to:
 1.  Create `vault` file with following variables:
     - `vault_ansible_user`: contains the user of the machine where you install the database
     - `vault_ansible_ssh_private_key_file`: the path to the SSH private key file to connect to the machine
-
+	- make sure you set up a ENV varible `DB_LOGIN_USER` and `DB_LOGIN_PASSWORD`, which is the user for creating schema, tables, etc...
     Put the `vault` file into [group_vars/](group_vars/), in the corresponding directory (acm/acm2/acm3/ etc.)
 
 1.  For formatting multiple lines output, add the following lines to your `ansible.cfg`:

@@ -7,8 +7,6 @@
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-  become: yes
-  become_user: postgres
   loop:
     - "{{ spec_schema }}"
     - "{{ status_schema }}"
@@ -33,8 +31,6 @@
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
-  become: yes
-  become_user: postgres
 
 - name: create spec tables
   tags: tables

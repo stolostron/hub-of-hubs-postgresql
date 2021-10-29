@@ -10,21 +10,21 @@ spec:
       - name: initial-db
         env:
           - name: ANSIBLE_PYTHON_INTERPRETER
-            value: "/usr/bin/python2"
+            value: "/usr/local/bin/python"
           - name: DB_LOGIN_HOST
             valueFrom:
               secretKeyRef:
-                name: hoh-pguser-hoh-process-user
+                name: hoh-pguser-postgres
                 key: host
           - name: DB_LOGIN_USER
             valueFrom:
               secretKeyRef:
-                name: hoh-pguser-hoh-process-user
+                name: hoh-pguser-postgres
                 key: user
           - name: DB_LOGIN_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: hoh-pguser-hoh-process-user
+                name: hoh-pguser-postgres
                 key: password
         image: quay.io/ianzhang366/postgre-ansible:latest
         command: ["/bin/bash", "-c", "ansible-playbook pgo.yaml -i production -l local"]

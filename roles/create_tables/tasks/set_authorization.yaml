@@ -10,8 +10,7 @@
     type: schema
     objs: "{{ spec_schema }},{{ status_schema }},{{ history_schema }},{{ local_spec_schema }},{{ local_status_schema }}"
     role: "{{ hoh_process_user }},{{ transport_bridge_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on spec schema for hoh_process_user
   postgresql_privs:
@@ -25,8 +24,7 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ spec_schema }}"
     role: "{{ hoh_process_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on spec schema for transport_bridge_user
   postgresql_privs:
@@ -40,8 +38,7 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ spec_schema }}"
     role: "{{ transport_bridge_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on status schema for hoh_process_user
   postgresql_privs:
@@ -55,8 +52,7 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ status_schema }}"
     role: "{{ hoh_process_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on history schema for hoh_process_user
   postgresql_privs:
@@ -70,8 +66,7 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ history_schema }}"
     role: "{{ hoh_process_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on status schema for transport_bridge_user
   postgresql_privs:
@@ -85,8 +80,7 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ status_schema }}"
     role: "{{ transport_bridge_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on local status schema for transport_bridge_user
   postgresql_privs:
@@ -100,8 +94,7 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ local_status_schema }}"
     role: "{{ transport_bridge_user }}"
-  become: yes
-  become_user: postgres
+
 
 - name: set permissions on local spec schema for transport_bridge_user
   postgresql_privs:
@@ -115,5 +108,5 @@
     objs: ALL_IN_SCHEMA
     schema: "{{ local_spec_schema }}"
     role: "{{ transport_bridge_user }}"
-  become: yes
-  become_user: postgres
+
+
