@@ -3,6 +3,10 @@
   tags: tables
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     query: |
       CREATE OR REPLACE FUNCTION move_{{ table }}_to_history()
       RETURNS TRIGGER AS $$
@@ -16,13 +20,16 @@
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
-  become: yes
-  become_user: postgres
+
 
 - name: create move_to_history_trigger trigger
   tags: tables
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     # transaction logic based on https://stackoverflow.com/a/61974663/553720
     query: |
       DO $$
@@ -40,5 +47,4 @@
         END IF;
       END;
       $$
-  become: yes
-  become_user: postgres
+

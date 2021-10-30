@@ -4,6 +4,7 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 
 ![DatabaseDiagram](images/HubOfHubsDatabase.png)
 
+
 ## Design points
 
 * We use three schemas: `spec`, `status` and `history`.
@@ -11,6 +12,11 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 * We use [the same structure](https://github.com/open-cluster-management/hub-of-hubs-postgresql/blob/main/roles/install/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
 * `status.schema` tables are defined by [this task](roles/install/tasks/create_status_tables.yaml).
 * We do not use foreign keys [due to performance considerations](http://bonesmoses.org/2014/05/14/foreign-keys-are-not-free/).
+
+## Use postgres as an operator in your Hub of hub cluster
+You can follow the [instructions](./pgo/README.md) to:
+- set up a postgres
+- use this ansible to set up database schema, tables, and permissions, etc... on the postgres inside your Hoh cluster
 
 ## Initial setup
 
@@ -24,7 +30,7 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 1.  Create `vault` file with following variables:
     - `vault_ansible_user`: contains the user of the machine where you install the database
     - `vault_ansible_ssh_private_key_file`: the path to the SSH private key file to connect to the machine
-
+	- make sure you set up a ENV varible `DB_LOGIN_USER` and `DB_LOGIN_PASSWORD`, which is the user for creating schema, tables, etc...
     Put the `vault` file into [group_vars/](group_vars/), in the corresponding directory (acm/acm2/acm3/ etc.)
 
 1.  For formatting multiple lines output, add the following lines to your `ansible.cfg`:
@@ -53,7 +59,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 1.  Set password for the user `hoh_process_user`. Run inside the VM the following command for each user:
 
     ```
-    sudo -u postgres psql -c '\password hoh_process_user'
+    sudo -u postgres psql -c '\password hoh-process-user'
     ```
 
 1.  Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
@@ -78,7 +84,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
 
 1.  Create `root.crt` on the client machine, put it into `~/.postgresql/root.crt`. For example, for
-[Let's encrypt](https://letsencrypt.org/) certificates, run the following command: 
+[Let's encrypt](https://letsencrypt.org/) certificates, run the following command:
 
     ```
     curl https://letsencrypt.org/certs/isrgrootx1.pem --output ~/.postgresql/root.crt

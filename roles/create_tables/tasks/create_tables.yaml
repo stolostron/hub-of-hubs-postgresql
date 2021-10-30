@@ -1,0 +1,52 @@
+---
+- name: create schema
+  postgresql_schema:
+    name: "{{ item }}"
+    database: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ status_schema }}"
+    - "{{ local_spec_schema }}"
+    - "{{ local_status_schema }}"
+    - "{{ history_schema }}"
+
+# from https://x-team.com/blog/automatic-timestamps-with-postgresql/
+- name: create trigger_set_timestamp function
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    query: |
+      CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+
+- name: create spec tables
+  tags: tables
+  include_tasks: create_spec_tables.yaml
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ history_schema }}"
+  loop_control:
+    loop_var: schema
+
+- name: create local spec tables
+  tags: tables
+  vars:
+    schema: "{{ local_spec_schema }}"
+  include_tasks: create_local_spec_tables.yaml
+
+- name: create status tables
+  tags: tables
+  import_tasks: create_status_tables.yaml

@@ -1,16 +1,19 @@
 ---
-- name: create table {{ table_name }}
+- name: create table {{ schema }}.{{ policies_table }}
   postgresql_table:
     name: "{{ schema }}.{{ policies_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid not null
       - cluster_name varchar({{ cluster_name_length_limit }}) not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - error {{ status_schema }}.{{ error_type }} not null
       - compliance {{ status_schema }}.{{ compliance_type }} not null
-  become: yes
-  become_user: postgres
+
 
 - name: create index on leaf_hub_name and compliance
   postgresql_idx:
@@ -18,10 +21,13 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, compliance
     cond: compliance != 'compliant'
-  become: yes
-  become_user: postgres
+
 
 - name: create index on id and compliance
   postgresql_idx:
@@ -29,10 +35,13 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: id, compliance
     cond: compliance != 'compliant'
-  become: yes
-  become_user: postgres
+
 
 - name: create index on leaf_hub_name and cluster_name
   postgresql_idx:
@@ -40,9 +49,11 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, cluster_name
-  become: yes
-  become_user: postgres
 
 - name: create index on id, leaf_hub_name, cluster_name
   postgresql_idx:
@@ -50,10 +61,12 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: id, leaf_hub_name, cluster_name
     unique: yes
-  become: yes
-  become_user: postgres
 
 - name: create index on leaf_hub_name, id
   postgresql_idx:
@@ -61,6 +74,10 @@
     table: "{{ policies_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
-    columns: leaf_hub_name, id
-  become: yes
-  become_user: postgres
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: leaf_hub_name, cluster_name, id
+    unique: yes
+

@@ -1,0 +1,36 @@
+---
+- name: create table {{ name }} schema {{ schema }} database {{ database }}
+  tags: tables
+  postgresql_table:
+    table: "{{ schema }}.{{ name }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns:
+      - id uuid
+      - leaf_hub_name text
+      - payload jsonb not null
+      - created_at timestamp not null default now()
+      - updated_at timestamp not null default now()
+
+- name: create unique index on id and leaf_hub_name
+  postgresql_idx:
+    name: "{{ name }}_id_leaf_hub_name_idx"
+    table: "{{ name }}"
+    schema: "{{ schema }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: id, leaf_hub_name
+    unique: yes
+
+  # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
+- name: add timestamp trigger
+  tags: tables
+  vars:
+    table: "{{ name }}"
+  include_tasks: create_timestamp_trigger.yaml

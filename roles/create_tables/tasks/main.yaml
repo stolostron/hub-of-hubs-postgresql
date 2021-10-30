@@ -1,0 +1,15 @@
+---
+- name: create tables
+  import_tasks: create_tables.yaml
+
+- name: set authorization
+  import_tasks: set_authorization.yaml
+
+- name: list all tables in hoh databases as a sanity check
+  tags: tables
+  include_tasks: output_table_info.yaml
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ status_schema }}"
+  loop_control:
+    loop_var: schema
