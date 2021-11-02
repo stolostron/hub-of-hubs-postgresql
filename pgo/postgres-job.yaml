@@ -26,7 +26,7 @@ spec:
               secretKeyRef:
                 name: hoh-pguser-postgres
                 key: password
-        image: quay.io/ianzhang366/postgre-ansible:latest
+        image: ${IMG}
         command: ["/bin/bash", "-c", "ansible-playbook pgo.yaml -i production -l local"]
       restartPolicy: Never
   backoffLimit: 3

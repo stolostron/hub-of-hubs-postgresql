@@ -1,0 +1,43 @@
+---
+- name: create table {{ name }} schema {{ schema }} database {{ database }}
+  tags: tables
+  postgresql_table:
+    name: "{{ status_schema }}.{{ name }}"
+    db: "{{ database }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns:
+      - id uuid not null
+      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
+      - payload jsonb not null
+
+
+- name: create index on payload->'metadata'->>'name' for table {{ name }}
+  postgresql_idx:
+    name: "{{ name }}_metadata_name_idx"
+    table: "{{ name }}"
+    schema: "{{ status_schema }}"
+    db: "{{ database }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: "(payload->'metadata'->>'name')"
+    idxtype: btree
+    unique: true
+
+- name: create index on payload->'metadata'->>'namespace'  for table {{ name }}
+  postgresql_idx:
+    name: "{{ name }}_metadata_namespace_idx"
+    table: "{{ name }}"
+    schema: "{{ status_schema }}"
+    db: "{{ database }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: "(payload->'metadata'->>'namespace')"
+    idxtype: btree
+    unique: true

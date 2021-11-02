@@ -1,5 +1,13 @@
 #!/bin/bash
 
+img="quay.io/ianzhang366/postgre-ansible:latest"
+
+cd ../
+docker build -f Dockerfile -t $img .
+docker push $img
+
+cd pgo
+
 # install the pgo operator to postgres-operator
 kubectl apply -k ./install
 
@@ -17,7 +25,9 @@ while [ -z "$matched" ]; do
     sleep 10
 done
 
-kubectl apply -f ./postgres-job.yaml
+kubectl delete -f ./postgres-job.yaml
+
+IMG=$img envsubst < ./postgres-job.yaml | kubectl apply -f -
 
 kubectl wait --for=condition=complete job/postgres-init -n $pg_namespace --timeout=120s
 
