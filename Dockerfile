@@ -23,6 +23,4 @@ COPY roles/create_tables /ansible/roles/create_tables
 COPY production /ansible
 COPY pgo.yaml /ansible
 
-# RUN ansible-playbook pgo.yaml -i production -l local
-
 CMD ["/bin/bash"]
