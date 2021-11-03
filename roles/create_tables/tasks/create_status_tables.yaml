@@ -2,6 +2,10 @@
 - name: create error type
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     query: |
       DO $$
       BEGIN
@@ -14,19 +18,21 @@
           END IF;
       END
       $$;
-  become: yes
-  become_user: postgres
+
 
 - name: create table managed_clusters
   postgresql_table:
     name: "{{ status_schema }}.{{ managed_clusters_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
       - error {{ status_schema }}.{{ error_type }} not null
-  become: yes
-  become_user: postgres
+
 
 - name: create index on payload->'metadata'->>'name'
   postgresql_idx:
@@ -34,11 +40,14 @@
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: "(payload->'metadata'->>'name')"
     idxtype: btree
-    unique: false
-  become: yes
-  become_user: postgres
+    unique: true
+
 
 - name: create index on leaf_hub_name, payload->'metadata'->>'name'
   postgresql_idx:
@@ -46,15 +55,22 @@
     table: "{{ managed_clusters_table }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns: "leaf_hub_name, (payload->'metadata'->>'name')"
     idxtype: btree
     unique: true
-  become: yes
-  become_user: postgres
+
 
 - name: create compliance type
   postgresql_query:
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     query: |
       DO $$
       BEGIN
@@ -67,8 +83,7 @@
           END IF;
       END
       $$;
-  become: yes
-  become_user: postgres
+
 
 - name: create policies tables
   tags: tables
@@ -85,32 +100,53 @@
   postgresql_table:
     name: "{{ status_schema }}.{{ aggregated_policies_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - applied_clusters int not null
       - non_compliant_clusters int not null
-  become: yes
-  become_user: postgres
+
 
 - name: create table {{ leaf_hub_heartbeats_table }}
   postgresql_table:
     name: "{{ status_schema }}.{{ leaf_hub_heartbeats_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - name varchar({{ cluster_name_length_limit }}) not null
       - last_timestamp timestamp not null default now()
       - PRIMARY KEY(name)
-  become: yes
-  become_user: postgres
+
 
 - name: create table {{ subscriptions_table }}
   postgresql_table:
     name: "{{ status_schema }}.{{ subscriptions_table }}"
     db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
     columns:
       - id uuid not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - payload jsonb not null
-  become: yes
-  become_user: postgres
+
+- name: create cluster lifecycle status tables
+  tags: tables
+  vars:
+    database: "{{ hoh_db }}"
+  include_tasks: create_status_clusterlifecycle_table.yaml
+  loop:
+    - clusterdeployments
+    - secrets
+    - machinepools
+    - klusterletaddonconfigs
+  loop_control:
+    loop_var: name

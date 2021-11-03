@@ -1,0 +1,84 @@
+---
+- name: delete tables
+  tags: tables
+  postgresql_table:
+    name: "{{ table_name }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    state: absent
+  loop:
+    - "{{ spec_schema }}.policies"
+    - "{{ spec_schema }}.placementrules"
+    - "{{ spec_schema }}.placementbindings"
+    - "{{ spec_schema }}.configs"
+    - "{{ spec_schema }}.subscriptions"
+    - "{{ spec_schema }}.channels"
+    - "{{ spec_schema }}.applications"
+    - "{{ history_schema }}.policies"
+    - "{{ history_schema }}.placementrules"
+    - "{{ history_schema }}.placementbindings"
+    - "{{ history_schema }}.configs"
+    - "{{ history_schema }}.subscriptions"
+    - "{{ history_schema }}.channels"
+    - "{{ history_schema }}.applications"
+    - "{{ status_schema }}.{{ managed_clusters_table }}"
+    - "{{ status_schema }}.{{ policies_table }}"
+    - "{{ status_schema }}.{{ aggregated_policies_table }}"
+    - "{{ status_schema }}.{{ leaf_hub_heartbeats_table }}"
+    - "{{ local_spec_schema }}.policies"
+    - "{{ local_spec_schema }}.placementrules"
+    - "{{ local_status_schema }}.{{ policies_table }}"
+  loop_control:
+    loop_var: table_name
+
+- name: delete types
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    query: DROP TYPE {{ item }}
+  loop:
+    - "{{ status_schema}}.{{ compliance_type }}"
+    - "{{ status_schema}}.{{ error_type }}"
+
+
+- name: delete functions
+  tags: tables
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    query: DROP FUNCTION {{ item }}
+  loop:
+    - trigger_set_timestamp
+    - move_policies_to_history
+    - move_placementrules_to_history
+    - move_placementbindings_to_history
+    - move_configs_to_history
+    - move_subscriptions_to_history
+    - move_channels_to_history
+    - move_applications_to_history
+
+- name: delete schema
+  postgresql_schema:
+    name: "{{ item }}"
+    database: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    state: absent
+  loop:
+    - "{{ spec_schema }}"
+    - "{{ status_schema }}"
+    - "{{ local_spec_schema }}"
+    - "{{ local_status_schema }}"
+    - "{{ history_schema }}"

@@ -1,14 +1,40 @@
 ---
-- name: create hoh process user
+- name: create {{ hoh_process_user }} user
   postgresql_user:
     db: "{{ hoh_db }}"
     name: "{{ hoh_process_user }}"
   become: yes
   become_user: postgres
 
-- name: create transport bridge user
+- name: create {{ transport_bridge_user }} user
   postgresql_user:
     db: "{{ hoh_db }}"
     name: "{{ transport_bridge_user }}"
   become: yes
   become_user: postgres
+
+- name: create {{ db_login_user }} user
+  postgresql_user:
+    db: "{{ hoh_db }}"
+    user: "{{ db_login_user }}"
+    password: "{{ db_login_password }}"
+    priv: ALL
+    role_attr_flags: CREATEDB,LOGIN
+  environment:
+    PGOPTIONS: "-c password_encryption=scram-sha-256"
+  become: yes
+  become_user: postgres
+  register: db_create_hoh_admin_user
+
+- name: database sanity debug
+  ansible.builtin.debug:
+    msg: "{{ db_create_hoh_admin_user }}"
+
+- name: Grant users {{ db_login_user }} access to databases {{ hoh_db }} using scram-sha-256 authentication
+  postgresql_pg_hba:
+    dest: "{{ postgresql_configuration_directory }}/pg_hba.conf"
+    contype: local
+    users: "{{ db_login_user }}"
+    source: all
+    databases: "{{ hoh_db }}"
+    method: scram-sha-256

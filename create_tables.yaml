@@ -1,0 +1,6 @@
+---
+- name: create table
+  hosts: local
+  connection: local
+  roles:
+    - { role: create_tables, tags: ["create_tables"]  }

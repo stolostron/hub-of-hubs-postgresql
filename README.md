@@ -4,6 +4,7 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 
 ![DatabaseDiagram](images/HubOfHubsDatabase.png)
 
+
 ## Design points
 
 * We use three schemas: `spec`, `status` and `history`.
@@ -11,6 +12,11 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 * We use [the same structure](https://github.com/open-cluster-management/hub-of-hubs-postgresql/blob/main/roles/install/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
 * `status.schema` tables are defined by [this task](roles/install/tasks/create_status_tables.yaml).
 * We do not use foreign keys [due to performance considerations](http://bonesmoses.org/2014/05/14/foreign-keys-are-not-free/).
+
+## Use postgres as an operator in your Hub of hub cluster
+You can follow the [instructions](./pgo/README.md) to:
+- set up a postgres
+- use this ansible to set up database schema, tables, and permissions, etc... on the postgres inside your Hoh cluster
 
 ## Initial setup
 
@@ -24,7 +30,7 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 1.  Create `vault` file with following variables:
     - `vault_ansible_user`: contains the user of the machine where you install the database
     - `vault_ansible_ssh_private_key_file`: the path to the SSH private key file to connect to the machine
-
+	- make sure you set up a ENV varible `DB_LOGIN_USER` and `DB_LOGIN_PASSWORD`, which is the user for creating schema, tables, etc...
     Put the `vault` file into [group_vars/](group_vars/), in the corresponding directory (acm/acm2/acm3/ etc.)
 
 1.  For formatting multiple lines output, add the following lines to your `ansible.cfg`:
@@ -40,7 +46,13 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 
 1.  Disable previous `postgresql`. On RHEL run:  `sudo dnf -qy module disable postgresql`
 
-## To install
+1.  Install `psycopg2` locally:
+
+    ```
+    pip3 install psycopg2-binary
+    ```
+
+## To install the database (without creating tables)
 
 Run:
 
@@ -50,10 +62,28 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 
 ## Post installation tasks
 
-1.  Set password for the user `hoh_process_user`. Run inside the VM the following command for each user:
+1.  Create an admin user. Run inside the VM:
 
     ```
-    sudo -u postgres psql -c '\password hoh_process_user'
+    sudo -u postgres createuser <admin user> -d
+    ```
+
+1.  Grant to the admin all the priviledges on the `hoh` database:
+
+    ```
+    sudo -u postgres psql -c `GRANT ALL PRIVILEGES ON DATABASE hoh TO <admin user>;`
+    ```
+
+1.  Add the following line to `/var/lib/pgsql/13/data/pg_hba.conf`
+
+    ```
+    hostssl hoh     <admin-user>   0.0.0.0/0       scram-sha-256
+    ```
+
+1.  Set password for the users. Run inside the VM the following command for each user:
+
+    ```
+    sudo -u postgres psql -c '\password <user name>'
     ```
 
 1.  Obtain a private key and a certificate and put them into `server.key` and `server.crt` files in the PostrgeSQL configuration directory.
@@ -68,6 +98,23 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
     ansible-playbook configure_tls.yaml -i production --ask-vault-pass -l acm
     ```
+## To create the tables
+
+If you want to add new tables/indexes, run the installation script with tag `tables`.
+
+Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or drop all the tables, see the previous section.
+
+1. Set the following environment variables:
+
+*  `DB_LOGIN_HOST` - the host of the database
+*  `DB_LOGIN_USER` - the admin user of the database. It must have permissions to create tables.
+*  `DB_LOGIN_PASSWORD` - the password of the admin user.
+
+Run:
+
+```
+ansible-playbook create_tables.yaml -i production -l local
+```
 
 ## Psql setup (on the client machine)
 
@@ -78,7 +125,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
 
 1.  Create `root.crt` on the client machine, put it into `~/.postgresql/root.crt`. For example, for
-[Let's encrypt](https://letsencrypt.org/) certificates, run the following command: 
+[Let's encrypt](https://letsencrypt.org/) certificates, run the following command:
 
     ```
     curl https://letsencrypt.org/certs/isrgrootx1.pem --output ~/.postgresql/root.crt
@@ -101,22 +148,16 @@ ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm
 
 ## To drop all the tables
 
-Run:
+1. Set the following environment variables:
 
-```
-ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm --tags tables
-```
-
-## To create the tables:
-
-If you want to add new tables/indexes, run the installation script with tag `tables`.
-
-Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or drop all the tables, see the previous section.
+*  `DB_LOGIN_HOST` - the host of the database
+*  `DB_LOGIN_USER` - the admin user of the database. It must have permissions to create tables.
+*  `DB_LOGIN_PASSWORD` - the password of the admin user.
 
 Run:
 
 ```
-ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags tables
+ansible-playbook delete_tables.yaml -i production -l local
 ```
 
 ## To change the database

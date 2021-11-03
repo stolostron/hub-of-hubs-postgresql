@@ -4,8 +4,16 @@ max_connections: 100
 shared_buffers: 128MB
 random_page_cost: 4.0
 hoh_db: hoh
-hoh_process_user: hoh_process_user
-transport_bridge_user: transport_bridge_user
+
+# pgo placeholders, the following is set to empty to make sure the ansible runs fine on VM instead of using postgres creds
+db_login_host:  ""
+db_login_user:  ""
+db_login_password: ""
+db_ssl_mode: "require"
+# end of pgo
+
+hoh_process_user: hoh-process-user
+transport_bridge_user: transport-bridge-user
 spec_schema: spec
 status_schema: status
 local_spec_schema: local_spec

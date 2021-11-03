@@ -1,19 +1,17 @@
 ---
 - name: install
-  import_tasks: install.yaml
+  import_tasks: install_postgres_server.yaml
+
 
 - name: perform tuning
   import_tasks: perform_tuning.yaml
 
-- name: create databases
+- name: create database
   import_tasks: create_databases.yaml
 
+# for pgo the user is created when operator initialized ../../../pgo/high-availability/ha-postgres.yaml:10,13
 - name: create users
   import_tasks: create_users.yaml
-
-- name: set authorization
-  tags: tables
-  import_tasks: set_authorization.yaml
 
 - name: set authentication
   import_tasks: set_authentication.yaml
@@ -22,16 +20,9 @@
   shell: psql -c '\l'
   become: yes
   become_user: postgres
-  register: databases_psql_result
+  register: databases_psql_databases_result
 
-- debug:
-    msg: "{{ databases_psql_result.stdout_lines }}"
+- name: database sanity debug
+  ansible.builtin.debug:
+    msg: "{{ databases_psql_databases_result.stdout_lines }}"
 
-- name: dump the current users as a sanity check
-  shell: psql -c '\du'
-  become: yes
-  become_user: postgres
-  register: databases_psql_result
-
-- debug:
-    msg: "{{ databases_psql_result.stdout_lines }}"
