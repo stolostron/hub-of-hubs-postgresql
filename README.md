@@ -122,7 +122,7 @@ Note that creating tables does not change the existing tables/indexes. If you wa
 Run:
 
 ```
-ansible-playbook install.yaml -i production --ask-vault-pass -l acm --tags tables
+ansible-playbook create_tables.yaml -i production --ask-vault-pass -l acm
 ```
 
 ## To change the database
