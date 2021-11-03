@@ -1,0 +1,6 @@
+---
+- name: delete tables
+  hosts: local
+  connection: local
+  roles:
+    - { role: delete_tables, tags: ["delete_tables"]  }

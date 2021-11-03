@@ -4,4 +4,3 @@
   hosts: all
   roles:
     - { role: install, tags: ["install"] }
-    - { role: create_tables, tags: ["create_tables"] }
