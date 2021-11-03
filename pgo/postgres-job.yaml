@@ -27,7 +27,6 @@ spec:
                 name: hoh-pguser-postgres
                 key: password
         image: ${IMG}
-        command: ["/bin/bash", "-c", "ansible-playbook pgo.yaml -i production -l local"]
+        command: ["/bin/bash", "-c", "ansible-playbook create_tables.yaml -i production -l local"]
       restartPolicy: Never
   backoffLimit: 3
-
