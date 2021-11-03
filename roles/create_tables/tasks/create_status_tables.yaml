@@ -46,7 +46,7 @@
     ssl_mode: "{{ db_ssl_mode }}"
     columns: "(payload->'metadata'->>'name')"
     idxtype: btree
-    unique: true
+    unique: false
 
 
 - name: create index on leaf_hub_name, payload->'metadata'->>'name'
