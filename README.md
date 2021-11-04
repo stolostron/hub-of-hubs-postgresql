@@ -100,21 +100,19 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
 ## To create the tables
 
-If you want to add new tables/indexes, run the installation script with tag `tables`.
-
 Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or drop all the tables, see the previous section.
 
-1. Set the following environment variables:
+1.  Set the following environment variables:
 
-*  `DB_LOGIN_HOST` - the host of the database
-*  `DB_LOGIN_USER` - the admin user of the database. It must have permissions to create tables.
-*  `DB_LOGIN_PASSWORD` - the password of the admin user.
+    *  `DB_LOGIN_HOST` - the host of the database
+    *  `DB_LOGIN_USER` - the admin user of the database. It must have permissions to create tables.
+    *  `DB_LOGIN_PASSWORD` - the password of the admin user.
 
-Run:
+1. Run:
 
-```
-ansible-playbook create_tables.yaml -i production -l local
-```
+   ```
+   ansible-playbook create_tables.yaml -i production -l local
+   ```
 
 ## Psql setup (on the client machine)
 
@@ -148,19 +146,19 @@ ansible-playbook uninstall.yaml -i production --ask-vault-pass -l acm
 
 ## To drop all the tables
 
-1. Set the following environment variables:
+1.  Set the following environment variables:
 
-*  `DB_LOGIN_HOST` - the host of the database
-*  `DB_LOGIN_USER` - the admin user of the database. It must have permissions to create tables.
-*  `DB_LOGIN_PASSWORD` - the password of the admin user.
+    *  `DB_LOGIN_HOST` - the host of the database
+    *  `DB_LOGIN_USER` - the admin user of the database. It must have permissions to create tables.
+    *  `DB_LOGIN_PASSWORD` - the password of the admin user.
 
-Run:
+1.  Run:
 
-```
-ansible-playbook delete_tables.yaml -i production -l local
-```
+    ```
+    ansible-playbook delete_tables.yaml -i production -l local
+    ```
 
-## To change the database
+## To change the database name
 
 ```
 ansible-playbook install.yaml -i production --ask-vault-pass -l acm -e "hoh_db=hoh2"
