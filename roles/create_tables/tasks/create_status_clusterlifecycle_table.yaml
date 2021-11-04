@@ -26,7 +26,7 @@
     ssl_mode: "{{ db_ssl_mode }}"
     columns: "(payload->'metadata'->>'name')"
     idxtype: btree
-    unique: true
+    unique: false
 
 - name: create index on payload->'metadata'->>'namespace'  for table {{ name }}
   postgresql_idx:
