@@ -167,3 +167,10 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm -e "hoh_db=h
 ## To tune the database
 
 ansible-playbook install.yaml -i production --ask-vault-pass -l acm -e "max_connections=550 shared_buffers=24GB random_page_cost=1.5"
+
+## Troubleshooting
+
+1.  If you get an error about some python library not loaded:
+    1. To check that the library is loaded - https://stackoverflow.com/a/42747425
+    1. If you have multiple python executable installed, and the library is loaded with one of them but not loaded with another one:
+ change the `interpreter_python` entry in `~/ansible.cfg` to the python executable that can load the library.
