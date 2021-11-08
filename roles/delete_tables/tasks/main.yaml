@@ -59,7 +59,7 @@
   loop:
     - "{{ status_schema}}.{{ compliance_type }}"
     - "{{ status_schema}}.{{ error_type }}"
-
+  ignore_errors: yes
 
 - name: delete functions
   tags: tables
@@ -79,6 +79,7 @@
     - move_subscriptions_to_history
     - move_channels_to_history
     - move_applications_to_history
+  ignore_errors: yes
 
 - name: delete schema
   postgresql_schema:
@@ -95,3 +96,4 @@
     - "{{ local_spec_schema }}"
     - "{{ local_status_schema }}"
     - "{{ history_schema }}"
+  ignore_errors: yes
