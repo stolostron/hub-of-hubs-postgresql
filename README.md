@@ -13,12 +13,12 @@ PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-clust
 * `status.schema` tables are defined by [this task](roles/install/tasks/create_status_tables.yaml).
 * We do not use foreign keys [due to performance considerations](http://bonesmoses.org/2014/05/14/foreign-keys-are-not-free/).
 
-## Use postgres as an operator in your Hub of hub cluster
+## Run PostgreSQL with an operator in your Hub of hub cluster
 You can follow the [instructions](./pgo/README.md) to:
-- set up a postgres
+- set up a PostgreSQL
 - use this ansible to set up database schema, tables, and permissions, etc... on the postgres inside your Hoh cluster
 
-## Initial setup
+## Initial setup if you do not want to run PostgreSQL with an operator
 
 1.  Create `production` file in the main directory with the host name of your machine to install the database, under the `acm` host group `acm`:
 
