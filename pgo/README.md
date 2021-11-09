@@ -8,7 +8,7 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
 4. all hoh related schema and tables will be created via `job/postgres-init`
 
 # How to do
-1. make sure your `KUBECONFIG` is pointing the HoH cluster. Ask for your cluster's admin to give you appropriate permissions.
+1. make sure your `KUBECONFIG` is pointing the HoH cluster. Ask your cluster's admin to give you appropriate permissions.
 2. run `./setup.sh`
 
 If the command above does not produce any errors, you should able to connect to the Hoh DB sits inside your hoh cluster.
