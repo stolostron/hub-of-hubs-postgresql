@@ -8,6 +8,8 @@ docker push $img
 
 cd pgo
 
+kubectl delete -k ./high-availability
+
 # install the pgo operator to postgres-operator
 kubectl apply -k ./install
 
