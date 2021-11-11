@@ -8,6 +8,9 @@ docker push $img
 
 cd pgo
 
+# ensure the pgo operator is deleted first to start its deployment from scratch
+kubectl delete -k ./high-availability
+
 # install the pgo operator to postgres-operator
 kubectl apply -k ./install
 
@@ -17,11 +20,11 @@ kubectl apply -k ./high-availability
 pg_namespace="hoh-postgres"
 db_name="hoh"
 
-postgres_secert_name="$db_name-pguser-postgres"
+postgres_secret_name="$db_name-pguser-postgres"
 
 while [ -z "$matched" ]; do
-    echo "Waiting for ($pg_namespace/$postgres_secert_name) to be created"
-    matched=$(kubectl get secret $postgres_secert_name -n $pg_namespace --ignore-not-found=true)
+    echo "Waiting for ($pg_namespace/$postgres_secret_name) to be created"
+    matched=$(kubectl get secret $postgres_secret_name -n $pg_namespace --ignore-not-found=true)
     sleep 10
 done
 
