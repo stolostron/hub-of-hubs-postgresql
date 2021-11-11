@@ -8,7 +8,7 @@ docker push $img
 
 cd pgo
 
-# ensure pgo operator is deleted first to start the deployment from scratch
+# ensure pgo operator is deleted first to start postgres operator deployment from scratch
 kubectl delete -k ./high-availability
 
 # install the pgo operator to postgres-operator
