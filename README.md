@@ -1,9 +1,14 @@
 # Install and configure Hub-of-Hubs database
 
+[![License](https://img.shields.io/github/license/open-cluster-management/hub-of-hubs-postgresql)](/LICENSE)
+
 PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/open-cluster-management/hub-of-hubs) . This repository contains Ansible playbooks to install, configure and uninstall the database. For common commands to work with the database, see [usage.md](usage.md).
 
 ![DatabaseDiagram](images/HubOfHubsDatabase.png)
 
+Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
+
+## Getting Started
 
 ## Design points
 
