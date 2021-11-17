@@ -62,7 +62,7 @@ make build-images
     kubectl exec -it -n myproject --kubeconfig $TOP_HUB_CONFIG $(kubectl get pods -l name=db-performance-tests -n myproject --kubeconfig $TOP_HUB_CONFIG  -o jsonpath='{.items..metadata.name}') -- bash
     ```
 
-1.  Run the tests (the executable is `db-performance-tests`, available via the `PATH` environment variable)
+1.  Run the tests (the executable is `/usr/local/bin/db-performance-tests`, available via the `PATH` environment variable)
 
 ## Setting a client on RHEL
 
