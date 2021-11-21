@@ -1,6 +1,7 @@
 #!/bin/bash
 
-img="quay.io/ianzhang366/postgre-ansible:latest"
+# use USERNAME=ianzhang366 in case you do not have your docker image
+img="quay.io/$USERNAME/postgre-ansible:latest"
 
 cd ../
 docker build -f Dockerfile -t $img .

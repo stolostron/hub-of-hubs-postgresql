@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	columnSize                   = 6
+	columnSize                   = 5
 	clustersPerLeafHub           = 1000
 	compliantToNonCompliantRatio = 1000
 	DefaultRowsNumber            = 100000
@@ -180,13 +180,13 @@ func generateRow(leafHubIndex, clusterIndex, policyIndex int) []interface{} {
 	leafHubName := fmt.Sprintf("hub%d", leafHubIndex)
 	clusterName := fmt.Sprintf("cluster%d", clusterIndex)
 
-	errorValue, compliance, action := generateDerivedColumns()
+	errorValue, compliance := generateDerivedColumns()
 
-	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance, action}
+	return []interface{}{policyID, clusterName, leafHubName, errorValue, compliance}
 }
 
 /* #nosec G404: Use of weak random number generator (math/rand instead of crypto/rand) */
-func generateDerivedColumns() (string, string, string) {
+func generateDerivedColumns() (string, string) {
 	errorValue := "none"
 	compliance := compliantString
 
@@ -194,9 +194,7 @@ func generateDerivedColumns() (string, string, string) {
 		compliance = nonCompliantString
 	}
 
-	action := "inform"
-
-	return errorValue, compliance, action
+	return errorValue, compliance
 }
 
 func insertRowsByCopy(ctx context.Context, dbConnectionPool *pgxpool.Pool, rows [][]interface{}) error {

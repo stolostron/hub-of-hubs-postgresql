@@ -23,7 +23,9 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: hub-of-hubs-perf-database-secret
+                  # We use 'hub-of-hubs-database-transport-bridge-secret' to run db performance tests against HoH database.
+                  # In case it is required to run the tests against another database a new secret must be defined and used here.
+                  name: hub-of-hubs-database-transport-bridge-secret
                   key: url
             - name: POD_NAME
               valueFrom:

@@ -9,7 +9,11 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
 
 # How to do
 1. make sure your `KUBECONFIG` is pointing the HoH cluster. Ask your cluster's admin to give you appropriate permissions.
-2. run `./setup.sh`
+2. set the `USERNAME` environment variable to hold the username part of your docker registry:
+    ```
+    $ export USERNAME=...
+    ```
+3. run `./setup.sh`
 
 If the command above does not produce any errors, you should able to connect to the Hoh DB sits inside your hoh cluster.
 
