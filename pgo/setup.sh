@@ -1,16 +1,10 @@
 #!/bin/bash
 
-# use USERNAME=ianzhang366 in case you do not have your docker image
-img="quay.io/$USERNAME/postgre-ansible:latest"
-
-cd ../
-docker build -f Dockerfile -t $img .
-docker push $img
-
-cd pgo
-
 # ensure the pgo operator is deleted first to start its deployment from scratch
-kubectl delete -k ./high-availability
+kubectl delete -k ./high-availability --ignore-not-found=true
+
+# ensure the pgo operator crd and other stuff is deleted first to start its deployment from scratch
+kubectl delete -k ./install --ignore-not-found=true
 
 # install the pgo operator to postgres-operator
 kubectl apply -k ./install
@@ -29,9 +23,9 @@ while [ -z "$matched" ]; do
     sleep 10
 done
 
-kubectl delete -f ./postgres-job.yaml
+kubectl delete -f ./postgres-job.yaml --ignore-not-found=true
 
-IMG=$img envsubst < ./postgres-job.yaml | kubectl apply -f -
+IMG=$IMAGE envsubst < ./postgres-job.yaml | kubectl apply -f -
 
 kubectl wait --for=condition=complete job/postgres-init -n $pg_namespace --timeout=120s
 
