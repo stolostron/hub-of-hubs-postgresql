@@ -9,7 +9,7 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
 
 # How to do
 1. make sure your `KUBECONFIG` is pointing the HoH cluster. Ask your cluster's admin to give you appropriate permissions.
-2. set the `USER_NAME` environment variable to hold the username part of your docker registry:
+2. set the `USER_NAME` environment variable to hold the username part of your docker image:
     ```
     $ export USER_NAME=...
     ```
@@ -17,11 +17,11 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
     ```
     $ export IMAGE_TAG=latest
     ```
-4. set the `REGISTRY` environment variable to hold your docker registry:
+4. set the `IMAGE` environment variable to hold your docker image:
     ```
-    $ export REGISTRY=quay.io/$USER_NAME/postgre-ansible:$IMAGE_TAG
+    $ export IMAGE=quay.io/$USER_NAME/postgre-ansible:$IMAGE_TAG
     ```
-5. run `docker build -f Dockerfile -t $REGISTRY .` and then `docker push $REGISTRY` from the project root folder
+5. run `docker build -f Dockerfile -t $IMAGE .` and then `docker push $IMAGE` from the project root folder
 6. run `./setup.sh`
 
 If the command above does not produce any errors, you should able to connect to the Hoh DB sits inside your hoh cluster.
