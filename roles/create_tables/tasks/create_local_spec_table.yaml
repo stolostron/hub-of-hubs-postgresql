@@ -24,7 +24,7 @@
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    columns: leaf_hub_name, payload->'metadata'->>'uid'
+    columns: "leaf_hub_name, (payload->'metadata'->>'uid')"
     unique: yes
 
   # based on https://x-team.com/blog/automatic-timestamps-with-postgresql/
