@@ -13,7 +13,16 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
     ```
     $ export USERNAME=...
     ```
-3. run `./setup.sh`
+3. set the `IMAGE_TAG` environment variable to hold the tag of your image:
+    ```
+    $ export IMAGE_TAG=latest
+    ```
+4. set the `REGISTRY` environment variable to hold your docker registry:
+    ```
+    $ export REGISTRY=quay.io/$USERNAME/postgre-ansible:$IMAGE_TAG
+    ```
+5. run `docker build -f Dockerfile -t $REGISTRY .` and then `docker push $REGISTRY` from the project root folder
+6. run `./setup.sh`
 
 If the command above does not produce any errors, you should able to connect to the Hoh DB sits inside your hoh cluster.
 

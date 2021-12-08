@@ -14,13 +14,13 @@ spec:
     databases: ["hoh"]
   instances:
     - name: pgha1
-      replicas: 2
+      replicas: 1
       dataVolumeClaimSpec:
         accessModes:
         - "ReadWriteOnce"
         resources:
           requests:
-            storage: 1Gi
+            storage: 2Gi
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -42,11 +42,11 @@ spec:
             - "ReadWriteOnce"
             resources:
               requests:
-                storage: 1Gi
+                storage: 2Gi
   proxy:
     pgBouncer:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:centos8-1.15-3
-      replicas: 2
+      replicas: 1
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -57,3 +57,20 @@ spec:
                 matchLabels:
                   postgres-operator.crunchydata.com/cluster: hoh
                   postgres-operator.crunchydata.com/role: pgbouncer
+---
+
+# The configMap is used to set/unset HA configuration
+# To set HA:
+#   1. Use DisableAutofail: "false" or omit it
+#   2. Define at least 2 replicas in "instances" and "proxy" sections of the above PostgresCluster CR
+# To unset HA:
+#   1. Use DisableAutofail: "true"
+#   2. Define 1 replica in "instances" and "proxy" sections of the above PostgresCluster CR
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgo-config
+  namespace: hoh-postgres
+data:
+  DisableAutofail: "true"
+---
