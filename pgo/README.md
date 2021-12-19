@@ -21,7 +21,7 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
     ```
     $ export IMAGE=quay.io/$USER_NAME/postgre-ansible:$IMAGE_TAG
     ```
-5. run `docker build -f Dockerfile -t $IMAGE .` and then `docker push $IMAGE` from the project root folder
+5. run `docker build -t $IMAGE .` and then `docker push $IMAGE` from the project root folder
 6. run `./setup.sh`
 
 If the command above does not produce any errors, you should able to connect to the Hoh DB sits inside your hoh cluster.
