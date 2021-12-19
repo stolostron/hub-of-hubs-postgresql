@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # ensure the pgo operator is deleted first to start its deployment from scratch
-kubectl delete -k ./high-availability --ignore-not-found=true
+kubectl delete -k ./high-availability --ignore-not-found=true 2>/dev/null
 
 # ensure the pgo operator crd and other stuff is deleted first to start its deployment from scratch
-kubectl delete -k ./install --ignore-not-found=true
+kubectl delete -k ./install --ignore-not-found=true 2>/dev/null
 
 # install the pgo operator to postgres-operator
 kubectl apply -k ./install
