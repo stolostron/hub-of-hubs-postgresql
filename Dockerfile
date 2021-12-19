@@ -20,7 +20,7 @@ COPY group_vars/all /ansible/group_vars/all
 COPY group_vars/local/vars.yaml /ansible/group_vars/local
 COPY roles/create_tables /ansible/roles/create_tables
 
-COPY production /ansible
+COPY production.local /ansible/production
 COPY create_tables.yaml /ansible
 
 CMD ["/bin/bash"]
