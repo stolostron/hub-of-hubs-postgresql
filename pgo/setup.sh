@@ -24,7 +24,7 @@ done
 
 kubectl delete -f ./postgres-job.yaml --ignore-not-found=true
 
-IMG=$IMAGE envsubst < ./postgres-job.yaml | kubectl apply -f -
+envsubst < ./postgres-job.yaml | kubectl apply -f -
 
 kubectl wait --for=condition=complete job/postgres-init -n $pg_namespace --timeout=300s
 

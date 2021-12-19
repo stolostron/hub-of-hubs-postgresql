@@ -26,7 +26,7 @@ spec:
               secretKeyRef:
                 name: hoh-pguser-postgres
                 key: password
-        image: ${IMG}
+        image: ${IMAGE}
         imagePullPolicy: Always
         command: ["/bin/bash", "-c", "ansible-playbook create_tables.yaml -i production -l local"]
       restartPolicy: Never
