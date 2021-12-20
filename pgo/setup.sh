@@ -28,4 +28,4 @@ envsubst < ./postgres-job.yaml | kubectl apply -f -
 
 kubectl wait --for=condition=complete job/postgres-init -n $pg_namespace --timeout=300s
 
-kubectl logs job/postgres-init -n $pg_namespace
+kubectl logs $(kubectl get pods --field-selector status.phase=Succeeded  --selector=job-name=postgres-init -n $pg_namespace  --output=jsonpath='{.items[*].metadata.name}') -n $pg_namespace
