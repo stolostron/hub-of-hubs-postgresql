@@ -13,9 +13,8 @@ kubectl apply -k ./install
 kubectl apply -k ./high-availability
 
 pg_namespace="hoh-postgres"
-db_name="hoh"
 
-postgres_secret_name="$db_name-pguser-postgres"
+postgres_secret_name="hoh-pguser-postgres"
 
 while [ -z "$matched" ]; do
     echo "Waiting for ($pg_namespace/$postgres_secret_name) to be created"
