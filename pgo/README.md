@@ -50,5 +50,10 @@ PGPASSWORD=$PGPASSWORD PGSSLMODE=require psql -h $PGHOST -U $DB_NAME -d $DB_NAME
 
 ```
 
+## Connect to the database from the master node
+
+```
+kubectl exec -it $(kubectl get pods -n hoh-postgres -l postgres-operator.crunchydata.com/role=master -o jsonpath='{.items..metadata.name}') -n hoh-postgres -c database -- psql -d hoh
+```
 # What's next
 Run the Hoh deployments and play around.
