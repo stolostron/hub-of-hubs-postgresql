@@ -46,7 +46,7 @@ echo "postgres password: " $PGPASSWORD
 echo "postgres host: "$PGHOST
 
 # connect to db
-PGPASSWORD=$PGPASSWORD PGSSLMODE=require psql -h $PGHOST -U $DB_NAME -d $DB_NAME
+PGPASSWORD=$PGPASSWORD PGSSLMODE=require psql -h $PGHOST -U $PGUSER -d $DB_NAME
 
 ```
 
