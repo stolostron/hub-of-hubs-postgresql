@@ -20,7 +20,7 @@ spec:
         - "ReadWriteOnce"
         resources:
           requests:
-            storage: 2Gi
+            storage: 50Gi
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -42,7 +42,7 @@ spec:
             - "ReadWriteOnce"
             resources:
               requests:
-                storage: 2Gi
+                storage: 50Gi
   proxy:
     pgBouncer:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:centos8-1.15-3
