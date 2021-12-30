@@ -19,7 +19,7 @@ If we can run the hoh postgres DB inside cluster as an operator to test/try our 
     ```
 4. set the `IMAGE` environment variable to hold your docker image:
     ```
-    $ export IMAGE=quay.io/$USER_NAME/postgre-ansible:$IMAGE_TAG
+    $ export IMAGE=quay.io/$USER_NAME/postgresql-ansible:$IMAGE_TAG
     ```
 5. run `docker build -t $IMAGE .` and then `docker push $IMAGE` from the project root folder
 6. run `./setup.sh`
