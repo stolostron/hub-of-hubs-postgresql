@@ -1,4 +1,4 @@
-module github.com/open-cluster-management/hub-of-hubs-postgresql/performance_tests
+module github.com/stolostron/hub-of-hubs-postgresql/performance_tests
 
 go 1.16
 

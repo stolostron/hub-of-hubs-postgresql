@@ -11,7 +11,7 @@ import (
 	"syscall"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/open-cluster-management/hub-of-hubs-postgresql/performance_tests/pkg/compliance"
+	"github.com/stolostron/hub-of-hubs-postgresql/performance_tests/pkg/compliance"
 )
 
 const (

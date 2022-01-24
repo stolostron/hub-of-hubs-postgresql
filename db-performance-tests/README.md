@@ -69,7 +69,7 @@ make build-images
 ```
 sudo dnf module install postgresql:13 -y
 sudo dnf install git wget emacs make -y
-git clone https://github.com/open-cluster-management/hub-of-hubs-postgresql
+git clone https://github.com/stolostron/hub-of-hubs-postgresql
 cd hub-of-hubs-postgresql/
 git checkout perf
 cd db-performance-tests/
