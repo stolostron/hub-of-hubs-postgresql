@@ -9,10 +9,10 @@
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
     columns:
-      - managed_cluster_name varchar({{ cluster_name_length_limit }}) not null
-      - labels text not null
-      - deleted_label_keys text not null default ''
-      - version bigint not null check (version > 0)
+      - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
+      - labels                jsonb not null default '[]'::jsonb  # format: array of {"key":"k","value":"v"}
+      - deleted_label_keys    jsonb not null default '[]'::jsonb  # format: array of strings
+      - version               bigint not null check (version > 0)
 
 - name: create index on version
   postgresql_idx:
