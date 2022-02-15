@@ -32,7 +32,7 @@
       END;
       $$ LANGUAGE plpgsql;
 
-- name: create spec tables
+- name: create templated spec tables
   tags: tables
   include_tasks: create_spec_tables.yaml
   loop:
@@ -40,6 +40,12 @@
     - "{{ history_schema }}"
   loop_control:
     loop_var: schema
+
+- name: create non-templated spec tables
+  tags: tables
+  vars:
+    schema: "{{ spec_schema }}"
+  include_tasks: create_spec_managedclusters_table.yaml
 
 - name: create local spec tables
   tags: tables
