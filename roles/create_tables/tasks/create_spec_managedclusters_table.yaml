@@ -9,7 +9,6 @@
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
     columns:
-      - leaf_hub_name         varchar({{ cluster_name_length_limit }}) not null
       - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
       - labels                text not null
       - deleted_label_keys    text not null
