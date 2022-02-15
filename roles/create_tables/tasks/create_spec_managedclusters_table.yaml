@@ -2,7 +2,7 @@
 - name: create managed clusters metadata table
   tags: tables
   postgresql_table:
-    table: "{{ schema }}.{{ managed_clusters_metadata_table }}"
+    table: "{{ schema }}.{{ name }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
@@ -17,8 +17,8 @@
 
 - name: create index on version
   postgresql_idx:
-    name: "{{ managed_clusters_metadata_table }}_version_idx"
-    table: "{{ managed_clusters_metadata_table }}"
+    name: "{{ name }}_version_idx"
+    table: "{{ name }}"
     schema: "{{ schema }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
