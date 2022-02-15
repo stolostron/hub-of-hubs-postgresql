@@ -12,7 +12,7 @@
       - leaf_hub_name         varchar({{ cluster_name_length_limit }}) not null
       - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
       - labels                text not null
-      - deleted_label_keys    text not null default ""
+      - deleted_label_keys    text not null
       - version               bigint not null check (version > 0)
 
 - name: create index on version
