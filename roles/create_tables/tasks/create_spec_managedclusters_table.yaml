@@ -26,6 +26,6 @@
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    columns: "version"
+    columns: "updated_at"
     idxtype: btree
     unique: false
