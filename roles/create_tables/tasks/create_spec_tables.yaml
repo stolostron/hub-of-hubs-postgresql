@@ -32,10 +32,9 @@
       - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
       - labels                text not null
       - deleted_label_keys    text not null  default ""
-      - version_epoch         int not null
-      - version               int not null
+      - version               bigint not null check (version > 0)
 
-- name: create index on version_epoch, version
+- name: create index on version
   postgresql_idx:
     name: "{{ managed_clusters_metadata_table }}_version_idx"
     table: "{{ managed_clusters_metadata_table }}"
@@ -45,6 +44,6 @@
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    columns: "version_epoch, version"
+    columns: "version"
     idxtype: btree
     unique: false
