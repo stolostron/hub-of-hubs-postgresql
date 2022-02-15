@@ -18,4 +18,3 @@
     - klusterletaddonconfigs
   loop_control:
     loop_var: name
-  import_tasks: create_spec_managedclusters_table.yaml
