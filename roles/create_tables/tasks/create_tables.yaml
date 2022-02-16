@@ -45,7 +45,7 @@
   tags: tables
   vars:
     schema: "{{ spec_schema }}"
-    name: "managed_clusters_metadata_table"
+    name: "managed_clusters_labels"
   include_tasks: create_spec_managedclusters_table.yaml
 
 - name: create local spec tables
