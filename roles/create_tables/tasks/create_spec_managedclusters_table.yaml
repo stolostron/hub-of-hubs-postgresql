@@ -1,5 +1,5 @@
 ---
-- name: create managed clusters labels table
+- name: create managed_clusters_labels table
   tags: tables
   postgresql_table:
     table: "{{ schema }}.{{ name }}"
@@ -14,6 +14,7 @@
       - labels                jsonb not null default '{}'::jsonb  # format: array of {"key":"value"}
       - deleted_label_keys    jsonb not null default '[]'::jsonb  # format: array of strings
       - updated_at            timestamp not null default now()
+      - version               bigint not null default 0 check (version >= 0) # version field local for each row
 
 - name: create index on updated_at
   postgresql_idx:
