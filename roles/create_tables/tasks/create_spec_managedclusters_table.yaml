@@ -11,8 +11,7 @@
     columns:
       - leaf_hub_name         varchar({{ cluster_name_length_limit }}) not null default ''
       - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
-      - namespace             varchar({{ cluster_name_length_limit }}) not null default ''
-      - labels                jsonb not null default '[]'::jsonb  # format: array of {"key":"k","value":"v"}
+      - labels                jsonb not null default '{}'::jsonb  # format: array of {"key":"value"}
       - deleted_label_keys    jsonb not null default '[]'::jsonb  # format: array of strings
       - updated_at            timestamp not null default now()
 
