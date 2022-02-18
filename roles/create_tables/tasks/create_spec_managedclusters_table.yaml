@@ -29,3 +29,17 @@
     columns: "updated_at"
     idxtype: btree
     unique: false
+
+- name: create index on leaf_hub_name, managed_cluster_name, version
+  postgresql_idx:
+    name: "{{ name }}_updated_at_idx"
+    table: "{{ name }}"
+    schema: "{{ schema }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: "updated_at, managed_cluster_name, version"
+    idxtype: btree
+    unique: false
