@@ -14,8 +14,8 @@ Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
 
 * We use three schemas: `spec`, `status` and `history`.
 * We save Json in `JSONB` fields.
-* We use [the same structure](https://github.com/stolostron/hub-of-hubs-postgresql/blob/main/roles/install/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
-* `status.schema` tables are defined by [this task](roles/install/tasks/create_status_tables.yaml).
+* We use [the same structure](roles/create_tables/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
+* `status.schema` tables are defined by [this task](https://github.com/stolostron/hub-of-hubs-postgresql/blob/main/roles/create_tables/tasks/create_status_tables.yaml).
 * We do not use foreign keys [due to performance considerations](http://bonesmoses.org/2014/05/14/foreign-keys-are-not-free/).
 
 ## Run PostgreSQL with an operator in your Hub of hub cluster
