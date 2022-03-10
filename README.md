@@ -23,7 +23,7 @@ Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
 ## Run PostgreSQL with an operator in your Hub of hub cluster
 You can follow the [instructions](./pgo/README.md) to:
 - set up a PostgreSQL
-- use this ansible to set up database schema, tables, and permissions, etc... on the postgres inside your Hoh cluster
+- use these Ansible playbooks to set up database schema, tables, and permissions, etc... on the PostgreSQL instance inside your Kubernetes cluster
 
 ## Initial setup if you do not want to run PostgreSQL with an operator
 
