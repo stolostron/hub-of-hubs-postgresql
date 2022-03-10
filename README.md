@@ -107,7 +107,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
 ## To create the tables
 
-Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or drop all the tables, see the previous section.
+Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or [drop all the tables](https://github.com/stolostron/hub-of-hubs-postgresql#to-drop-all-the-tables).
 
 1.  Set the following environment variables:
 
