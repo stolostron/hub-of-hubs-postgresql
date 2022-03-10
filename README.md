@@ -14,7 +14,7 @@ Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
 
 ## Design points
 
-* We use three schemas: `spec`, `status` and `history`.
+* We use five schemas: `spec`, `status`, `local_spec`, `local_status`, and `history`.
 * We save Json in `JSONB` fields.
 * We use [the same structure](roles/create_tables/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
 * `status.schema` tables are defined by [this task](https://github.com/stolostron/hub-of-hubs-postgresql/blob/main/roles/create_tables/tasks/create_status_tables.yaml).
