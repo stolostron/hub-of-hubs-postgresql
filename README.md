@@ -69,7 +69,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 
 ## Post installation tasks
 
-1.  Create an admin user. Run inside the VM:
+1.  Create an admin user. Run inside the VM of the PostgreSQL server:
 
     ```
     sudo -u postgres createuser <admin user> -d
