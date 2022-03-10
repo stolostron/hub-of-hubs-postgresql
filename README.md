@@ -4,6 +4,8 @@
 
 PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/stolostron/hub-of-hubs) . This repository contains Ansible playbooks to install, configure and uninstall the database. For common commands to work with the database, see [usage.md](usage.md).
 
+The repository also contains [a go program to run performance tests](db-performance-tests) and [scripts to deploy the database to a Kubernetes cluster](pgo).
+
 ![DatabaseDiagram](images/HubOfHubsDatabase.png)
 
 Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
