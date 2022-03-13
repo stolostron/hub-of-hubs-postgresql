@@ -46,7 +46,7 @@
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    privs: UPDATE
+    privs: SELECT,INSERT,UPDATE
     type: table
     objs: "managed_clusters_labels"
     schema: "{{ spec_schema }}"
