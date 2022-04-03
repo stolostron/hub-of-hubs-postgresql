@@ -14,23 +14,9 @@
       - managed_clusters      jsonb not null default '[]'::jsonb # format : []string
       - updated_at            timestamp not null default now()
 
-- name: create index on updated_at
-  postgresql_idx:
-    name: "{{ name }}_cluster_set_name_idx"
-    table: "{{ name }}"
-    schema: "{{ schema }}"
-    db: "{{ hoh_db }}"
-    login_host: "{{ db_login_host }}"
-    login_user: "{{ db_login_user }}"
-    login_password: "{{ db_login_password }}"
-    ssl_mode: "{{ db_ssl_mode }}"
-    columns: "updated_at"
-    idxtype: btree
-    unique: false
-
 - name: create index on cluster_set_name, leaf_hub_name
   postgresql_idx:
-    name: "{{ name }}_cluster_set_name_idx"
+    name: "{{ name }}_cluster_set_name_and_leaf_hub_name_idx"
     table: "{{ name }}"
     schema: "{{ schema }}"
     db: "{{ hoh_db }}"

@@ -39,7 +39,7 @@
     schema: "{{ spec_schema }}"
     role: "{{ transport_bridge_user }}"
 
-- name: set permissions on spec.managed_clusters_labels & spec.managed_cluster_sets_tracking for transport_bridge_user
+- name: set permissions on managed-clusters-labels & managed-cluster-sets-tracking for transport_bridge_user
   postgresql_privs:
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
@@ -48,7 +48,7 @@
     ssl_mode: "{{ db_ssl_mode }}"
     privs: SELECT,INSERT,UPDATE,DELETE
     type: table
-    objs: "managed_clusters_labels,managed_cluster_sets_tracking"
+    objs: "{{ managed_clusters_labels_table }},{{ managed_cluster_sets_tracking_table }}"
     schema: "{{ spec_schema }}"
     role: "{{ transport_bridge_user }}"
 
