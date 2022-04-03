@@ -16,5 +16,8 @@
     - secrets
     - machinepools
     - klusterletaddonconfigs
+    - managedclustersets
+    - managedclustersetbindings
+    - placements
   loop_control:
     loop_var: name

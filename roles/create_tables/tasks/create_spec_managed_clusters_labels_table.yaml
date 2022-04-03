@@ -1,0 +1,31 @@
+---
+- name: create managed_clusters_labels table
+  tags: tables
+  postgresql_table:
+    table: "{{ schema }}.{{ name }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns:
+      - leaf_hub_name         varchar({{ cluster_name_length_limit }}) not null default ''
+      - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
+      - labels                jsonb not null default '{}'::jsonb  # format: map[string]string
+      - deleted_label_keys    jsonb not null default '[]'::jsonb  # format: []string
+      - updated_at            timestamp not null default now()
+      - version               bigint not null default 0 check (version >= 0) # version field local for each row
+
+- name: create index on leaf_hub_name, managed_cluster_name
+  postgresql_idx:
+    name: "{{ name }}_leaf_hub_name_and_cluster_name_idx"
+    table: "{{ name }}"
+    schema: "{{ schema }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: "leaf_hub_name,managed_cluster_name"
+    idxtype: btree
+    unique: true

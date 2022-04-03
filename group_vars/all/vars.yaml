@@ -22,6 +22,8 @@ history_schema: history
 # according to Kubernetes DNS label standard https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-label-names
 cluster_name_length_limit: 63
 managed_clusters_table: managed_clusters
+managed_clusters_labels_table: managed_clusters_labels
+managed_cluster_sets_tracking_table: managed_cluster_sets_tracking
 policies_table: compliance
 aggregated_policies_table: aggregated_compliance
 leaf_hub_heartbeats_table: leaf_hub_heartbeats

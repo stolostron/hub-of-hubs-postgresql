@@ -13,10 +13,24 @@
       BEGIN
         INSERT INTO {{ history_schema }}.{{ table }} SELECT * FROM {{ schema}}.{{ table }}
         WHERE payload -> 'metadata' ->> 'name' = NEW.payload -> 'metadata' ->> 'name' AND
-        payload -> 'metadata' ->> 'namespace' = NEW.payload -> 'metadata' ->> 'namespace';
+        (
+          (
+            (payload -> 'metadata' ->> 'namespace' IS NOT NULL AND NEW.payload -> 'metadata' ->> 'namespace' IS NOT NULL)
+          AND payload -> 'metadata' ->> 'namespace' = NEW.payload -> 'metadata' ->> 'namespace'
+          ) OR (
+            payload -> 'metadata' -> 'namespace' IS NULL AND NEW.payload -> 'metadata' -> 'namespace' IS NULL
+          )
+        );
         DELETE FROM {{ schema}}.{{ table }}
         WHERE payload -> 'metadata' ->> 'name' = NEW.payload -> 'metadata' ->> 'name' AND
-        payload -> 'metadata' ->> 'namespace' = NEW.payload -> 'metadata' ->> 'namespace';
+        (
+          (
+            (payload -> 'metadata' ->> 'namespace' IS NOT NULL AND NEW.payload -> 'metadata' ->> 'namespace' IS NOT NULL)
+          AND payload -> 'metadata' ->> 'namespace' = NEW.payload -> 'metadata' ->> 'namespace'
+          ) OR (
+            payload -> 'metadata' -> 'namespace' IS NULL AND NEW.payload -> 'metadata' -> 'namespace' IS NULL
+          )
+        );
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
