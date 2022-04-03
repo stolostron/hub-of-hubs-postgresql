@@ -4,7 +4,9 @@
 
 PostgreSQL serves as the database of [Hub-of-Hubs](https://github.com/stolostron/hub-of-hubs) . This repository contains Ansible playbooks to install, configure and uninstall the database. For common commands to work with the database, see [usage.md](usage.md).
 
-![DatabaseDiagram](images/HubOfHubsDatabase.png)
+The repository also contains [a go program to run performance tests](db-performance-tests) and [scripts to deploy the database to a Kubernetes cluster](pgo).
+
+![DatabaseDiagram](diagrams/design.svg)
 
 Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
 
@@ -12,16 +14,16 @@ Go to the [Contributing guide](CONTRIBUTING.md) to learn how to get involved.
 
 ## Design points
 
-* We use three schemas: `spec`, `status` and `history`.
+* We use five schemas: `spec`, `status`, `local_spec`, `local_status`, and `history`.
 * We save Json in `JSONB` fields.
-* We use [the same structure](https://github.com/stolostron/hub-of-hubs-postgresql/blob/main/roles/install/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
-* `status.schema` tables are defined by [this task](roles/install/tasks/create_status_tables.yaml).
+* We use [the same structure](roles/create_tables/tasks/create_spec_table.yaml) for all the tables in the `spec.schema`.
+* `status.schema` tables are defined by [this task](https://github.com/stolostron/hub-of-hubs-postgresql/blob/main/roles/create_tables/tasks/create_status_tables.yaml).
 * We do not use foreign keys [due to performance considerations](http://bonesmoses.org/2014/05/14/foreign-keys-are-not-free/).
 
 ## Run PostgreSQL with an operator in your Hub of hub cluster
 You can follow the [instructions](./pgo/README.md) to:
 - set up a PostgreSQL
-- use this ansible to set up database schema, tables, and permissions, etc... on the postgres inside your Hoh cluster
+- use these Ansible playbooks to set up database schema, tables, and permissions, etc... on the PostgreSQL instance inside your Kubernetes cluster
 
 ## Initial setup if you do not want to run PostgreSQL with an operator
 
@@ -67,7 +69,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
 
 ## Post installation tasks
 
-1.  Create an admin user. Run inside the VM:
+1.  Create an admin user. Run inside the VM of the PostgreSQL server:
 
     ```
     sudo -u postgres createuser <admin user> -d
@@ -105,7 +107,7 @@ ansible-playbook install.yaml -i production --ask-vault-pass -l acm
     ```
 ## To create the tables
 
-Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or drop all the tables, see the previous section.
+Note that creating tables does not change the existing tables/indexes. If you want to change an existing table/index, either drop it manually or [drop all the tables](https://github.com/stolostron/hub-of-hubs-postgresql#to-drop-all-the-tables).
 
 1.  Set the following environment variables:
 
