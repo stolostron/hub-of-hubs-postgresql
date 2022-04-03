@@ -1,5 +1,5 @@
 ---
-- name: create managed_clusters_labels table
+- name: create managed_cluster_sets_tracking table
   tags: tables
   postgresql_table:
     table: "{{ schema }}.{{ name }}"
@@ -9,16 +9,14 @@
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
     columns:
-      - leaf_hub_name         varchar({{ cluster_name_length_limit }}) not null default ''
-      - managed_cluster_name  varchar({{ cluster_name_length_limit }}) not null
-      - labels                jsonb not null default '{}'::jsonb  # format: map[string]string
-      - deleted_label_keys    jsonb not null default '[]'::jsonb  # format: []string
+      - cluster_set_name      varchar({{ cluster_name_length_limit }}) not null
+      - leaf_hub_name         varchar({{ cluster_name_length_limit }}) not null
+      - managed_clusters      jsonb not null default '[]'::jsonb # format : []string
       - updated_at            timestamp not null default now()
-      - version               bigint not null default 0 check (version >= 0) # version field local for each row
 
 - name: create index on updated_at
   postgresql_idx:
-    name: "{{ name }}_updated_at_idx"
+    name: "{{ name }}_cluster_set_name_idx"
     table: "{{ name }}"
     schema: "{{ schema }}"
     db: "{{ hoh_db }}"
@@ -30,9 +28,9 @@
     idxtype: btree
     unique: false
 
-- name: create index on leaf_hub_name, managed_cluster_name, version
+- name: create index on cluster_set_name, leaf_hub_name
   postgresql_idx:
-    name: "{{ name }}_updated_at_idx"
+    name: "{{ name }}_cluster_set_name_idx"
     table: "{{ name }}"
     schema: "{{ schema }}"
     db: "{{ hoh_db }}"
@@ -40,6 +38,6 @@
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    columns: "updated_at, managed_cluster_name, version"
+    columns: "cluster_set_name,leaf_hub_name"
     idxtype: btree
-    unique: false
+    unique: true

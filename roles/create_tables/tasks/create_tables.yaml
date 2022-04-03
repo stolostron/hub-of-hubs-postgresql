@@ -41,12 +41,19 @@
   loop_control:
     loop_var: schema
 
-- name: create non-templated spec tables
+- name: create managed_clusters_labels spec tables
   tags: tables
   vars:
     schema: "{{ spec_schema }}"
     name: "managed_clusters_labels"
   include_tasks: create_spec_managedclusters_table.yaml
+
+- name: create managed_cluster_sets spec tables
+  tags: tables
+  vars:
+    schema: "{{ spec_schema }}"
+    name: "managed_cluster_sets_tracking"
+  include_tasks: create_spec_managedclusterset_tracking_table.yaml
 
 - name: create local spec tables
   tags: tables
