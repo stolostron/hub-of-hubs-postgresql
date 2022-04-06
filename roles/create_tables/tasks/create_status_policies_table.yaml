@@ -1,4 +1,24 @@
 ---
+- name: create compliance type
+  postgresql_query:
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    query: |
+      DO $$
+      BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_type t
+            LEFT JOIN pg_namespace p ON t.typnamespace=p.oid
+            WHERE t.typname='{{ compliance_type }}' AND p.nspname='{{ schema }}'
+          ) THEN
+              CREATE TYPE {{ schema }}.{{ compliance_type }} AS  ENUM ('compliant', 'non_compliant', 'unknown');
+          END IF;
+      END
+      $$;
+
 - name: create table {{ schema }}.{{ policies_table }}
   postgresql_table:
     name: "{{ schema }}.{{ policies_table }}"
@@ -12,14 +32,13 @@
       - cluster_name varchar({{ cluster_name_length_limit }}) not null
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - error {{ status_schema }}.{{ error_type }} not null
-      - compliance {{ status_schema }}.{{ compliance_type }} not null
+      - compliance {{ schema }}.{{ compliance_type }} not null
 
-
-- name: create index on leaf_hub_name and compliance
+- name: create index on leaf_hub_name and compliance for table {{ schema }}.{{ policies_table }}
   postgresql_idx:
     name: "{{ policies_table }}_leaf_hub_non_compliant_idx"
     table: "{{ policies_table }}"
-    schema: "{{ status_schema }}"
+    schema: "{{ schema }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
@@ -28,26 +47,11 @@
     columns: leaf_hub_name, compliance
     cond: compliance != 'compliant'
 
-
-- name: create index on id and compliance
-  postgresql_idx:
-    name: "{{ policies_table }}_id_non_compliant_idx"
-    table: "{{ policies_table }}"
-    schema: "{{ status_schema }}"
-    db: "{{ hoh_db }}"
-    login_host: "{{ db_login_host }}"
-    login_user: "{{ db_login_user }}"
-    login_password: "{{ db_login_password }}"
-    ssl_mode: "{{ db_ssl_mode }}"
-    columns: id, compliance
-    cond: compliance != 'compliant'
-
-
-- name: create index on leaf_hub_name and cluster_name
+- name: create index on leaf_hub_name and cluster_name for table {{ schema }}.{{ policies_table }}
   postgresql_idx:
     name: "{{ policies_table }}_leaf_hub_cluster_idx"
     table: "{{ policies_table }}"
-    schema: "{{ status_schema }}"
+    schema: "{{ schema }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
@@ -55,29 +59,42 @@
     ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, cluster_name
 
-- name: create index on id, leaf_hub_name, cluster_name
+- name: create index on leaf_hub_name, id, cluster_name for table {{ schema }}.{{ policies_table }}
   postgresql_idx:
-    name: "{{ policies_table }}_policy_leaf_hub_cluster_idx"
+    name: "{{ policies_table }}_leaf_hub_policy_cluster_idx"
     table: "{{ policies_table }}"
-    schema: "{{ status_schema }}"
+    schema: "{{ schema }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    columns: id, leaf_hub_name, cluster_name
+    columns: leaf_hub_name, id, cluster_name
     unique: yes
 
-- name: create index on leaf_hub_name, id
-  postgresql_idx:
-    name: "{{ policies_table }}_leaf_hub_id_idx"
-    table: "{{ policies_table }}"
-    schema: "{{ status_schema }}"
+- name: create table {{ schema }}.{{ policies_placement_table }}
+  postgresql_table:
+    name: "{{ schema }}.{{ policies_placement_table }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
     login_password: "{{ db_login_password }}"
     ssl_mode: "{{ db_ssl_mode }}"
-    columns: leaf_hub_name, cluster_name, id
-    unique: yes
+    columns:
+      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
+      - id uuid not null
+      - placement jsonb not null
+      - resource_version text not null
 
+- name: create index on leaf_hub_name, id for table {{ schema }}.{{ policies_placement_table }}
+  postgresql_idx:
+    name: "{{ policies_placement_table }}_leaf_hub_policy_idx"
+    table: "{{ policies_placement_table }}"
+    schema: "{{ schema }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: leaf_hub_name, id
+    unique: yes
