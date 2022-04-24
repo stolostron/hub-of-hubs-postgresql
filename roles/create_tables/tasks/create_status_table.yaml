@@ -1,0 +1,40 @@
+- name: create table {{ name }} schema {{ status_schema }} database {{ database }}
+  postgresql_table:
+    name: "{{ status_schema }}.{{ name }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns:
+      - id uuid not null
+      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
+      - payload jsonb not null
+
+- name: create index on payload->metadata->>name, payload->metadata->>namespace
+  postgresql_idx:
+    name: "{{ name }}_payload_name_and_namespace_idx"
+    table: "{{ name }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: (payload->'metadata'->>'name'), (payload->'metadata'->>'namespace')
+    idxtype: btree
+    unique: false
+
+- name: create index on leaf_hub_name, payload->metadata->>name, payload->metadata->>namespace
+  postgresql_idx:
+    name: "{{ name }}_leaf_hub_name_and_payload_name_namespace_idx"
+    table: "{{ name }}"
+    schema: "{{ status_schema }}"
+    db: "{{ hoh_db }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    columns: leaf_hub_name, (payload->'metadata'->>'name'), (payload->'metadata'->>'namespace')
+    idxtype: btree
+    unique: true

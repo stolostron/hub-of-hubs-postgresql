@@ -103,7 +103,6 @@
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - last_timestamp timestamp not null default now()
 
-
 - name: create index on leaf_hub_name for table {{ leaf_hub_heartbeats_table }}
   postgresql_idx:
     name: "{{ leaf_hub_heartbeats_table }}_leaf_hub_idx"
@@ -117,16 +116,17 @@
     columns: leaf_hub_name
     unique: yes
 
-
-- name: create table {{ subscriptions_table }}
-  postgresql_table:
-    name: "{{ status_schema }}.{{ subscriptions_table }}"
-    db: "{{ hoh_db }}"
-    login_host: "{{ db_login_host }}"
-    login_user: "{{ db_login_user }}"
-    login_password: "{{ db_login_password }}"
-    ssl_mode: "{{ db_ssl_mode }}"
-    columns:
-      - id uuid not null
-      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
-      - payload jsonb not null
+- name: create generic status tables
+  tags: tables
+  vars:
+    database: "{{ hoh_db }}"
+  include_tasks: create_status_table.yaml
+  loop:
+    - "{{ subscription_statuses_table }}"
+    - "{{ subscription_reports_table }}"
+    - "{{ subscription_table }}"
+    - "{{ placementrules_table }}"
+    - "{{ placements_table }}"
+    - "{{ placementdecisions_table }}"
+  loop_control:
+    loop_var: name
