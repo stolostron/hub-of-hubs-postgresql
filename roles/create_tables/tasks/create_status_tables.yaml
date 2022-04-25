@@ -124,7 +124,7 @@
   loop:
     - "{{ subscription_statuses_table }}"
     - "{{ subscription_reports_table }}"
-    - "{{ subscription_table }}"
+    - "{{ subscriptions_table }}"
     - "{{ placementrules_table }}"
     - "{{ placements_table }}"
     - "{{ placementdecisions_table }}"
