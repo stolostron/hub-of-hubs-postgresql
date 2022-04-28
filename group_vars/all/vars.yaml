@@ -28,7 +28,13 @@ policies_table: compliance
 policies_placement_table: policies_placement
 aggregated_policies_table: aggregated_compliance
 leaf_hub_heartbeats_table: leaf_hub_heartbeats
-subscriptions_table: subscriptions
+
+subscription_statuses_table: subscription_statuses
+subscription_reports_table: subscription_reports
+placementrules_table: placementrules
+placements_table: placements
+placementdecisions_table: placementdecisions
+
 enforcement_type: enforcement_type
 compliance_type: compliance_type
 error_type: error_type
