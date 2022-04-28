@@ -1,6 +1,6 @@
-- name: create table {{ name }} schema {{ status_schema }}
+- name: create table {{ table_name }} schema {{ status_schema }}
   postgresql_table:
-    name: "{{ status_schema }}.{{ name }}"
+    name: "{{ status_schema }}.{{ table_name }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
@@ -13,8 +13,8 @@
 
 - name: create index on payload->metadata->>name, payload->metadata->>namespace
   postgresql_idx:
-    name: "{{ name }}_payload_name_and_namespace_idx"
-    table: "{{ name }}"
+    name: "{{ table_name }}_payload_name_and_namespace_idx"
+    table: "{{ table_name }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"
@@ -27,8 +27,8 @@
 
 - name: create index on leaf_hub_name, payload->metadata->>name, payload->metadata->>namespace
   postgresql_idx:
-    name: "{{ name }}_leaf_hub_name_and_payload_name_namespace_idx"
-    table: "{{ name }}"
+    name: "{{ table_name }}_leaf_hub_name_and_payload_name_namespace_idx"
+    table: "{{ table_name }}"
     schema: "{{ status_schema }}"
     db: "{{ hoh_db }}"
     login_host: "{{ db_login_host }}"

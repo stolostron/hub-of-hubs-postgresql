@@ -66,8 +66,6 @@
 
 - name: create policies tables
   tags: tables
-  vars:
-    database: "{{ hoh_db }}"
   include_tasks: create_status_policies_table.yaml
   loop:
     - "{{ status_schema }}"
@@ -128,4 +126,4 @@
     - "{{ placements_table }}"
     - "{{ placementdecisions_table }}"
   loop_control:
-    loop_var: name
+    loop_var: table_name

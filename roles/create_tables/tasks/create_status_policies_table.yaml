@@ -71,30 +71,3 @@
     ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name, id, cluster_name
     unique: yes
-
-- name: create table {{ schema }}.{{ policies_placement_table }}
-  postgresql_table:
-    name: "{{ schema }}.{{ policies_placement_table }}"
-    db: "{{ hoh_db }}"
-    login_host: "{{ db_login_host }}"
-    login_user: "{{ db_login_user }}"
-    login_password: "{{ db_login_password }}"
-    ssl_mode: "{{ db_ssl_mode }}"
-    columns:
-      - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
-      - id uuid not null
-      - placement jsonb not null
-      - resource_version text not null
-
-- name: create index on leaf_hub_name, id for table {{ schema }}.{{ policies_placement_table }}
-  postgresql_idx:
-    name: "{{ policies_placement_table }}_leaf_hub_policy_idx"
-    table: "{{ policies_placement_table }}"
-    schema: "{{ schema }}"
-    db: "{{ hoh_db }}"
-    login_host: "{{ db_login_host }}"
-    login_user: "{{ db_login_user }}"
-    login_password: "{{ db_login_password }}"
-    ssl_mode: "{{ db_ssl_mode }}"
-    columns: leaf_hub_name, id
-    unique: yes
