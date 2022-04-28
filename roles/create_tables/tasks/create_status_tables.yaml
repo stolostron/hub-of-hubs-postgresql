@@ -118,8 +118,6 @@
 
 - name: create status tables
   tags: tables
-  vars:
-    database: "{{ hoh_db }}"
   include_tasks: create_status_table.yaml
   loop:
     - "{{ subscription_statuses_table }}"
