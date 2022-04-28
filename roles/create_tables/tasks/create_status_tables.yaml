@@ -103,6 +103,7 @@
       - leaf_hub_name varchar({{ cluster_name_length_limit }}) not null
       - last_timestamp timestamp not null default now()
 
+
 - name: create index on leaf_hub_name for table {{ leaf_hub_heartbeats_table }}
   postgresql_idx:
     name: "{{ leaf_hub_heartbeats_table }}_leaf_hub_idx"
@@ -115,6 +116,7 @@
     ssl_mode: "{{ db_ssl_mode }}"
     columns: leaf_hub_name
     unique: yes
+
 
 - name: create status tables
   tags: tables
