@@ -1,4 +1,4 @@
-- name: create table {{ name }} schema {{ status_schema }} database {{ database }}
+- name: create table {{ name }} schema {{ status_schema }}
   postgresql_table:
     name: "{{ status_schema }}.{{ name }}"
     db: "{{ hoh_db }}"
