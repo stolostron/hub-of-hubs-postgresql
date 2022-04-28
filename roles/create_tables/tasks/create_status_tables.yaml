@@ -116,7 +116,7 @@
     columns: leaf_hub_name
     unique: yes
 
-- name: create generic status tables
+- name: create status tables
   tags: tables
   vars:
     database: "{{ hoh_db }}"
