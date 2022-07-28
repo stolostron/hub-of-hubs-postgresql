@@ -12,21 +12,45 @@ spec:
           - name: ANSIBLE_PYTHON_INTERPRETER
             value: "/usr/local/bin/python"
           - name: DB_LOGIN_HOST
-            value: ${DB_LOGIN_HOST}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-admin
+                key: host
           - name: DB_LOGIN_USER
-            value: ${DB_LOGIN_USER}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-admin
+                key: user
           - name: DB_LOGIN_PASSWORD
-            value: ${DB_LOGIN_PASSWORD}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-admin
+                key: password
           - name: DB_NAME
-            value: ${DB_NAME}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-admin
+                key: database
           - name: DB_PROCESS_USER
-            value: ${DB_PROCESS_USER}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-users
+                key: process_user
           - name: DB_PROCESS_PWD
-            value: ${DB_PROCESS_PWD}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-users
+                key: process_password
           - name: DB_TANSPORT_USER
-            value: ${DB_TANSPORT_USER}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-users
+                key: transport_user
           - name: DB_TANSPORT_PWD
-            value: ${DB_TANSPORT_PWD}
+            valueFrom:
+              secretKeyRef:
+                name: hoh-postgres-users
+                key: transport_password
         image: ${IMAGE}
         imagePullPolicy: Always
         command: ["/bin/bash", "-c", "ansible-playbook create_tables.yaml -i production -l local"]
