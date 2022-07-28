@@ -3,7 +3,7 @@
   postgresql_user:
     db: "{{ hoh_db }}"
     name: "{{ hoh_process_user }}"
-    password: "{{ hoh_user_password }}"
+    password: "{{ hoh_process_password }}"
     expires: infinity
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"
@@ -14,7 +14,7 @@
   postgresql_user:
     db: "{{ hoh_db }}"
     name: "{{ transport_bridge_user }}"
-    password: "{{ hoh_user_password }}"
+    password: "{{ hoh_transport_password }}"
     expires: infinity
     login_host: "{{ db_login_host }}"
     login_user: "{{ db_login_user }}"

@@ -6,5 +6,6 @@ db_ssl_mode: prefer
 
 hoh_db: "{{ lookup('env', 'DB_NAME', default='hoh') }}"
 hoh_process_user: "{{ lookup('env', 'DB_PROCESS_USER', default='hoh-process-user') }}"
+hoh_process_password: "{{ lookup('env', 'DB_PROCESS_PWD', default='123') }}"
 transport_bridge_user: "{{ lookup('env', 'DB_TANSPORT_USER', default='transport-bridge-user') }}"
-hoh_user_password: "{{ lookup('env', 'DB_HOH_USER_PASSWORD', default='123') }}"
+hoh_transport_password: "{{ lookup('env', 'DB_TANSPORT_PWD', default='123') }}"

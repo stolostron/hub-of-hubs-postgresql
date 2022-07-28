@@ -21,10 +21,12 @@ spec:
             value: ${DB_NAME}
           - name: DB_PROCESS_USER
             value: ${DB_PROCESS_USER}
+          - name: DB_PROCESS_PWD
+            value: ${DB_PROCESS_PWD}
           - name: DB_TANSPORT_USER
             value: ${DB_TANSPORT_USER}
-          - name: DB_HOH_USER_PASSWORD
-            value: ${DB_HOH_USER_PASSWORD}
+          - name: DB_TANSPORT_PWD
+            value: ${DB_TANSPORT_PWD}
         image: ${IMAGE}
         imagePullPolicy: Always
         command: ["/bin/bash", "-c", "ansible-playbook create_tables.yaml -i production -l local"]
