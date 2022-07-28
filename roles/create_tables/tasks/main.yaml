@@ -1,4 +1,10 @@
 ---
+- name: create db
+  import_tasks: create_db.yaml
+  
+- name: create users
+  import_tasks: create_users.yaml
+
 - name: create tables
   import_tasks: create_tables.yaml
 

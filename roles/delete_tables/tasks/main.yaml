@@ -97,3 +97,17 @@
     - "{{ local_status_schema }}"
     - "{{ history_schema }}"
   ignore_errors: yes
+
+- name: delete users 
+  postgresql_user:
+    db: "{{ hoh_db }}"
+    name: "{{ item }}"
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+    state: absent
+  loop:
+    - "{{ hoh_process_user }}"
+    - "{{ transport_bridge_user }}"
+  ignore_errors: yes

@@ -6,3 +6,5 @@ production
 
 # the vault file with credentials
 group_vars/*/vault
+
+.vscode
