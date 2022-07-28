@@ -1,4 +1,10 @@
 db_login_host: "{{ lookup('env', 'DB_LOGIN_HOST') }}"
+db_login_port: "{{ lookup('env', 'DB_LOGIN_PORT', default='5432') }}"
 db_login_user: "{{ lookup('env', 'DB_LOGIN_USER') }}"
 db_login_password: "{{ lookup('env', 'DB_LOGIN_PASSWORD') }}"
-db_ssl_mode: require
+db_ssl_mode: prefer
+
+hoh_db: "{{ lookup('env', 'DB_NAME', default='hoh') }}"
+hoh_process_user: "{{ lookup('env', 'DB_PROCESS_USER', default='hoh-process-user') }}"
+transport_bridge_user: "{{ lookup('env', 'DB_TANSPORT_USER', default='transport-bridge-user') }}"
+hoh_user_password: "{{ lookup('env', 'DB_HOH_USER_PASSWORD', default='123') }}"

@@ -1,0 +1,22 @@
+---
+- name: create user {{ hoh_process_user }}
+  postgresql_user:
+    db: "{{ hoh_db }}"
+    name: "{{ hoh_process_user }}"
+    password: "{{ hoh_user_password }}"
+    expires: infinity
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
+
+- name: create user {{ transport_bridge_user }}
+  postgresql_user:
+    db: "{{ hoh_db }}"
+    name: "{{ transport_bridge_user }}"
+    password: "{{ hoh_user_password }}"
+    expires: infinity
+    login_host: "{{ db_login_host }}"
+    login_user: "{{ db_login_user }}"
+    login_password: "{{ db_login_password }}"
+    ssl_mode: "{{ db_ssl_mode }}"
